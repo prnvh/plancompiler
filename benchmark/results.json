@@ -1,0 +1,360 @@
+{
+  "run_at": "2026-03-01T18:33:52.304589",
+  "task_count": 5,
+  "compiler_first_pass_rate": 0.8,
+  "results": [
+    {
+      "task_id": "etl_multi_stage_pipeline",
+      "description": "Read data.csv, remove null values, deduplicate rows, cast numeric columns using a predefined mapping, filter rows where salary > 50000, sort by salary descending, compute group-wise count by region, and export the final dataset to etl_output.csv.",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": true,
+      "criteria_passed": true,
+      "first_pass_success": true,
+      "plan": {
+        "nodes": [
+          "CSVParser",
+          "NullHandler",
+          "DataDeduplicator",
+          "TypeCaster",
+          "DataFilter",
+          "DataSorter",
+          "Aggregator",
+          "CSVExporter"
+        ],
+        "edges": [
+          [
+            "CSVParser",
+            "NullHandler"
+          ],
+          [
+            "NullHandler",
+            "DataDeduplicator"
+          ],
+          [
+            "DataDeduplicator",
+            "TypeCaster"
+          ],
+          [
+            "TypeCaster",
+            "DataFilter"
+          ],
+          [
+            "DataFilter",
+            "DataSorter"
+          ],
+          [
+            "DataSorter",
+            "Aggregator"
+          ],
+          [
+            "Aggregator",
+            "CSVExporter"
+          ]
+        ],
+        "parameters": {
+          "CSVParser": {
+            "file_path": "data.csv"
+          },
+          "NullHandler": {
+            "strategy": "drop"
+          },
+          "DataDeduplicator": {},
+          "TypeCaster": {
+            "mapping": {}
+          },
+          "DataFilter": {
+            "condition": "salary > 50000"
+          },
+          "DataSorter": {
+            "by": "salary"
+          },
+          "Aggregator": {
+            "group_by": "region",
+            "agg_func": "count"
+          },
+          "CSVExporter": {
+            "output_path": "etl_output.csv"
+          }
+        },
+        "flags": [],
+        "glue_code": ""
+      },
+      "validation_errors": [],
+      "compile_error": null,
+      "run_stdout": "[CSVParser] Loaded 23 rows from data.csv\n[NullHandler] Dropped null rows\n[DataDeduplicator] Removed duplicate rows\n[TypeCaster] Cast columns: {}\n[DataFilter] Applied condition: salary > 50000\n[DataSorter] Sorted by salary, ascending=True\n[Aggregator] Aggregated using count\n[CSVExporter] Exported to etl_output.csv\netl_output.csv\n",
+      "run_stderr": "",
+      "run_returncode": 0,
+      "criteria_failures": [],
+      "duration_seconds": 8.77,
+      "error": null,
+      "baseline_success": false,
+      "baseline_error": "Baseline runtime error (exit 1):\nTraceback (most recent call last):\n  File \"C:\\Users\\pranav h\\Documents\\GitHub\\llm-code-graph-compiler\\.venv\\Lib\\site-packages\\pandas\\core\\indexes\\base.py\", line 3641, in get_loc\n    return self._engine.get_loc(casted_key)\n           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^\n  File \"pandas/_libs/index.pyx\", line 168, in pandas._libs.index.IndexEngine.get_loc\n  File \"pandas/_libs/index.pyx\", line 197, in pandas._libs.index.IndexEngine.get_loc\n  File \"pandas/_libs/hashtable_class_helper.pxi\", line 7668, in ",
+      "baseline_duration_seconds": 2.52
+    },
+    {
+      "task_id": "json_ingest_sql_query_export",
+      "description": "Read input.json, store the dataset into a SQLite database called analytics.db in table events, then run a SQL query to retrieve all events, and export the results to events_summary.json.",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": true,
+      "criteria_passed": true,
+      "first_pass_success": true,
+      "plan": {
+        "nodes": [
+          "JSONParser",
+          "SQLiteConnector",
+          "QueryEngine",
+          "JSONExporter"
+        ],
+        "edges": [
+          [
+            "JSONParser",
+            "SQLiteConnector"
+          ],
+          [
+            "SQLiteConnector",
+            "QueryEngine"
+          ],
+          [
+            "QueryEngine",
+            "JSONExporter"
+          ]
+        ],
+        "parameters": {
+          "JSONParser": {
+            "file_path": "input.json"
+          },
+          "SQLiteConnector": {
+            "db_path": "analytics.db",
+            "table_name": "events"
+          },
+          "QueryEngine": {
+            "query": "SELECT * FROM events"
+          },
+          "JSONExporter": {
+            "output_path": "events_summary.json"
+          }
+        },
+        "flags": [],
+        "glue_code": ""
+      },
+      "validation_errors": [],
+      "compile_error": null,
+      "run_stdout": "[JSONParser] Loaded 50 rows from input.json\n[SQLiteConnector] Stored table 'events' in analytics.db\n[QueryEngine] Query executed\n[JSONExporter] Exported to events_summary.json\nevents_summary.json\n",
+      "run_stderr": "",
+      "run_returncode": 0,
+      "criteria_failures": [],
+      "duration_seconds": 7.0,
+      "error": null,
+      "baseline_success": false,
+      "baseline_error": "Baseline execution timed out",
+      "baseline_duration_seconds": 6134.94
+    },
+    {
+      "task_id": "csv_sqlite_rest_pipeline",
+      "description": "Read dataset.csv, drop null values, filter rows where score > 0.7, store the filtered data into a SQLite database called predictions.db in a table called results, then expose a REST API endpoint at route /results on port 8080 with API key authentication using environment variable API_SECRET_KEY.",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": false,
+      "criteria_passed": false,
+      "first_pass_success": false,
+      "plan": {
+        "nodes": [
+          "CSVParser",
+          "NullHandler",
+          "DataFilter",
+          "SQLiteConnector",
+          "RESTEndpoint",
+          "AuthMiddleware"
+        ],
+        "edges": [
+          [
+            "CSVParser",
+            "NullHandler"
+          ],
+          [
+            "NullHandler",
+            "DataFilter"
+          ],
+          [
+            "DataFilter",
+            "SQLiteConnector"
+          ],
+          [
+            "SQLiteConnector",
+            "RESTEndpoint"
+          ],
+          [
+            "RESTEndpoint",
+            "AuthMiddleware"
+          ]
+        ],
+        "parameters": {
+          "CSVParser": {
+            "file_path": "dataset.csv"
+          },
+          "NullHandler": {
+            "strategy": "drop"
+          },
+          "DataFilter": {
+            "condition": "score > 0.7"
+          },
+          "SQLiteConnector": {
+            "db_path": "predictions.db",
+            "table_name": "results"
+          },
+          "RESTEndpoint": {
+            "route": "/results",
+            "port": 8080
+          },
+          "AuthMiddleware": {
+            "api_key_env_var": "API_SECRET_KEY"
+          }
+        },
+        "flags": [],
+        "glue_code": ""
+      },
+      "validation_errors": [],
+      "compile_error": null,
+      "run_stdout": "[CSVParser] Loaded 30 rows from dataset.csv\n[NullHandler] Dropped null rows\n[DataFilter] Applied condition: score > 0.7\n[SQLiteConnector] Stored table 'results' in predictions.db\n[RESTEndpoint] Running on port 8080\n * Serving Flask app 'app'\n * Debug mode: off\n",
+      "run_stderr": "WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.\n * Running on http://127.0.0.1:8080\nPress CTRL+C to quit\n",
+      "run_returncode": null,
+      "criteria_failures": [],
+      "duration_seconds": 22.57,
+      "error": "Execution timed out",
+      "baseline_success": null,
+      "baseline_error": null,
+      "baseline_duration_seconds": null
+    },
+    {
+      "task_id": "adversarial_planner_normalization_test",
+      "description": "Read a CSV file named data.csv and perform cleaning, deduplication, filtering where age > 30, sorting by age ascending, and export results to final.csv. The planner may receive this task in mixed phrasing and must still produce a valid DAG pipeline after normalization.",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": true,
+      "criteria_passed": true,
+      "first_pass_success": true,
+      "plan": {
+        "nodes": [
+          "CSVParser",
+          "NullHandler",
+          "DataDeduplicator",
+          "DataFilter",
+          "DataSorter",
+          "CSVExporter"
+        ],
+        "edges": [
+          [
+            "CSVParser",
+            "NullHandler"
+          ],
+          [
+            "NullHandler",
+            "DataDeduplicator"
+          ],
+          [
+            "DataDeduplicator",
+            "DataFilter"
+          ],
+          [
+            "DataFilter",
+            "DataSorter"
+          ],
+          [
+            "DataSorter",
+            "CSVExporter"
+          ]
+        ],
+        "parameters": {
+          "CSVParser": {
+            "file_path": "data.csv"
+          },
+          "NullHandler": {
+            "strategy": "drop"
+          },
+          "DataDeduplicator": {},
+          "DataFilter": {
+            "condition": "age > 30"
+          },
+          "DataSorter": {
+            "by": "age"
+          },
+          "CSVExporter": {
+            "output_path": "final.csv"
+          }
+        },
+        "flags": [],
+        "glue_code": ""
+      },
+      "validation_errors": [],
+      "compile_error": null,
+      "run_stdout": "[CSVParser] Loaded 10 rows from data.csv\n[NullHandler] Dropped null rows\n[DataDeduplicator] Removed duplicate rows\n[DataFilter] Applied condition: age > 30\n[DataSorter] Sorted by age, ascending=True\n[CSVExporter] Exported to final.csv\nfinal.csv\n",
+      "run_stderr": "",
+      "run_returncode": 0,
+      "criteria_failures": [],
+      "duration_seconds": 10.82,
+      "error": null,
+      "baseline_success": null,
+      "baseline_error": null,
+      "baseline_duration_seconds": null
+    },
+    {
+      "task_id": "csv_aggregate_export",
+      "description": "Read a CSV file called data.csv, group by the department column and count rows per group, then export the aggregated result to summary.csv.",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": true,
+      "criteria_passed": true,
+      "first_pass_success": true,
+      "plan": {
+        "nodes": [
+          "CSVParser",
+          "Aggregator",
+          "CSVExporter"
+        ],
+        "edges": [
+          [
+            "CSVParser",
+            "Aggregator"
+          ],
+          [
+            "Aggregator",
+            "CSVExporter"
+          ]
+        ],
+        "parameters": {
+          "CSVParser": {
+            "file_path": "data.csv"
+          },
+          "Aggregator": {
+            "group_by": "department",
+            "agg_func": "count"
+          },
+          "CSVExporter": {
+            "output_path": "summary.csv"
+          }
+        },
+        "flags": [],
+        "glue_code": ""
+      },
+      "validation_errors": [],
+      "compile_error": null,
+      "run_stdout": "[CSVParser] Loaded 23 rows from data.csv\n[Aggregator] Aggregated using count\n[CSVExporter] Exported to summary.csv\nsummary.csv\n",
+      "run_stderr": "",
+      "run_returncode": 0,
+      "criteria_failures": [],
+      "duration_seconds": 4.82,
+      "error": null,
+      "baseline_success": null,
+      "baseline_error": null,
+      "baseline_duration_seconds": null
+    }
+  ],
+  "baseline_first_pass_rate": 0.0
+}

@@ -1,3 +1,5 @@
 pydantic
 pandas
 openai
+sqlalchemy
+psycopg2-binary

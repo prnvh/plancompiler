@@ -1,0 +1,11 @@
+name,age,city,region,salary
+Alice,29,NYC,East,55000.0
+Bob,22,LA,West,38000.0
+Carol,35,NYC,East,72000.0
+Dave,41,Chicago,Central,91000.0
+Eve,25,LA,West,
+Frank,33,NYC,East,67000.0
+Grace,28,Chicago,Central,51000.0
+Heidi,45,LA,West,88000.0
+Ivan,19,NYC,East,31000.0
+Judy,37,Chicago,Central,74000.0

@@ -28,6 +28,93 @@ def data_filter(df: pd.DataFrame, condition: str) -> pd.DataFrame:
     return filtered
 
 
+# --- Node: DataTransformer ---
+import pandas as pd
+
+def data_transformer(df: pd.DataFrame, operations: dict | None = None) -> pd.DataFrame:
+    """
+    Applies transformations to a DataFrame.
+    Node: DataTransformer
+    """
+    if operations:
+        if "rename" in operations:
+            df = df.rename(columns=operations["rename"])
+        if "filter" in operations:
+            df = df.query(operations["filter"])
+        if "cast" in operations:
+            for col, dtype in operations["cast"].items():
+                df[col] = df[col].astype(dtype)
+
+    print("[DataTransformer] Transformations applied")
+    return df
+
+
+# --- Node: SchemaValidator ---
+import pandas as pd
+
+def schema_validator(df: pd.DataFrame, schema: dict | None = None) -> pd.DataFrame:
+    """
+    Validates DataFrame schema.
+    Node: SchemaValidator
+    """
+    if schema:
+        for col, dtype in schema.items():
+            if col not in df.columns:
+                raise ValueError(f"[SchemaValidator] Missing column: {col}")
+            if not pd.api.types.is_dtype_equal(df[col].dtype, dtype):
+                print(f"[SchemaValidator] Warning: Column {col} dtype mismatch")
+
+    print("[SchemaValidator] Schema validated")
+    return df
+
+
+# --- Node: SQLiteConnector ---
+import sqlite3
+import pandas as pd
+
+def sqlite_connector(df: pd.DataFrame, db_path: str, table_name: str):
+    """
+    Stores DataFrame into SQLite and returns connection.
+    Node: SQLiteConnector
+    """
+    conn = sqlite3.connect(db_path)
+    df.to_sql(table_name, conn, if_exists="replace", index=False)
+    print(f"[SQLiteConnector] Stored table '{table_name}' in {db_path}")
+    return conn
+
+
+# --- Node: QueryEngine ---
+import pandas as pd
+import sqlite3
+
+def query_engine(conn: sqlite3.Connection, query: str) -> pd.DataFrame:
+    """
+    Executes SQL query on DBHandle.
+    Node: QueryEngine
+    """
+    df = pd.read_sql_query(query, conn)
+    print("[QueryEngine] Query executed")
+    return df
+
+
+# --- Node: Aggregator ---
+import pandas as pd
+
+def aggregator(df: pd.DataFrame, group_by: str, agg_func: str) -> pd.DataFrame:
+    """
+    Aggregates DataFrame.
+    Node: Aggregator
+    """
+
+    if agg_func == "count":
+        grouped = df.groupby(group_by).size().reset_index(name="count")
+    else:
+        grouped = df.groupby(group_by).agg(agg_func).reset_index()
+
+    print(f"[Aggregator] Aggregated using {agg_func}")
+    return grouped
+
+
 # --- Node: DataSorter ---
 import pandas as pd
 
@@ -56,8 +143,13 @@ def csv_exporter(df: pd.DataFrame, output_path: str) -> str:
 
 # --- Execution (auto-generated) ---
 if __name__ == '__main__':
-    out_csv_parser = csv_parser(file_path="data.csv")
-    out_data_filter = data_filter(out_csv_parser, condition="age > 25")
-    out_data_sorter = data_sorter(out_data_filter, by="age", ascending="True")
-    out_csv_exporter = csv_exporter(out_data_sorter, output_path="output.csv")
+    out_csv_parser = csv_parser(file_path='data.csv')
+    out_data_filter = data_filter(out_csv_parser, condition='age > 20')
+    out_data_transformer = data_transformer(out_data_filter)
+    out_schema_validator = schema_validator(out_data_transformer)
+    out_sqlite_connector = sqlite_connector(out_schema_validator, db_path='test.db', table_name='people')
+    out_query_engine = query_engine(out_sqlite_connector, query='SELECT age FROM people')
+    out_aggregator = aggregator(out_query_engine, group_by='age', agg_func='count')
+    out_data_sorter = data_sorter(out_aggregator, by='age', ascending=True)
+    out_csv_exporter = csv_exporter(out_data_sorter, output_path='final_output.csv')
     print(out_csv_exporter)
