@@ -1,0 +1,282 @@
+[
+  {
+    "task_id": "set_g_01_json_sqlite_json_parity",
+    "description": "SQLite roundtrip task 1: read data.csv, drop null values, remove duplicate rows, store into a SQLite database called g_roundtrip1.db in table people_rows, run a SQL query to retrieve all rows from people_rows, then export to g_roundtrip1.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/people.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "g_roundtrip1.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "g_roundtrip1.csv",
+        "column": "name"
+      },
+      {
+        "type": "file_has_column",
+        "path": "g_roundtrip1.csv",
+        "column": "age"
+      },
+      {
+        "type": "file_has_column",
+        "path": "g_roundtrip1.csv",
+        "column": "region"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_g_02_node_normalization_roundtrip",
+    "description": "SQLite roundtrip task 2: read data.csv, select name, department, region, salary, cast column types using an empty mapping, store into a SQLite database called g_roundtrip2.db in table employee_rows, run a SQL query to retrieve all rows from employee_rows, then export to g_roundtrip2.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/employees.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "g_roundtrip2.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "g_roundtrip2.csv",
+        "column": "name"
+      },
+      {
+        "type": "file_has_column",
+        "path": "g_roundtrip2.csv",
+        "column": "department"
+      },
+      {
+        "type": "file_has_column",
+        "path": "g_roundtrip2.csv",
+        "column": "region"
+      },
+      {
+        "type": "file_has_column",
+        "path": "g_roundtrip2.csv",
+        "column": "salary"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_g_03_edge_integrity_roundtrip",
+    "description": "SQLite roundtrip task 3: read data.csv, drop null values, filter rows where score is greater than 0.2, store into a SQLite database called g_roundtrip3.db in table score_rows, run a SQL query to retrieve all rows from score_rows, then export to g_roundtrip3.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/predictions.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "g_roundtrip3.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "g_roundtrip3.csv",
+        "column": "name"
+      },
+      {
+        "type": "file_has_column",
+        "path": "g_roundtrip3.csv",
+        "column": "score"
+      },
+      {
+        "type": "file_has_column",
+        "path": "g_roundtrip3.csv",
+        "column": "label"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_g_04_tx_rollback_roundtrip",
+    "description": "SQLite roundtrip task 4: read data.csv, drop null values, remove duplicate rows, select name, status, signup_date, store into a SQLite database called g_roundtrip4.db in table customer_rows, run a SQL query to retrieve all rows from customer_rows, then export to g_roundtrip4.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/customers.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "g_roundtrip4.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "g_roundtrip4.csv",
+        "column": "name"
+      },
+      {
+        "type": "file_has_column",
+        "path": "g_roundtrip4.csv",
+        "column": "status"
+      },
+      {
+        "type": "file_has_column",
+        "path": "g_roundtrip4.csv",
+        "column": "signup_date"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_g_05_index_impact_roundtrip",
+    "description": "SQLite roundtrip task 5: read input.json, validate schema, store into a SQLite database called g_roundtrip5.db in table raw_events, run a SQL query to retrieve all rows from raw_events, then export to g_roundtrip5.csv.",
+    "fixtures": {
+      "input.json": "benchmark/fixtures/events.json"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "g_roundtrip5.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "g_roundtrip5.csv",
+        "column": "event_id"
+      },
+      {
+        "type": "file_has_column",
+        "path": "g_roundtrip5.csv",
+        "column": "event_type"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_g_06_utf8_roundtrip",
+    "description": "SQLite roundtrip task 6: read data.csv, drop null values, cast column types using an empty mapping, store into a SQLite database called g_roundtrip6.db in table people_rows, run a SQL query to retrieve all rows from people_rows, then export to g_roundtrip6.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/people.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "g_roundtrip6.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "g_roundtrip6.csv",
+        "column": "name"
+      },
+      {
+        "type": "file_has_column",
+        "path": "g_roundtrip6.csv",
+        "column": "age"
+      },
+      {
+        "type": "file_has_column",
+        "path": "g_roundtrip6.csv",
+        "column": "city"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_g_07_deterministic_order_roundtrip",
+    "description": "SQLite roundtrip task 7: read data.csv, drop null values, remove duplicate rows, sort by salary descending, store into a SQLite database called g_roundtrip7.db in table employee_rows, run a SQL query to retrieve all rows from employee_rows, then export to g_roundtrip7.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/employees.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "g_roundtrip7.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "g_roundtrip7.csv",
+        "column": "name"
+      },
+      {
+        "type": "file_has_column",
+        "path": "g_roundtrip7.csv",
+        "column": "salary"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_g_08_incremental_upsert_roundtrip",
+    "description": "SQLite roundtrip task 8: read data.csv, drop null values, filter rows where score is greater than 0.4, cast column types using an empty mapping, store into a SQLite database called g_roundtrip8.db in table score_rows, run a SQL query to retrieve all rows from score_rows, then export to g_roundtrip8.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/predictions.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "g_roundtrip8.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "g_roundtrip8.csv",
+        "column": "name"
+      },
+      {
+        "type": "file_has_column",
+        "path": "g_roundtrip8.csv",
+        "column": "score"
+      },
+      {
+        "type": "file_has_column",
+        "path": "g_roundtrip8.csv",
+        "column": "label"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_g_09_corruption_detection_roundtrip",
+    "description": "SQLite roundtrip task 9: read data.csv, filter rows where status equals active, sort by signup_date ascending, store into a SQLite database called g_roundtrip9.db in table active_customers, run a SQL query to retrieve all rows from active_customers, then export to g_roundtrip9.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/customers.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "g_roundtrip9.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "g_roundtrip9.csv",
+        "column": "name"
+      },
+      {
+        "type": "file_has_column",
+        "path": "g_roundtrip9.csv",
+        "column": "status"
+      },
+      {
+        "type": "file_has_column",
+        "path": "g_roundtrip9.csv",
+        "column": "signup_date"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_g_10_schema_migration_roundtrip",
+    "description": "SQLite roundtrip task 10: read input.json, validate schema, apply a data transformation with no operations, store into a SQLite database called g_roundtrip10.db in table events, run a SQL query to retrieve all rows from events, group by event_type and count occurrences, then export to g_roundtrip10.csv.",
+    "fixtures": {
+      "input.json": "benchmark/fixtures/events.json"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "g_roundtrip10.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "g_roundtrip10.csv",
+        "column": "event_type"
+      },
+      {
+        "type": "file_has_column",
+        "path": "g_roundtrip10.csv",
+        "column": "occurrences"
+      }
+    ],
+    "timeout_seconds": 40
+  }
+]

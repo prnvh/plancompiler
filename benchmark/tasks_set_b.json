@@ -1,0 +1,267 @@
+[
+  {
+    "task_id": "set_b_01_multifile_compile",
+    "description": "Using a 5-node workflow, read data.csv, drop null values, remove duplicate rows, group by department and count rows, then export to b_dept_summary.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/employees.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "b_dept_summary.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "b_dept_summary.csv",
+        "column": "department"
+      },
+      {
+        "type": "file_has_column",
+        "path": "b_dept_summary.csv",
+        "column": "count"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_b_02_retry_fallback",
+    "description": "Using a 6-node workflow, read data.csv, drop null values, cast column types using an empty mapping, filter rows where age is greater than 30, sort by salary descending, then export to b_people_filtered.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/people.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "b_people_filtered.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "b_people_filtered.csv",
+        "column": "name"
+      },
+      {
+        "type": "file_has_column",
+        "path": "b_people_filtered.csv",
+        "column": "age"
+      },
+      {
+        "type": "file_has_column",
+        "path": "b_people_filtered.csv",
+        "column": "salary"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_b_03_incremental_compile",
+    "description": "Using a 6-node workflow, read data.csv, remove duplicate rows, filter rows where salary is greater than 45000, select name, department, salary, sort by salary ascending, then export to b_salary_band.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/employees.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "b_salary_band.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "b_salary_band.csv",
+        "column": "name"
+      },
+      {
+        "type": "file_has_column",
+        "path": "b_salary_band.csv",
+        "column": "department"
+      },
+      {
+        "type": "file_has_column",
+        "path": "b_salary_band.csv",
+        "column": "salary"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_b_04_namespace_collision",
+    "description": "Using a 5-node workflow, read data.csv, filter rows where status equals active, sort by signup_date ascending, select name, status, signup_date, then export to b_active_signup.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/customers.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "b_active_signup.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "b_active_signup.csv",
+        "column": "name"
+      },
+      {
+        "type": "file_has_column",
+        "path": "b_active_signup.csv",
+        "column": "status"
+      },
+      {
+        "type": "file_has_column",
+        "path": "b_active_signup.csv",
+        "column": "signup_date"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_b_05_dead_node_prune",
+    "description": "Using a 5-node workflow, read data.csv, drop null values, filter rows where score is greater than 0.3, group by label and count rows, then export to b_label_counts.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/predictions.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "b_label_counts.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "b_label_counts.csv",
+        "column": "label"
+      },
+      {
+        "type": "file_has_column",
+        "path": "b_label_counts.csv",
+        "column": "count"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_b_06_parallel_parse",
+    "description": "Using a 7-node workflow, read input.json, validate schema, apply a data transformation with no operations, drop null values, group by event_type and count occurrences, sort by occurrences descending, then export to b_event_counts.csv.",
+    "fixtures": {
+      "input.json": "benchmark/fixtures/events.json"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "b_event_counts.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "b_event_counts.csv",
+        "column": "event_type"
+      },
+      {
+        "type": "file_has_column",
+        "path": "b_event_counts.csv",
+        "column": "occurrences"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_b_07_edge_filtering",
+    "description": "Using a 5-node workflow, read data.csv, drop null values, remove duplicate rows, select name, region, and salary, then export to b_region_salary.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/employees.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "b_region_salary.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "b_region_salary.csv",
+        "column": "name"
+      },
+      {
+        "type": "file_has_column",
+        "path": "b_region_salary.csv",
+        "column": "region"
+      },
+      {
+        "type": "file_has_column",
+        "path": "b_region_salary.csv",
+        "column": "salary"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_b_08_error_taxonomy",
+    "description": "Using a 6-node workflow, read data.csv, drop null values, remove duplicate rows, cast column types using an empty mapping, group by region and count employees, then export to b_region_counts.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/employees.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "b_region_counts.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "b_region_counts.csv",
+        "column": "region"
+      },
+      {
+        "type": "file_has_column",
+        "path": "b_region_counts.csv",
+        "column": "count"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_b_09_graph_diff",
+    "description": "Using a 7-node workflow, read data.csv, drop null values, filter rows where salary is greater than 35000, select name, age, region, store into a SQLite database called b_people.db in table contacts, run a SQL query to retrieve all rows, then export to b_contacts.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/people.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "b_contacts.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "b_contacts.csv",
+        "column": "name"
+      },
+      {
+        "type": "file_has_column",
+        "path": "b_contacts.csv",
+        "column": "age"
+      },
+      {
+        "type": "file_has_column",
+        "path": "b_contacts.csv",
+        "column": "region"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_b_10_chunked_writer",
+    "description": "Using a 5-node workflow, read data.csv, drop null values, remove duplicate rows, sort by salary descending, then export to b_sorted.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/employees.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "b_sorted.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "b_sorted.csv",
+        "column": "name"
+      },
+      {
+        "type": "file_has_column",
+        "path": "b_sorted.csv",
+        "column": "salary"
+      }
+    ],
+    "timeout_seconds": 40
+  }
+]
