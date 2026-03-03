@@ -274,7 +274,7 @@
       {
         "type": "file_has_column",
         "path": "g_roundtrip10.csv",
-        "column": "occurrences"
+        "column": "count"
       }
     ],
     "timeout_seconds": 40

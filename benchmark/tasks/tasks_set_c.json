@@ -42,7 +42,7 @@
       {
         "type": "file_has_column",
         "path": "c_event_counts.csv",
-        "column": "occurrences"
+        "column": "count"
       }
     ],
     "timeout_seconds": 40

@@ -66,7 +66,7 @@
       {
         "type": "file_has_column",
         "path": "f_schema_report_03.csv",
-        "column": "occurrences"
+        "column": "count"
       }
     ],
     "timeout_seconds": 40

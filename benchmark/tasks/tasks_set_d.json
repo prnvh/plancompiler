@@ -42,7 +42,7 @@
       {
         "type": "file_has_column",
         "path": "d_event_counts.csv",
-        "column": "occurrences"
+        "column": "count"
       }
     ],
     "timeout_seconds": 40
@@ -220,7 +220,7 @@
       {
         "type": "file_has_column",
         "path": "d_event_summary.csv",
-        "column": "occurrences"
+        "column": "count"
       }
     ],
     "timeout_seconds": 40

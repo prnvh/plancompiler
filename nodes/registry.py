@@ -106,7 +106,7 @@ NODE_REGISTRY = {
         input_type=NodeType.DATA_FRAME,
         output_type=NodeType.DATA_FRAME,
         template_path="nodes/templates/data_sorter.py",
-        required_params=["by"],
+        required_params=["by", "ascending"],
         function_name="data_sorter"
     ),
 

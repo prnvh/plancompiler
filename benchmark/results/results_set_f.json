@@ -1,0 +1,621 @@
+{
+  "run_at": "2026-03-03T20:33:19.560118",
+  "task_count": 10,
+  "compiler_first_pass_rate": 0.9,
+  "results": [
+    {
+      "task_id": "set_f_01_missing_required_field",
+      "description": "Schema trap task 1: read input.json, validate the schema, apply a data transformation with no operations, then export to f_schema_report_01.csv.",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": true,
+      "criteria_passed": true,
+      "first_pass_success": true,
+      "plan": {
+        "nodes": [
+          "JSONParser",
+          "SchemaValidator",
+          "DataTransformer",
+          "CSVExporter"
+        ],
+        "edges": [
+          [
+            "JSONParser",
+            "SchemaValidator"
+          ],
+          [
+            "SchemaValidator",
+            "DataTransformer"
+          ],
+          [
+            "DataTransformer",
+            "CSVExporter"
+          ]
+        ],
+        "parameters": {
+          "JSONParser": {
+            "file_path": "input.json"
+          },
+          "SchemaValidator": {},
+          "DataTransformer": {},
+          "CSVExporter": {
+            "output_path": "f_schema_report_01.csv"
+          }
+        },
+        "flags": [],
+        "glue_code": ""
+      },
+      "validation_errors": [],
+      "compile_error": null,
+      "run_stdout": "[JSONParser] Loaded 50 rows from input.json\n[SchemaValidator] Schema validated\n[DataTransformer] Transformations applied\n[CSVExporter] Exported to f_schema_report_01.csv\nf_schema_report_01.csv\n",
+      "run_stderr": "",
+      "run_returncode": 0,
+      "criteria_failures": [],
+      "duration_seconds": 5.4,
+      "error": null,
+      "baseline_success": false,
+      "baseline_error": "Baseline runtime error (exit 1):\nTraceback (most recent call last):\n  File \"C:\\Users\\PRANAV~1\\AppData\\Local\\Temp\\tmpblceismv\\app.py\", line 3, in <module>\n    from jsonschema import validate, ValidationError\nModuleNotFoundError: No module named 'jsonschema'\n",
+      "baseline_duration_seconds": 4.45
+    },
+    {
+      "task_id": "set_f_02_wrong_primitive_type",
+      "description": "Schema trap task 2: read input.json, validate the schema, drop null values, then export to f_schema_report_02.csv.",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": true,
+      "criteria_passed": true,
+      "first_pass_success": true,
+      "plan": {
+        "nodes": [
+          "JSONParser",
+          "SchemaValidator",
+          "NullHandler",
+          "CSVExporter"
+        ],
+        "edges": [
+          [
+            "JSONParser",
+            "SchemaValidator"
+          ],
+          [
+            "SchemaValidator",
+            "NullHandler"
+          ],
+          [
+            "NullHandler",
+            "CSVExporter"
+          ]
+        ],
+        "parameters": {
+          "JSONParser": {
+            "file_path": "input.json"
+          },
+          "SchemaValidator": {},
+          "NullHandler": {
+            "strategy": "drop"
+          },
+          "CSVExporter": {
+            "output_path": "f_schema_report_02.csv"
+          }
+        },
+        "flags": [],
+        "glue_code": ""
+      },
+      "validation_errors": [],
+      "compile_error": null,
+      "run_stdout": "[JSONParser] Loaded 50 rows from input.json\n[SchemaValidator] Schema validated\n[NullHandler] Dropped null rows\n[CSVExporter] Exported to f_schema_report_02.csv\nf_schema_report_02.csv\n",
+      "run_stderr": "",
+      "run_returncode": 0,
+      "criteria_failures": [],
+      "duration_seconds": 6.02,
+      "error": null,
+      "baseline_success": true,
+      "baseline_error": null,
+      "baseline_duration_seconds": 5.06
+    },
+    {
+      "task_id": "set_f_03_enum_trap",
+      "description": "Schema trap task 3: read input.json, validate the schema, group by event_type and count occurrences, then export to f_schema_report_03.csv.",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": true,
+      "criteria_passed": false,
+      "first_pass_success": false,
+      "plan": {
+        "nodes": [
+          "JSONParser",
+          "SchemaValidator",
+          "Aggregator",
+          "CSVExporter"
+        ],
+        "edges": [
+          [
+            "JSONParser",
+            "SchemaValidator"
+          ],
+          [
+            "SchemaValidator",
+            "Aggregator"
+          ],
+          [
+            "Aggregator",
+            "CSVExporter"
+          ]
+        ],
+        "parameters": {
+          "JSONParser": {
+            "file_path": "input.json"
+          },
+          "SchemaValidator": {},
+          "Aggregator": {
+            "group_by": "event_type",
+            "agg_func": "count"
+          },
+          "CSVExporter": {
+            "output_path": "f_schema_report_03.csv"
+          }
+        },
+        "flags": [],
+        "glue_code": ""
+      },
+      "validation_errors": [],
+      "compile_error": null,
+      "run_stdout": "[JSONParser] Loaded 50 rows from input.json\n[SchemaValidator] Schema validated\n[Aggregator] Aggregated using count\n[CSVExporter] Exported to f_schema_report_03.csv\nf_schema_report_03.csv\n",
+      "run_stderr": "",
+      "run_returncode": 0,
+      "criteria_failures": [
+        "file_has_column: column 'occurrences' not in 'f_schema_report_03.csv'"
+      ],
+      "duration_seconds": 7.36,
+      "error": null,
+      "baseline_success": false,
+      "baseline_error": "Baseline runtime error (exit 1):\nTraceback (most recent call last):\n  File \"C:\\Users\\PRANAV~1\\AppData\\Local\\Temp\\tmpky1tmk_c\\app.py\", line 3, in <module>\n    from jsonschema import validate, ValidationError\nModuleNotFoundError: No module named 'jsonschema'\n",
+      "baseline_duration_seconds": 5.54
+    },
+    {
+      "task_id": "set_f_04_additional_properties",
+      "description": "Schema trap task 4: read input.json, validate the schema, cast column types using an empty mapping, then export to f_schema_report_04.csv.",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": true,
+      "criteria_passed": true,
+      "first_pass_success": true,
+      "plan": {
+        "nodes": [
+          "JSONParser",
+          "SchemaValidator",
+          "TypeCaster",
+          "CSVExporter"
+        ],
+        "edges": [
+          [
+            "JSONParser",
+            "SchemaValidator"
+          ],
+          [
+            "SchemaValidator",
+            "TypeCaster"
+          ],
+          [
+            "TypeCaster",
+            "CSVExporter"
+          ]
+        ],
+        "parameters": {
+          "JSONParser": {
+            "file_path": "input.json"
+          },
+          "SchemaValidator": {},
+          "TypeCaster": {
+            "mapping": {}
+          },
+          "CSVExporter": {
+            "output_path": "f_schema_report_04.csv"
+          }
+        },
+        "flags": [],
+        "glue_code": ""
+      },
+      "validation_errors": [],
+      "compile_error": null,
+      "run_stdout": "[JSONParser] Loaded 50 rows from input.json\n[SchemaValidator] Schema validated\n[TypeCaster] Cast columns: {}\n[CSVExporter] Exported to f_schema_report_04.csv\nf_schema_report_04.csv\n",
+      "run_stderr": "",
+      "run_returncode": 0,
+      "criteria_failures": [],
+      "duration_seconds": 6.64,
+      "error": null,
+      "baseline_success": true,
+      "baseline_error": null,
+      "baseline_duration_seconds": 4.89
+    },
+    {
+      "task_id": "set_f_05_nullability_trap",
+      "description": "Schema trap task 5: read data.csv, drop null values, cast column types using an empty mapping, then export to f_schema_report_05.csv.",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": true,
+      "criteria_passed": true,
+      "first_pass_success": true,
+      "plan": {
+        "nodes": [
+          "CSVParser",
+          "NullHandler",
+          "TypeCaster",
+          "CSVExporter"
+        ],
+        "edges": [
+          [
+            "CSVParser",
+            "NullHandler"
+          ],
+          [
+            "NullHandler",
+            "TypeCaster"
+          ],
+          [
+            "TypeCaster",
+            "CSVExporter"
+          ]
+        ],
+        "parameters": {
+          "CSVParser": {
+            "file_path": "data.csv"
+          },
+          "NullHandler": {
+            "strategy": "drop"
+          },
+          "TypeCaster": {
+            "mapping": {}
+          },
+          "CSVExporter": {
+            "output_path": "f_schema_report_05.csv"
+          }
+        },
+        "flags": [],
+        "glue_code": ""
+      },
+      "validation_errors": [],
+      "compile_error": null,
+      "run_stdout": "[CSVParser] Loaded 30 rows from data.csv\n[NullHandler] Dropped null rows\n[TypeCaster] Cast columns: {}\n[CSVExporter] Exported to f_schema_report_05.csv\nf_schema_report_05.csv\n",
+      "run_stderr": "",
+      "run_returncode": 0,
+      "criteria_failures": [],
+      "duration_seconds": 6.81,
+      "error": null,
+      "baseline_success": true,
+      "baseline_error": null,
+      "baseline_duration_seconds": 2.85
+    },
+    {
+      "task_id": "set_f_06_recursive_depth",
+      "description": "Schema trap task 6: read input.json, validate schema, store into a SQLite database called f_trap.db in table raw_events, run a SQL query to retrieve all rows, then export to f_schema_report_06.csv.",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": true,
+      "criteria_passed": true,
+      "first_pass_success": true,
+      "plan": {
+        "nodes": [
+          "JSONParser",
+          "SchemaValidator",
+          "SQLiteConnector",
+          "QueryEngine",
+          "CSVExporter"
+        ],
+        "edges": [
+          [
+            "JSONParser",
+            "SchemaValidator"
+          ],
+          [
+            "SchemaValidator",
+            "SQLiteConnector"
+          ],
+          [
+            "SQLiteConnector",
+            "QueryEngine"
+          ],
+          [
+            "QueryEngine",
+            "CSVExporter"
+          ]
+        ],
+        "parameters": {
+          "JSONParser": {
+            "file_path": "input.json"
+          },
+          "SchemaValidator": {},
+          "SQLiteConnector": {
+            "db_path": "f_trap.db",
+            "table_name": "raw_events"
+          },
+          "QueryEngine": {
+            "query": "SELECT * FROM raw_events"
+          },
+          "CSVExporter": {
+            "output_path": "f_schema_report_06.csv"
+          }
+        },
+        "flags": [],
+        "glue_code": ""
+      },
+      "validation_errors": [],
+      "compile_error": null,
+      "run_stdout": "[JSONParser] Loaded 50 rows from input.json\n[SchemaValidator] Schema validated\n[SQLiteConnector] Stored table 'raw_events' in f_trap.db\n[QueryEngine] Query executed\n[CSVExporter] Exported to f_schema_report_06.csv\nf_schema_report_06.csv\n",
+      "run_stderr": "",
+      "run_returncode": 0,
+      "criteria_failures": [],
+      "duration_seconds": 7.53,
+      "error": null,
+      "baseline_success": false,
+      "baseline_error": "Baseline runtime error (exit 1):\nTraceback (most recent call last):\n  File \"C:\\Users\\PRANAV~1\\AppData\\Local\\Temp\\tmp98ty62jr\\app.py\", line 6, in <module>\n    from jsonschema import validate, ValidationError\nModuleNotFoundError: No module named 'jsonschema'\n",
+      "baseline_duration_seconds": 7.44
+    },
+    {
+      "task_id": "set_f_07_id_uniqueness",
+      "description": "Schema trap task 7: read data.csv, remove duplicate rows, group by department and count rows, then export to f_schema_report_07.csv.",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": true,
+      "criteria_passed": true,
+      "first_pass_success": true,
+      "plan": {
+        "nodes": [
+          "CSVParser",
+          "DataDeduplicator",
+          "Aggregator",
+          "CSVExporter"
+        ],
+        "edges": [
+          [
+            "CSVParser",
+            "DataDeduplicator"
+          ],
+          [
+            "DataDeduplicator",
+            "Aggregator"
+          ],
+          [
+            "Aggregator",
+            "CSVExporter"
+          ]
+        ],
+        "parameters": {
+          "CSVParser": {
+            "file_path": "data.csv"
+          },
+          "DataDeduplicator": {},
+          "Aggregator": {
+            "group_by": "department",
+            "agg_func": "count"
+          },
+          "CSVExporter": {
+            "output_path": "f_schema_report_07.csv"
+          }
+        },
+        "flags": [],
+        "glue_code": ""
+      },
+      "validation_errors": [],
+      "compile_error": null,
+      "run_stdout": "[CSVParser] Loaded 23 rows from data.csv\n[DataDeduplicator] Removed duplicate rows\n[Aggregator] Aggregated using count\n[CSVExporter] Exported to f_schema_report_07.csv\nf_schema_report_07.csv\n",
+      "run_stderr": "",
+      "run_returncode": 0,
+      "criteria_failures": [],
+      "duration_seconds": 6.03,
+      "error": null,
+      "baseline_success": true,
+      "baseline_error": null,
+      "baseline_duration_seconds": 2.18
+    },
+    {
+      "task_id": "set_f_08_foreign_key_trap",
+      "description": "Schema trap task 8: read data.csv, drop null values, select name, department, region, salary, then export to f_schema_report_08.csv.",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": true,
+      "criteria_passed": true,
+      "first_pass_success": true,
+      "plan": {
+        "nodes": [
+          "CSVParser",
+          "NullHandler",
+          "ColumnSelector",
+          "CSVExporter"
+        ],
+        "edges": [
+          [
+            "CSVParser",
+            "NullHandler"
+          ],
+          [
+            "NullHandler",
+            "ColumnSelector"
+          ],
+          [
+            "ColumnSelector",
+            "CSVExporter"
+          ]
+        ],
+        "parameters": {
+          "CSVParser": {
+            "file_path": "data.csv"
+          },
+          "NullHandler": {
+            "strategy": "drop"
+          },
+          "ColumnSelector": {
+            "columns": [
+              "name",
+              "department",
+              "region",
+              "salary"
+            ]
+          },
+          "CSVExporter": {
+            "output_path": "f_schema_report_08.csv"
+          }
+        },
+        "flags": [],
+        "glue_code": ""
+      },
+      "validation_errors": [],
+      "compile_error": null,
+      "run_stdout": "[CSVParser] Loaded 23 rows from data.csv\n[NullHandler] Dropped null rows\n[ColumnSelector] Selected columns: ['name', 'department', 'region', 'salary']\n[CSVExporter] Exported to f_schema_report_08.csv\nf_schema_report_08.csv\n",
+      "run_stderr": "",
+      "run_returncode": 0,
+      "criteria_failures": [],
+      "duration_seconds": 5.67,
+      "error": null,
+      "baseline_success": true,
+      "baseline_error": null,
+      "baseline_duration_seconds": 2.64
+    },
+    {
+      "task_id": "set_f_09_version_skew",
+      "description": "Schema trap task 9: read input.json, validate the schema, apply a data transformation with no operations, store into a SQLite database called f_version.db in table events, run a SQL query to retrieve all rows, then export to f_schema_report_09.csv.",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": true,
+      "criteria_passed": true,
+      "first_pass_success": true,
+      "plan": {
+        "nodes": [
+          "JSONParser",
+          "SchemaValidator",
+          "DataTransformer",
+          "SQLiteConnector",
+          "QueryEngine",
+          "CSVExporter"
+        ],
+        "edges": [
+          [
+            "JSONParser",
+            "SchemaValidator"
+          ],
+          [
+            "SchemaValidator",
+            "DataTransformer"
+          ],
+          [
+            "DataTransformer",
+            "SQLiteConnector"
+          ],
+          [
+            "SQLiteConnector",
+            "QueryEngine"
+          ],
+          [
+            "QueryEngine",
+            "CSVExporter"
+          ]
+        ],
+        "parameters": {
+          "JSONParser": {
+            "file_path": "input.json"
+          },
+          "SchemaValidator": {},
+          "DataTransformer": {},
+          "SQLiteConnector": {
+            "db_path": "f_version.db",
+            "table_name": "events"
+          },
+          "QueryEngine": {
+            "query": "SELECT * FROM events"
+          },
+          "CSVExporter": {
+            "output_path": "f_schema_report_09.csv"
+          }
+        },
+        "flags": [],
+        "glue_code": ""
+      },
+      "validation_errors": [],
+      "compile_error": null,
+      "run_stdout": "[JSONParser] Loaded 50 rows from input.json\n[SchemaValidator] Schema validated\n[DataTransformer] Transformations applied\n[SQLiteConnector] Stored table 'events' in f_version.db\n[QueryEngine] Query executed\n[CSVExporter] Exported to f_schema_report_09.csv\nf_schema_report_09.csv\n",
+      "run_stderr": "",
+      "run_returncode": 0,
+      "criteria_failures": [],
+      "duration_seconds": 9.39,
+      "error": null,
+      "baseline_success": false,
+      "baseline_error": "Baseline runtime error (exit 1):\nTraceback (most recent call last):\n  File \"C:\\Users\\PRANAV~1\\AppData\\Local\\Temp\\tmpqdyjk3am\\app.py\", line 34, in <module>\n    is_valid, error = validate_json(data, expected_schema)\n                      ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\PRANAV~1\\AppData\\Local\\Temp\\tmpqdyjk3am\\app.py\", line 23, in validate_json\n    from jsonschema import validate, ValidationError\nModuleNotFoundError: No module named 'jsonschema'\n",
+      "baseline_duration_seconds": 5.55
+    },
+    {
+      "task_id": "set_f_10_oversized_payload",
+      "description": "Schema trap task 10: read data.csv, drop null values, remove duplicate rows, filter rows where score is greater than 0.1, then export to f_schema_report_10.csv.",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": true,
+      "criteria_passed": true,
+      "first_pass_success": true,
+      "plan": {
+        "nodes": [
+          "CSVParser",
+          "NullHandler",
+          "DataDeduplicator",
+          "DataFilter",
+          "CSVExporter"
+        ],
+        "edges": [
+          [
+            "CSVParser",
+            "NullHandler"
+          ],
+          [
+            "NullHandler",
+            "DataDeduplicator"
+          ],
+          [
+            "DataDeduplicator",
+            "DataFilter"
+          ],
+          [
+            "DataFilter",
+            "CSVExporter"
+          ]
+        ],
+        "parameters": {
+          "CSVParser": {
+            "file_path": "data.csv"
+          },
+          "NullHandler": {
+            "strategy": "drop"
+          },
+          "DataDeduplicator": {},
+          "DataFilter": {
+            "condition": "score > 0.1"
+          },
+          "CSVExporter": {
+            "output_path": "f_schema_report_10.csv"
+          }
+        },
+        "flags": [],
+        "glue_code": ""
+      },
+      "validation_errors": [],
+      "compile_error": null,
+      "run_stdout": "[CSVParser] Loaded 30 rows from data.csv\n[NullHandler] Dropped null rows\n[DataDeduplicator] Removed duplicate rows\n[DataFilter] Applied condition: score > 0.1\n[CSVExporter] Exported to f_schema_report_10.csv\nf_schema_report_10.csv\n",
+      "run_stderr": "",
+      "run_returncode": 0,
+      "criteria_failures": [],
+      "duration_seconds": 7.41,
+      "error": null,
+      "baseline_success": true,
+      "baseline_error": null,
+      "baseline_duration_seconds": 3.2
+    }
+  ],
+  "baseline_first_pass_rate": 0.6
+}
