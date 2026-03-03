@@ -25,7 +25,7 @@
   },
   {
     "task_id": "set_c_02_language_mixed",
-    "description": "Using a 9-node workflow, read input.json, validate schema, apply a data transformation with no operations, drop null values, store into a SQLite database called c_events.db in table raw_events, run a SQL query to retrieve all rows, group by event_type and count occurrences, sort by occurrences descending, then export to c_event_counts.csv.",
+    "description": "Using a 9-node workflow, read input.json, validate schema, apply a data transformation with no operations, drop null values, store into a SQLite database called c_events.db in table raw_events, run a SQL query to retrieve all rows, group by event_type and count rows, sort by count descending, then export to c_event_counts.csv.",
     "fixtures": {
       "input.json": "benchmark/fixtures/events.json"
     },
@@ -49,7 +49,7 @@
   },
   {
     "task_id": "set_c_03_cycle_analyzer",
-    "description": "Using an 8-node workflow, read data.csv, drop null values, remove duplicate rows, filter rows where score is greater than 0.4, cast column types using an empty mapping, group by label and count occurrences, sort by count descending, then export to c_label_counts.csv.",
+    "description": "Using an 8-node workflow, read data.csv, drop null values, remove duplicate rows, filter rows where score is greater than 0.4, cast column types using an empty mapping, group by label and count rows, sort by count descending, then export to c_label_counts.csv.",
     "fixtures": {
       "data.csv": "benchmark/fixtures/predictions.csv"
     },

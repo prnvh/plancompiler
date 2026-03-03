@@ -25,7 +25,7 @@
   },
   {
     "task_id": "set_d_02_plugin_lifecycle",
-    "description": "Using an 11-node workflow, read input.json, validate schema, apply a data transformation with no operations, drop null values, store into a SQLite database called d_events.db in table raw_events, run a SQL query to retrieve all rows, cast column types using an empty mapping, group by event_type and count occurrences, sort by occurrences descending, then export to d_event_counts.csv.",
+    "description": "Using an 11-node workflow, read input.json, validate schema, apply a data transformation with no operations, drop null values, store into a SQLite database called d_events.db in table raw_events, run a SQL query to retrieve all rows, cast column types using an empty mapping, group by event_type and count rows, sort by count descending, then export to d_event_counts.csv.",
     "fixtures": {
       "input.json": "benchmark/fixtures/events.json"
     },
@@ -73,7 +73,7 @@
   },
   {
     "task_id": "set_d_04_security_graph",
-    "description": "Using a 10-node workflow, read data.csv, drop null values, remove duplicate rows, filter rows where score is greater than 0.25, select name, score, label, cast column types using an empty mapping, group by label and count occurrences, sort by count descending, then export to d_label_counts.csv.",
+    "description": "Using a 10-node workflow, read data.csv, drop null values, remove duplicate rows, filter rows where score is greater than 0.25, select name, score, label, cast column types using an empty mapping, group by label and count rows, sort by count descending, then export to d_label_counts.csv.",
     "fixtures": {
       "data.csv": "benchmark/fixtures/predictions.csv"
     },
@@ -179,7 +179,7 @@
   },
   {
     "task_id": "set_d_08_incremental_parity",
-    "description": "Using an 11-node workflow, read data.csv, drop null values, remove duplicate rows, filter rows where score is greater than 0.6, select name, score, label, cast column types using an empty mapping, store into a SQLite database called d_scores.db in table results, run a SQL query to retrieve all rows, group by label and count occurrences, then export to d_high_score_labels.csv.",
+    "description": "Using an 11-node workflow, read data.csv, drop null values, remove duplicate rows, filter rows where score is greater than 0.6, select name, score, label, cast column types using an empty mapping, store into a SQLite database called d_scores.db in table results, run a SQL query to retrieve all rows, group by label and count rows, then export to d_high_score_labels.csv.",
     "fixtures": {
       "data.csv": "benchmark/fixtures/predictions.csv"
     },
@@ -203,7 +203,7 @@
   },
   {
     "task_id": "set_d_09_ownership_constraints",
-    "description": "Using a 10-node workflow, read input.json, validate schema, apply a data transformation with no operations, drop null values, group by event_type and count occurrences, cast column types using an empty mapping, sort by occurrences descending, then export to d_event_summary.csv.",
+    "description": "Using a 10-node workflow, read input.json, validate schema, apply a data transformation with no operations, drop null values, group by event_type and count rows, cast column types using an empty mapping, sort by count descending, then export to d_event_summary.csv.",
     "fixtures": {
       "input.json": "benchmark/fixtures/events.json"
     },

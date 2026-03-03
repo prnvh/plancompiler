@@ -1,7 +1,7 @@
 {
-  "run_at": "2026-03-03T20:33:19.560118",
+  "run_at": "2026-03-03T22:37:08.336712",
   "task_count": 10,
-  "compiler_first_pass_rate": 0.9,
+  "compiler_first_pass_rate": 1.0,
   "results": [
     {
       "task_id": "set_f_01_missing_required_field",
@@ -52,11 +52,11 @@
       "run_stderr": "",
       "run_returncode": 0,
       "criteria_failures": [],
-      "duration_seconds": 5.4,
+      "duration_seconds": 4.9,
       "error": null,
-      "baseline_success": false,
-      "baseline_error": "Baseline runtime error (exit 1):\nTraceback (most recent call last):\n  File \"C:\\Users\\PRANAV~1\\AppData\\Local\\Temp\\tmpblceismv\\app.py\", line 3, in <module>\n    from jsonschema import validate, ValidationError\nModuleNotFoundError: No module named 'jsonschema'\n",
-      "baseline_duration_seconds": 4.45
+      "baseline_success": null,
+      "baseline_error": null,
+      "baseline_duration_seconds": null
     },
     {
       "task_id": "set_f_02_wrong_primitive_type",
@@ -109,21 +109,21 @@
       "run_stderr": "",
       "run_returncode": 0,
       "criteria_failures": [],
-      "duration_seconds": 6.02,
+      "duration_seconds": 5.51,
       "error": null,
-      "baseline_success": true,
+      "baseline_success": null,
       "baseline_error": null,
-      "baseline_duration_seconds": 5.06
+      "baseline_duration_seconds": null
     },
     {
       "task_id": "set_f_03_enum_trap",
-      "description": "Schema trap task 3: read input.json, validate the schema, group by event_type and count occurrences, then export to f_schema_report_03.csv.",
+      "description": "Schema trap task 3: read input.json, validate the schema, group by event_type and count rows, then export to f_schema_report_03.csv.",
       "plan_success": true,
       "validation_success": true,
       "compile_success": true,
       "run_success": true,
-      "criteria_passed": false,
-      "first_pass_success": false,
+      "criteria_passed": true,
+      "first_pass_success": true,
       "plan": {
         "nodes": [
           "JSONParser",
@@ -166,14 +166,12 @@
       "run_stdout": "[JSONParser] Loaded 50 rows from input.json\n[SchemaValidator] Schema validated\n[Aggregator] Aggregated using count\n[CSVExporter] Exported to f_schema_report_03.csv\nf_schema_report_03.csv\n",
       "run_stderr": "",
       "run_returncode": 0,
-      "criteria_failures": [
-        "file_has_column: column 'occurrences' not in 'f_schema_report_03.csv'"
-      ],
-      "duration_seconds": 7.36,
+      "criteria_failures": [],
+      "duration_seconds": 5.25,
       "error": null,
-      "baseline_success": false,
-      "baseline_error": "Baseline runtime error (exit 1):\nTraceback (most recent call last):\n  File \"C:\\Users\\PRANAV~1\\AppData\\Local\\Temp\\tmpky1tmk_c\\app.py\", line 3, in <module>\n    from jsonschema import validate, ValidationError\nModuleNotFoundError: No module named 'jsonschema'\n",
-      "baseline_duration_seconds": 5.54
+      "baseline_success": null,
+      "baseline_error": null,
+      "baseline_duration_seconds": null
     },
     {
       "task_id": "set_f_04_additional_properties",
@@ -226,11 +224,11 @@
       "run_stderr": "",
       "run_returncode": 0,
       "criteria_failures": [],
-      "duration_seconds": 6.64,
+      "duration_seconds": 5.3,
       "error": null,
-      "baseline_success": true,
+      "baseline_success": null,
       "baseline_error": null,
-      "baseline_duration_seconds": 4.89
+      "baseline_duration_seconds": null
     },
     {
       "task_id": "set_f_05_nullability_trap",
@@ -285,11 +283,11 @@
       "run_stderr": "",
       "run_returncode": 0,
       "criteria_failures": [],
-      "duration_seconds": 6.81,
+      "duration_seconds": 5.06,
       "error": null,
-      "baseline_success": true,
+      "baseline_success": null,
       "baseline_error": null,
-      "baseline_duration_seconds": 2.85
+      "baseline_duration_seconds": null
     },
     {
       "task_id": "set_f_06_recursive_depth",
@@ -351,11 +349,11 @@
       "run_stderr": "",
       "run_returncode": 0,
       "criteria_failures": [],
-      "duration_seconds": 7.53,
+      "duration_seconds": 6.62,
       "error": null,
-      "baseline_success": false,
-      "baseline_error": "Baseline runtime error (exit 1):\nTraceback (most recent call last):\n  File \"C:\\Users\\PRANAV~1\\AppData\\Local\\Temp\\tmp98ty62jr\\app.py\", line 6, in <module>\n    from jsonschema import validate, ValidationError\nModuleNotFoundError: No module named 'jsonschema'\n",
-      "baseline_duration_seconds": 7.44
+      "baseline_success": null,
+      "baseline_error": null,
+      "baseline_duration_seconds": null
     },
     {
       "task_id": "set_f_07_id_uniqueness",
@@ -409,11 +407,11 @@
       "run_stderr": "",
       "run_returncode": 0,
       "criteria_failures": [],
-      "duration_seconds": 6.03,
+      "duration_seconds": 5.19,
       "error": null,
-      "baseline_success": true,
+      "baseline_success": null,
       "baseline_error": null,
-      "baseline_duration_seconds": 2.18
+      "baseline_duration_seconds": null
     },
     {
       "task_id": "set_f_08_foreign_key_trap",
@@ -473,11 +471,11 @@
       "run_stderr": "",
       "run_returncode": 0,
       "criteria_failures": [],
-      "duration_seconds": 5.67,
+      "duration_seconds": 5.55,
       "error": null,
-      "baseline_success": true,
+      "baseline_success": null,
       "baseline_error": null,
-      "baseline_duration_seconds": 2.64
+      "baseline_duration_seconds": null
     },
     {
       "task_id": "set_f_09_version_skew",
@@ -545,11 +543,11 @@
       "run_stderr": "",
       "run_returncode": 0,
       "criteria_failures": [],
-      "duration_seconds": 9.39,
+      "duration_seconds": 7.27,
       "error": null,
-      "baseline_success": false,
-      "baseline_error": "Baseline runtime error (exit 1):\nTraceback (most recent call last):\n  File \"C:\\Users\\PRANAV~1\\AppData\\Local\\Temp\\tmpqdyjk3am\\app.py\", line 34, in <module>\n    is_valid, error = validate_json(data, expected_schema)\n                      ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\PRANAV~1\\AppData\\Local\\Temp\\tmpqdyjk3am\\app.py\", line 23, in validate_json\n    from jsonschema import validate, ValidationError\nModuleNotFoundError: No module named 'jsonschema'\n",
-      "baseline_duration_seconds": 5.55
+      "baseline_success": null,
+      "baseline_error": null,
+      "baseline_duration_seconds": null
     },
     {
       "task_id": "set_f_10_oversized_payload",
@@ -610,12 +608,11 @@
       "run_stderr": "",
       "run_returncode": 0,
       "criteria_failures": [],
-      "duration_seconds": 7.41,
+      "duration_seconds": 6.92,
       "error": null,
-      "baseline_success": true,
+      "baseline_success": null,
       "baseline_error": null,
-      "baseline_duration_seconds": 3.2
+      "baseline_duration_seconds": null
     }
-  ],
-  "baseline_first_pass_rate": 0.6
+  ]
 }

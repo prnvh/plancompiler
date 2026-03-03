@@ -257,7 +257,7 @@
   },
   {
     "task_id": "set_g_10_schema_migration_roundtrip",
-    "description": "SQLite roundtrip task 10: read input.json, validate schema, apply a data transformation with no operations, store into a SQLite database called g_roundtrip10.db in table events, run a SQL query to retrieve all rows from events, group by event_type and count occurrences, then export to g_roundtrip10.csv.",
+    "description": "SQLite roundtrip task 10: read input.json, validate schema, apply a data transformation with no operations, store into a SQLite database called g_roundtrip10.db in table events, run a SQL query to retrieve all rows from events, group by event_type and count rows, then export to g_roundtrip10.csv.",
     "fixtures": {
       "input.json": "benchmark/fixtures/events.json"
     },

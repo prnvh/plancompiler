@@ -1,7 +1,7 @@
 {
-  "run_at": "2026-03-03T20:34:04.301734",
+  "run_at": "2026-03-03T22:37:40.241307",
   "task_count": 10,
-  "compiler_first_pass_rate": 0.7,
+  "compiler_first_pass_rate": 0.6,
   "results": [
     {
       "task_id": "set_g_01_json_sqlite_json_parity",
@@ -71,11 +71,11 @@
       "run_stderr": "",
       "run_returncode": 0,
       "criteria_failures": [],
-      "duration_seconds": 8.51,
+      "duration_seconds": 7.56,
       "error": null,
-      "baseline_success": true,
+      "baseline_success": null,
       "baseline_error": null,
-      "baseline_duration_seconds": 4.88
+      "baseline_duration_seconds": null
     },
     {
       "task_id": "set_g_02_node_normalization_roundtrip",
@@ -152,27 +152,28 @@
       "run_stderr": "",
       "run_returncode": 0,
       "criteria_failures": [],
-      "duration_seconds": 9.35,
+      "duration_seconds": 7.92,
       "error": null,
-      "baseline_success": false,
-      "baseline_error": "Baseline runtime error (exit 1):\nTraceback (most recent call last):\n  File \"C:\\Users\\pranav h\\Documents\\GitHub\\llm-code-graph-compiler\\.venv\\Lib\\site-packages\\sqlalchemy\\engine\\base.py\", line 1415, in execute\n    meth = statement._execute_on_connection\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'str' object has no attribute '_execute_on_connection'\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"C:\\Users\\PRANAV~1\\AppData\\Local\\Temp\\tmpm550oxl0\\ap",
-      "baseline_duration_seconds": 3.91
+      "baseline_success": null,
+      "baseline_error": null,
+      "baseline_duration_seconds": null
     },
     {
       "task_id": "set_g_03_edge_integrity_roundtrip",
       "description": "SQLite roundtrip task 3: read data.csv, drop null values, filter rows where score is greater than 0.2, store into a SQLite database called g_roundtrip3.db in table score_rows, run a SQL query to retrieve all rows from score_rows, then export to g_roundtrip3.csv.",
       "plan_success": true,
-      "validation_success": true,
-      "compile_success": true,
-      "run_success": true,
-      "criteria_passed": true,
-      "first_pass_success": true,
+      "validation_success": false,
+      "compile_success": false,
+      "run_success": false,
+      "criteria_passed": false,
+      "first_pass_success": false,
       "plan": {
         "nodes": [
           "CSVParser",
           "NullHandler",
           "DataFilter",
           "SQLiteConnector",
+          "SQLiteReader",
           "QueryEngine",
           "CSVExporter"
         ],
@@ -191,6 +192,10 @@
           ],
           [
             "SQLiteConnector",
+            "SQLiteReader"
+          ],
+          [
+            "SQLiteReader",
             "QueryEngine"
           ],
           [
@@ -212,6 +217,9 @@
             "db_path": "g_roundtrip3.db",
             "table_name": "score_rows"
           },
+          "SQLiteReader": {
+            "db_path": "g_roundtrip3.db"
+          },
           "QueryEngine": {
             "query": "SELECT * FROM score_rows"
           },
@@ -222,17 +230,19 @@
         "flags": [],
         "glue_code": ""
       },
-      "validation_errors": [],
+      "validation_errors": [
+        "TYPE_MISMATCH: [SQLiteConnector -> SQLiteReader] NodeType.DB_HANDLE != NodeType.FILE_PATH"
+      ],
       "compile_error": null,
-      "run_stdout": "[CSVParser] Loaded 30 rows from data.csv\n[NullHandler] Dropped null rows\n[DataFilter] Applied condition: score > 0.2\n[SQLiteConnector] Stored table 'score_rows' in g_roundtrip3.db\n[QueryEngine] Query executed\n[CSVExporter] Exported to g_roundtrip3.csv\ng_roundtrip3.csv\n",
+      "run_stdout": "",
       "run_stderr": "",
-      "run_returncode": 0,
+      "run_returncode": null,
       "criteria_failures": [],
-      "duration_seconds": 12.21,
+      "duration_seconds": 8.71,
       "error": null,
-      "baseline_success": true,
+      "baseline_success": null,
       "baseline_error": null,
-      "baseline_duration_seconds": 3.81
+      "baseline_duration_seconds": null
     },
     {
       "task_id": "set_g_04_tx_rollback_roundtrip",
@@ -314,11 +324,11 @@
       "run_stderr": "",
       "run_returncode": 0,
       "criteria_failures": [],
-      "duration_seconds": 10.01,
+      "duration_seconds": 10.31,
       "error": null,
-      "baseline_success": true,
+      "baseline_success": null,
       "baseline_error": null,
-      "baseline_duration_seconds": 4.2
+      "baseline_duration_seconds": null
     },
     {
       "task_id": "set_g_05_index_impact_roundtrip",
@@ -390,11 +400,11 @@
       "run_stderr": "",
       "run_returncode": null,
       "criteria_failures": [],
-      "duration_seconds": 7.91,
+      "duration_seconds": 6.51,
       "error": null,
-      "baseline_success": false,
-      "baseline_error": "Baseline runtime error (exit 1):\nTraceback (most recent call last):\n  File \"C:\\Users\\PRANAV~1\\AppData\\Local\\Temp\\tmpa1fkym6z\\app.py\", line 28, in <module>\n    raise ValueError(\"JSON data does not match the expected schema\")\nValueError: JSON data does not match the expected schema\n",
-      "baseline_duration_seconds": 6.04
+      "baseline_success": null,
+      "baseline_error": null,
+      "baseline_duration_seconds": null
     },
     {
       "task_id": "set_g_06_utf8_roundtrip",
@@ -476,11 +486,11 @@
       "run_stderr": "",
       "run_returncode": null,
       "criteria_failures": [],
-      "duration_seconds": 9.32,
+      "duration_seconds": 8.3,
       "error": null,
-      "baseline_success": true,
+      "baseline_success": null,
       "baseline_error": null,
-      "baseline_duration_seconds": 5.82
+      "baseline_duration_seconds": null
     },
     {
       "task_id": "set_g_07_deterministic_order_roundtrip",
@@ -536,7 +546,8 @@
           },
           "DataDeduplicator": {},
           "DataSorter": {
-            "by": "salary"
+            "by": "salary",
+            "ascending": false
           },
           "SQLiteConnector": {
             "db_path": "g_roundtrip7.db",
@@ -554,15 +565,15 @@
       },
       "validation_errors": [],
       "compile_error": null,
-      "run_stdout": "[CSVParser] Loaded 23 rows from data.csv\n[NullHandler] Dropped null rows\n[DataDeduplicator] Removed duplicate rows\n[DataSorter] Sorted by salary, ascending=True\n[SQLiteConnector] Stored table 'employee_rows' in g_roundtrip7.db\n[QueryEngine] Query executed\n[CSVExporter] Exported to g_roundtrip7.csv\ng_roundtrip7.csv\n",
+      "run_stdout": "[CSVParser] Loaded 23 rows from data.csv\n[NullHandler] Dropped null rows\n[DataDeduplicator] Removed duplicate rows\n[DataSorter] Sorted by 'salary' (descending)\n[SQLiteConnector] Stored table 'employee_rows' in g_roundtrip7.db\n[QueryEngine] Query executed\n[CSVExporter] Exported to g_roundtrip7.csv\ng_roundtrip7.csv\n",
       "run_stderr": "",
       "run_returncode": 0,
       "criteria_failures": [],
-      "duration_seconds": 8.53,
+      "duration_seconds": 7.24,
       "error": null,
-      "baseline_success": false,
-      "baseline_error": "Baseline runtime error (exit 1):\nTraceback (most recent call last):\n  File \"C:\\Users\\pranav h\\Documents\\GitHub\\llm-code-graph-compiler\\.venv\\Lib\\site-packages\\sqlalchemy\\engine\\base.py\", line 1415, in execute\n    meth = statement._execute_on_connection\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'str' object has no attribute '_execute_on_connection'\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"C:\\Users\\PRANAV~1\\AppData\\Local\\Temp\\tmpnhmsj54j\\ap",
-      "baseline_duration_seconds": 5.62
+      "baseline_success": null,
+      "baseline_error": null,
+      "baseline_duration_seconds": null
     },
     {
       "task_id": "set_g_08_incremental_upsert_roundtrip",
@@ -642,11 +653,11 @@
       "run_stderr": "",
       "run_returncode": 0,
       "criteria_failures": [],
-      "duration_seconds": 7.81,
+      "duration_seconds": 9.24,
       "error": null,
-      "baseline_success": true,
+      "baseline_success": null,
       "baseline_error": null,
-      "baseline_duration_seconds": 5.82
+      "baseline_duration_seconds": null
     },
     {
       "task_id": "set_g_09_corruption_detection_roundtrip",
@@ -696,7 +707,8 @@
             "condition": "status == 'active'"
           },
           "DataSorter": {
-            "by": "signup_date"
+            "by": "signup_date",
+            "ascending": true
           },
           "SQLiteConnector": {
             "db_path": "g_roundtrip9.db",
@@ -714,19 +726,19 @@
       },
       "validation_errors": [],
       "compile_error": null,
-      "run_stdout": "[CSVParser] Loaded 20 rows from data.csv\n[DataFilter] Applied condition: status == 'active'\n[DataSorter] Sorted by signup_date, ascending=True\n[SQLiteConnector] Stored table 'active_customers' in g_roundtrip9.db\n[QueryEngine] Query executed\n[CSVExporter] Exported to g_roundtrip9.csv\ng_roundtrip9.csv\n",
+      "run_stdout": "[CSVParser] Loaded 20 rows from data.csv\n[DataFilter] Applied condition: status == 'active'\n[DataSorter] Sorted by 'signup_date' (ascending)\n[SQLiteConnector] Stored table 'active_customers' in g_roundtrip9.db\n[QueryEngine] Query executed\n[CSVExporter] Exported to g_roundtrip9.csv\ng_roundtrip9.csv\n",
       "run_stderr": "",
       "run_returncode": 0,
       "criteria_failures": [],
-      "duration_seconds": 10.06,
+      "duration_seconds": 8.23,
       "error": null,
-      "baseline_success": false,
-      "baseline_error": "Baseline runtime error (exit 1):\nTraceback (most recent call last):\n  File \"C:\\Users\\pranav h\\Documents\\GitHub\\llm-code-graph-compiler\\.venv\\Lib\\site-packages\\sqlalchemy\\engine\\base.py\", line 1415, in execute\n    meth = statement._execute_on_connection\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'str' object has no attribute '_execute_on_connection'\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"C:\\Users\\PRANAV~1\\AppData\\Local\\Temp\\tmpc04oedpt\\ap",
-      "baseline_duration_seconds": 4.02
+      "baseline_success": null,
+      "baseline_error": null,
+      "baseline_duration_seconds": null
     },
     {
       "task_id": "set_g_10_schema_migration_roundtrip",
-      "description": "SQLite roundtrip task 10: read input.json, validate schema, apply a data transformation with no operations, store into a SQLite database called g_roundtrip10.db in table events, run a SQL query to retrieve all rows from events, group by event_type and count occurrences, then export to g_roundtrip10.csv.",
+      "description": "SQLite roundtrip task 10: read input.json, validate schema, apply a data transformation with no operations, store into a SQLite database called g_roundtrip10.db in table events, run a SQL query to retrieve all rows from events, group by event_type and count rows, then export to g_roundtrip10.csv.",
       "plan_success": true,
       "validation_success": true,
       "compile_success": true,
@@ -790,14 +802,13 @@
       "run_stderr": "",
       "run_returncode": 0,
       "criteria_failures": [
-        "file_has_column: column 'occurrences' not in 'g_roundtrip10.csv'"
+        "file_has_column: column 'count' not in 'g_roundtrip10.csv'"
       ],
-      "duration_seconds": 8.72,
+      "duration_seconds": 7.88,
       "error": null,
-      "baseline_success": false,
-      "baseline_error": "Baseline runtime error (exit 1):\nTraceback (most recent call last):\n  File \"C:\\Users\\PRANAV~1\\AppData\\Local\\Temp\\tmp4i_3u8le\\app.py\", line 18, in <module>\n    raise ValueError(\"Input JSON does not match expected schema.\")\nValueError: Input JSON does not match expected schema.\n",
-      "baseline_duration_seconds": 6.07
+      "baseline_success": null,
+      "baseline_error": null,
+      "baseline_duration_seconds": null
     }
-  ],
-  "baseline_first_pass_rate": 0.5
+  ]
 }

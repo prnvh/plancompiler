@@ -136,7 +136,7 @@
   },
   {
     "task_id": "set_b_06_parallel_parse",
-    "description": "Using a 7-node workflow, read input.json, validate schema, apply a data transformation with no operations, drop null values, group by event_type and count occurrences, sort by occurrences descending, then export to b_event_counts.csv.",
+    "description": "Using a 7-node workflow, read input.json, validate schema, apply a data transformation with no operations, drop null values, group by event_type and count rows, sort by count descending, then export to b_event_counts.csv.",
     "fixtures": {
       "input.json": "benchmark/fixtures/events.json"
     },

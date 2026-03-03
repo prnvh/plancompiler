@@ -49,7 +49,7 @@
   },
   {
     "task_id": "set_f_03_enum_trap",
-    "description": "Schema trap task 3: read input.json, validate the schema, group by event_type and count occurrences, then export to f_schema_report_03.csv.",
+    "description": "Schema trap task 3: read input.json, validate the schema, group by event_type and count rows, then export to f_schema_report_03.csv.",
     "fixtures": {
       "input.json": "benchmark/fixtures/events.json"
     },

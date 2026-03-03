@@ -8,8 +8,8 @@ def data_sorter(df: pd.DataFrame, by: str, ascending: bool) -> pd.DataFrame:
 
     Required params:
         by        - column name to sort by
-        ascending - True for ascending order, False for descending order
-                    Must be explicitly specified — no default.
+        ascending - True for ascending, False for descending.
+                    Must be explicitly specified, no default.
     """
     sorted_df = df.sort_values(by=by, ascending=ascending)
     direction = "ascending" if ascending else "descending"
