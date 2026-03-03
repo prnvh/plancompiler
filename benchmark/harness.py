@@ -46,6 +46,14 @@ from core.compiler import compile_output
 from benchmark.criteria import check_criteria
 
 
+def _task_deadline_exceeded(start: float, task: dict) -> bool:
+    """Hard wall-clock guard to avoid apparent indefinite hangs."""
+    hard_limit = task.get("max_task_duration_seconds")
+    if hard_limit is None:
+        hard_limit = task.get("timeout_seconds", 30) + 120
+    return (time.time() - start) > hard_limit
+
+
 # ─────────────────────────────────────────────────────────────────────
 # Helpers
 # ─────────────────────────────────────────────────────────────────────
