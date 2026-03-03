@@ -1,0 +1,257 @@
+[
+  {
+    "task_id": "set_f_01_missing_required_field",
+    "description": "Read input.json, validate the schema, apply a data transformation with no operations, then export to f_schema_report_01.csv.",
+    "fixtures": {
+      "input.json": "benchmark/fixtures/events.json"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "f_schema_report_01.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f_schema_report_01.csv",
+        "column": "event_id"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f_schema_report_01.csv",
+        "column": "event_type"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_f_02_wrong_primitive_type",
+    "description": "Read input.json, validate the schema, drop null values, then export to f_schema_report_02.csv.",
+    "fixtures": {
+      "input.json": "benchmark/fixtures/events.json"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "f_schema_report_02.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f_schema_report_02.csv",
+        "column": "event_id"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f_schema_report_02.csv",
+        "column": "event_type"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_f_03_enum_trap",
+    "description": "Read input.json, validate the schema, group by event_type and count occurrences, then export to f_schema_report_03.csv.",
+    "fixtures": {
+      "input.json": "benchmark/fixtures/events.json"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "f_schema_report_03.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f_schema_report_03.csv",
+        "column": "event_type"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f_schema_report_03.csv",
+        "column": "occurrences"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_f_04_additional_properties",
+    "description": "Read input.json, validate the schema, cast column types using an empty mapping, then export to f_schema_report_04.csv.",
+    "fixtures": {
+      "input.json": "benchmark/fixtures/events.json"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "f_schema_report_04.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f_schema_report_04.csv",
+        "column": "event_id"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f_schema_report_04.csv",
+        "column": "event_type"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_f_05_nullability_trap",
+    "description": "Read data.csv, drop null values, cast column types using an empty mapping, then export to f_schema_report_05.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/predictions.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "f_schema_report_05.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f_schema_report_05.csv",
+        "column": "name"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f_schema_report_05.csv",
+        "column": "score"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_f_06_recursive_depth",
+    "description": "Read input.json, validate schema, store into a SQLite database called f_trap.db in table raw_events, run a SQL query to retrieve all rows, then export to f_schema_report_06.csv.",
+    "fixtures": {
+      "input.json": "benchmark/fixtures/events.json"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "f_schema_report_06.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f_schema_report_06.csv",
+        "column": "event_id"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f_schema_report_06.csv",
+        "column": "event_type"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_f_07_id_uniqueness",
+    "description": "Read data.csv, remove duplicate rows, group by department and count rows, then export to f_schema_report_07.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/employees.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "f_schema_report_07.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f_schema_report_07.csv",
+        "column": "department"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f_schema_report_07.csv",
+        "column": "count"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_f_08_foreign_key_trap",
+    "description": "Read data.csv, drop null values, select name, department, region, salary, then export to f_schema_report_08.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/employees.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "f_schema_report_08.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f_schema_report_08.csv",
+        "column": "name"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f_schema_report_08.csv",
+        "column": "department"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f_schema_report_08.csv",
+        "column": "region"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f_schema_report_08.csv",
+        "column": "salary"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_f_09_version_skew",
+    "description": "Read input.json, validate the schema, apply a data transformation with no operations, store into a SQLite database called f_version.db in table events, run a SQL query to retrieve all rows, then export to f_schema_report_09.csv.",
+    "fixtures": {
+      "input.json": "benchmark/fixtures/events.json"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "f_schema_report_09.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f_schema_report_09.csv",
+        "column": "event_id"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f_schema_report_09.csv",
+        "column": "event_type"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_f_10_oversized_payload",
+    "description": "Read data.csv, drop null values, remove duplicate rows, filter rows where score is greater than 0.1, then export to f_schema_report_10.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/predictions.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "f_schema_report_10.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f_schema_report_10.csv",
+        "column": "name"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f_schema_report_10.csv",
+        "column": "score"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f_schema_report_10.csv",
+        "column": "label"
+      }
+    ],
+    "timeout_seconds": 40
+  }
+]

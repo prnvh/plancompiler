@@ -1,0 +1,242 @@
+[
+  {
+    "task_id": "set_e_01_prod_orchestrator",
+    "description": "Read data.csv, drop null values, remove duplicate rows, filter rows where salary is greater than 50000, select name, department, region, salary, sort by salary descending, cast column types using an empty mapping, store into a SQLite database called e_employees.db in table employees, run a SQL query to retrieve all rows, group by department and count rows, sort by count descending, then export to e_dept_counts.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/employees.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "e_dept_counts.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "e_dept_counts.csv",
+        "column": "department"
+      },
+      {
+        "type": "file_has_column",
+        "path": "e_dept_counts.csv",
+        "column": "count"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_e_02_distributed_compile",
+    "description": "Read input.json, validate schema, apply a data transformation with no operations, drop null values, cast column types using an empty mapping, store into a SQLite database called e_events.db in table raw_events, run a SQL query to retrieve all rows, group by event_type and count occurrences, sort by occurrences descending, store into a SQLite database called e_events_summary.db in table event_counts, run a SQL query to retrieve all rows from event_counts, then export to e_event_counts.csv.",
+    "fixtures": {
+      "input.json": "benchmark/fixtures/events.json"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "e_event_counts.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "e_event_counts.csv",
+        "column": "event_type"
+      },
+      {
+        "type": "file_has_column",
+        "path": "e_event_counts.csv",
+        "column": "occurrences"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_e_03_multibranch_compare",
+    "description": "Read data.csv, drop null values, remove duplicate rows, filter rows where score is greater than 0.3, select name, score, label, sort by score descending, cast column types using an empty mapping, store into a SQLite database called e_scores.db in table results, run a SQL query to retrieve all rows, group by label and count occurrences, sort by count descending, then export to e_label_counts.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/predictions.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "e_label_counts.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "e_label_counts.csv",
+        "column": "label"
+      },
+      {
+        "type": "file_has_column",
+        "path": "e_label_counts.csv",
+        "column": "count"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_e_04_compliance_provenance",
+    "description": "Read data.csv, drop null values, remove duplicate rows, filter rows where age is greater than 20, select name, age, city, region, salary, sort by salary descending, cast column types using an empty mapping, store into a SQLite database called e_people.db in table contacts, run a SQL query to retrieve all rows, group by region and count rows, sort by count descending, store into a SQLite database called e_region.db in table region_counts, run a SQL query to retrieve all rows from region_counts, then export to e_region_counts.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/people.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "e_region_counts.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "e_region_counts.csv",
+        "column": "region"
+      },
+      {
+        "type": "file_has_column",
+        "path": "e_region_counts.csv",
+        "column": "count"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_e_05_self_diagnostics",
+    "description": "Read data.csv, filter rows where status equals active, drop null values, remove duplicate rows, select name, status, signup_date, region, sort by signup_date ascending, cast column types using an empty mapping, store into a SQLite database called e_customers.db in table active_customers, run a SQL query to retrieve all rows, group by region and count rows, then export to e_active_by_region.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/customers.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "e_active_by_region.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "e_active_by_region.csv",
+        "column": "region"
+      },
+      {
+        "type": "file_has_column",
+        "path": "e_active_by_region.csv",
+        "column": "count"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_e_06_resilient_daemon",
+    "description": "Read data.csv, drop null values, remove duplicate rows, filter rows where salary is greater than 35000, select name, department, region, salary, sort by salary ascending, cast column types using an empty mapping, group by region and count rows, store into a SQLite database called e_daemon.db in table region_counts, run a SQL query to retrieve all rows from region_counts, sort by count descending, then export to e_daemon_region_counts.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/employees.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "e_daemon_region_counts.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "e_daemon_region_counts.csv",
+        "column": "region"
+      },
+      {
+        "type": "file_has_column",
+        "path": "e_daemon_region_counts.csv",
+        "column": "count"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_e_07_quality_scorecard",
+    "description": "Read data.csv, drop null values, remove duplicate rows, filter rows where score is greater than 0.5, select name, score, label, sort by score descending, cast column types using an empty mapping, store into a SQLite database called e_quality.db in table scored_rows, run a SQL query to retrieve all rows, group by label and count occurrences, then export to e_quality_label_counts.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/predictions.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "e_quality_label_counts.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "e_quality_label_counts.csv",
+        "column": "label"
+      },
+      {
+        "type": "file_has_column",
+        "path": "e_quality_label_counts.csv",
+        "column": "count"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_e_08_hybrid_resolver",
+    "description": "Read input.json, validate schema, apply a data transformation with no operations, drop null values, cast column types using an empty mapping, group by event_type and count occurrences, sort by occurrences descending, store into a SQLite database called e_hybrid.db in table event_counts, run a SQL query to retrieve all rows from event_counts, cast column types using an empty mapping, store into a SQLite database called e_hybrid_copy.db in table event_counts_copy, run a SQL query to retrieve all rows from event_counts_copy, then export to e_hybrid_event_counts.csv.",
+    "fixtures": {
+      "input.json": "benchmark/fixtures/events.json"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "e_hybrid_event_counts.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "e_hybrid_event_counts.csv",
+        "column": "event_type"
+      },
+      {
+        "type": "file_has_column",
+        "path": "e_hybrid_event_counts.csv",
+        "column": "occurrences"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_e_09_multitenant_isolation",
+    "description": "Read data.csv, drop null values, remove duplicate rows, filter rows where age is greater than 25, select name, age, city, region, salary, cast column types using an empty mapping, store into a SQLite database called e_tenant.db in table tenant_people, run a SQL query to retrieve all rows, sort by age ascending, group by city and count rows, sort by count descending, then export to e_city_counts.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/people.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "e_city_counts.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "e_city_counts.csv",
+        "column": "city"
+      },
+      {
+        "type": "file_has_column",
+        "path": "e_city_counts.csv",
+        "column": "count"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_e_10_disaster_recovery",
+    "description": "Read data.csv, drop null values, remove duplicate rows, filter rows where salary is greater than 30000, select name, department, region, salary, sort by salary ascending, cast column types using an empty mapping, store into a SQLite database called e_recovery.db in table employees, run a SQL query to retrieve all rows, group by region and count rows, sort by count descending, store into a SQLite database called e_recovery2.db in table region_counts, run a SQL query to retrieve all rows from region_counts, cast column types using an empty mapping, group by region and count rows, then export to e_recovery_region_counts.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/employees.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "e_recovery_region_counts.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "e_recovery_region_counts.csv",
+        "column": "region"
+      },
+      {
+        "type": "file_has_column",
+        "path": "e_recovery_region_counts.csv",
+        "column": "count"
+      }
+    ],
+    "timeout_seconds": 40
+  }
+]

@@ -1,0 +1,272 @@
+[
+  {
+    "task_id": "set_c_01_end_to_end_gates",
+    "description": "Read data.csv, drop null values, remove duplicate rows, filter rows where salary is greater than 50000, select name, department, salary, sort by salary descending, group by department and count rows, then export to c_dept_counts.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/employees.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "c_dept_counts.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "c_dept_counts.csv",
+        "column": "department"
+      },
+      {
+        "type": "file_has_column",
+        "path": "c_dept_counts.csv",
+        "column": "count"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_c_02_language_mixed",
+    "description": "Read input.json, validate schema, apply a data transformation with no operations, drop null values, store into a SQLite database called c_events.db in table raw_events, run a SQL query to retrieve all rows, group by event_type and count occurrences, sort by occurrences descending, then export to c_event_counts.csv.",
+    "fixtures": {
+      "input.json": "benchmark/fixtures/events.json"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "c_event_counts.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "c_event_counts.csv",
+        "column": "event_type"
+      },
+      {
+        "type": "file_has_column",
+        "path": "c_event_counts.csv",
+        "column": "occurrences"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_c_03_cycle_analyzer",
+    "description": "Read data.csv, drop null values, remove duplicate rows, filter rows where score is greater than 0.4, cast column types using an empty mapping, group by label and count occurrences, sort by count descending, then export to c_label_counts.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/predictions.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "c_label_counts.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "c_label_counts.csv",
+        "column": "label"
+      },
+      {
+        "type": "file_has_column",
+        "path": "c_label_counts.csv",
+        "column": "count"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_c_04_symbol_lineage",
+    "description": "Read data.csv, drop null values, remove duplicate rows, select name, age, region, cast column types using an empty mapping, store into a SQLite database called c_people.db in table contacts, run a SQL query to retrieve all rows, sort by age ascending, then export to c_contacts.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/people.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "c_contacts.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "c_contacts.csv",
+        "column": "name"
+      },
+      {
+        "type": "file_has_column",
+        "path": "c_contacts.csv",
+        "column": "age"
+      },
+      {
+        "type": "file_has_column",
+        "path": "c_contacts.csv",
+        "column": "region"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_c_05_policy_compile",
+    "description": "Read data.csv, filter rows where status equals active, remove duplicate rows, select name, status, region, cast column types using an empty mapping, store into a SQLite database called c_customers.db in table active_customers, run a SQL query to retrieve all rows, then export to c_active_customers.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/customers.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "c_active_customers.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "c_active_customers.csv",
+        "column": "name"
+      },
+      {
+        "type": "file_has_column",
+        "path": "c_active_customers.csv",
+        "column": "status"
+      },
+      {
+        "type": "file_has_column",
+        "path": "c_active_customers.csv",
+        "column": "region"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_c_06_snapshot_rollback",
+    "description": "Read data.csv, drop null values, remove duplicate rows, filter rows where salary is greater than 40000, select name, region, salary, cast column types using an empty mapping, store into a SQLite database called c_salary.db in table salary_rows, run a SQL query to retrieve all rows, sort by salary descending, then export to c_salary_rows.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/employees.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "c_salary_rows.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "c_salary_rows.csv",
+        "column": "name"
+      },
+      {
+        "type": "file_has_column",
+        "path": "c_salary_rows.csv",
+        "column": "region"
+      },
+      {
+        "type": "file_has_column",
+        "path": "c_salary_rows.csv",
+        "column": "salary"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_c_07_confidence_scoring",
+    "description": "Read data.csv, drop null values, remove duplicate rows, filter rows where age is greater than 25, select name, age, salary, sort by age ascending, then export to c_people_age.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/people.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "c_people_age.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "c_people_age.csv",
+        "column": "name"
+      },
+      {
+        "type": "file_has_column",
+        "path": "c_people_age.csv",
+        "column": "age"
+      },
+      {
+        "type": "file_has_column",
+        "path": "c_people_age.csv",
+        "column": "salary"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_c_08_api_drift",
+    "description": "Read data.csv, drop null values, remove duplicate rows, filter rows where score is greater than 0.2, select name, score, label, store into a SQLite database called c_scores.db in table results, run a SQL query to retrieve all rows, sort by score descending, then export to c_scores.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/predictions.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "c_scores.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "c_scores.csv",
+        "column": "name"
+      },
+      {
+        "type": "file_has_column",
+        "path": "c_scores.csv",
+        "column": "score"
+      },
+      {
+        "type": "file_has_column",
+        "path": "c_scores.csv",
+        "column": "label"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_c_09_vector_metadata",
+    "description": "Read data.csv, drop null values, remove duplicate rows, filter rows where salary is greater than 30000, select name, department, region, salary, cast column types using an empty mapping, group by region and count rows, sort by count descending, then export to c_region_counts.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/employees.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "c_region_counts.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "c_region_counts.csv",
+        "column": "region"
+      },
+      {
+        "type": "file_has_column",
+        "path": "c_region_counts.csv",
+        "column": "count"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_c_10_trace_replay",
+    "description": "Read data.csv, drop null values, remove duplicate rows, filter rows where status equals active, sort by signup_date ascending, select name, status, signup_date, then export to c_signup.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/customers.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "c_signup.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "c_signup.csv",
+        "column": "name"
+      },
+      {
+        "type": "file_has_column",
+        "path": "c_signup.csv",
+        "column": "status"
+      },
+      {
+        "type": "file_has_column",
+        "path": "c_signup.csv",
+        "column": "signup_date"
+      }
+    ],
+    "timeout_seconds": 40
+  }
+]

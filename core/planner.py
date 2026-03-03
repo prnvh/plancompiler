@@ -207,17 +207,26 @@ def normalize_plan(plan: dict) -> dict:
 
     plan["edges"] = [e for e in normalized_edges if e[0] != e[1]]
 
-    # 🔥 STRICT LINEAR REPAIR (critical fix)
-    if len(plan["nodes"]) > 1:
+    # Strictly linearize edges for benchmark stability.
+    # Some model outputs create back-edges/cycles that can stall execution planning.
+    # For this compiler, tasks are modeled as ordered pipelines, so we enforce
+    # node[i] -> node[i+1] regardless of model-proposed edge shape.
+    if len(plan.get("nodes", [])) > 1:
+        index = {name: i for i, name in enumerate(plan["nodes"])}
         expected_edges = len(plan["nodes"]) - 1
 
-        if len(plan["edges"]) != expected_edges:
-            repaired_edges = []
-            for i in range(len(plan["nodes"]) - 1):
-                repaired_edges.append([
-                    plan["nodes"][i],
-                    plan["nodes"][i + 1]
-                ])
-            plan["edges"] = repaired_edges
+        def is_forward_edge(edge: list[str]) -> bool:
+            source, target = edge
+            if source not in index or target not in index:
+                return False
+            return index[source] < index[target]
+
+        has_non_forward = any(not is_forward_edge(e) for e in plan["edges"])
+
+        if len(plan["edges"]) != expected_edges or has_non_forward:
+            plan["edges"] = [
+                [plan["nodes"][i], plan["nodes"][i + 1]]
+                for i in range(len(plan["nodes"]) - 1)
+            ]
 
     return plan

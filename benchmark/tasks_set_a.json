@@ -1,0 +1,247 @@
+[
+  {
+    "task_id": "set_a_01_parse_validate_emit",
+    "description": "Read data.csv, drop null values, then export to a_clean.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/people.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "a_clean.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a_clean.csv",
+        "column": "name"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a_clean.csv",
+        "column": "age"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_a_02_ingest_normalize_index",
+    "description": "Read data.csv, remove duplicate rows, sort by salary descending, then export to a_salary_sorted.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/employees.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "a_salary_sorted.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a_salary_sorted.csv",
+        "column": "name"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a_salary_sorted.csv",
+        "column": "salary"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_a_03_config_merge_compile",
+    "description": "Read data.csv, filter rows where salary is greater than 50000, then export to a_high_salary.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/employees.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "a_high_salary.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a_high_salary.csv",
+        "column": "name"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a_high_salary.csv",
+        "column": "salary"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_a_04_import_link",
+    "description": "Read data.csv, select only name, region, and salary, then export to a_region_slice.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/people.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "a_region_slice.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a_region_slice.csv",
+        "column": "name"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a_region_slice.csv",
+        "column": "region"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a_region_slice.csv",
+        "column": "salary"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_a_05_ast_nodes_edges",
+    "description": "Read data.csv, drop null values, remove duplicate rows, then export to a_deduped.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/employees.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "a_deduped.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a_deduped.csv",
+        "column": "name"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a_deduped.csv",
+        "column": "department"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_a_06_cache_check",
+    "description": "Read data.csv, sort by age ascending, select name and age, then export to a_age_sorted.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/people.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "a_age_sorted.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a_age_sorted.csv",
+        "column": "name"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a_age_sorted.csv",
+        "column": "age"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_a_07_symbol_export",
+    "description": "Read data.csv, filter rows where status equals active, then export to a_active_customers.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/customers.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "a_active_customers.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a_active_customers.csv",
+        "column": "name"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a_active_customers.csv",
+        "column": "status"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_a_08_token_detector",
+    "description": "Read data.csv, filter rows where score is greater than 0.5, sort by score descending, then export to a_scores.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/predictions.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "a_scores.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a_scores.csv",
+        "column": "name"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a_scores.csv",
+        "column": "score"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_a_09_discover_queue",
+    "description": "Read input.json, validate schema, then export to a_events.json.",
+    "fixtures": {
+      "input.json": "benchmark/fixtures/events.json"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "a_events.json"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a_events.json",
+        "column": "event_id"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a_events.json",
+        "column": "event_type"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_a_10_integrity_summary",
+    "description": "Read data.csv, group by department and count rows, then export to a_dept_counts.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/employees.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "a_dept_counts.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a_dept_counts.csv",
+        "column": "department"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a_dept_counts.csv",
+        "column": "count"
+      }
+    ],
+    "timeout_seconds": 40
+  }
+]
