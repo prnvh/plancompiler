@@ -2,9 +2,7 @@ import sqlite3
 
 def sqlite_reader(db_path: str):
     """
-    Opens a pre-existing .db file from disk and returns a DB handle. 
-    Input is a FilePath. Only use this to read a database that exists before the 
-    pipeline starts 
+    Entry-point node that opens a pre-existing .db file from disk via db_path parameter and returns a DB handle. Use only to start a pipeline from a database that exists before the pipeline runs.
     Node: SQLiteReader
     """
 

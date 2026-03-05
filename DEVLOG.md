@@ -46,3 +46,7 @@
 - Ran tests for 180 tasks, over 6 sets (n=30)
 - Updated criteria, planner, registry
 - Stabilized baseline test, added deadline.
+
+### 5/03/2026
+- Added 20 new tasks per set. n=50 per set and total n=300
+- Altered harness and run_baseline to run 5 times for accurate testing.

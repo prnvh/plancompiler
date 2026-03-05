@@ -853,5 +853,520 @@
       }
     ],
     "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_f_31_sales_filter_sqlite",
+    "description": "Using a 6-node workflow, read data.csv, drop null values, filter rows where revenue is greater than 100, store into a SQLite database called f31_sales.db in table sales, run a SQL query to retrieve all rows, then export to f31_sales_out.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/sales.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "f31_sales_out.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f31_sales_out.csv",
+        "column": "product"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f31_sales_out.csv",
+        "column": "revenue"
+      },
+      {
+        "type": "file_row_count",
+        "path": "f31_sales_out.csv",
+        "expected": 27
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_f_32_products_schema_sqlite",
+    "description": "Using a 6-node workflow, read input.json, validate schema, drop null values, store into a SQLite database called f32_prod.db in table products, run a SQL query to retrieve all rows, then export to f32_prod_out.csv.",
+    "fixtures": {
+      "input.json": "benchmark/fixtures/products.json"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "f32_prod_out.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f32_prod_out.csv",
+        "column": "name"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f32_prod_out.csv",
+        "column": "price"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_f_33_employees_null_sqlite",
+    "description": "Using a 5-node workflow, read data.csv, drop null values, store into a SQLite database called f33_emp.db in table employees, run a SQL query to retrieve all rows, then export to f33_emp_out.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/employees.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "f33_emp_out.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f33_emp_out.csv",
+        "column": "name"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f33_emp_out.csv",
+        "column": "salary"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_f_34_events_schema_sqlite",
+    "description": "Using a 5-node workflow, read input.json, validate schema, store into a SQLite database called f34_events.db in table events, run a SQL query to retrieve all rows, then export to f34_events_out.csv.",
+    "fixtures": {
+      "input.json": "benchmark/fixtures/events.json"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "f34_events_out.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f34_events_out.csv",
+        "column": "event_type"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f34_events_out.csv",
+        "column": "value"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_f_35_predictions_null_sqlite_sort",
+    "description": "Using a 6-node workflow, read data.csv, drop null values, store into a SQLite database called f35_preds.db in table predictions, run a SQL query to retrieve all rows, sort by score descending, then export to f35_preds_sorted.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/predictions.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "f35_preds_sorted.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f35_preds_sorted.csv",
+        "column": "score"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f35_preds_sorted.csv",
+        "column": "label"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_f_36_sales_logger_sqlite",
+    "description": "Using a 7-node workflow, read data.csv, drop null values, filter rows where revenue is greater than 100, log the intermediate data, store into a SQLite database called f36_sales.db in table sales, run a SQL query to retrieve all rows, then export to f36_sales_log.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/sales.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "f36_sales_log.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f36_sales_log.csv",
+        "column": "product"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f36_sales_log.csv",
+        "column": "revenue"
+      },
+      {
+        "type": "file_row_count",
+        "path": "f36_sales_log.csv",
+        "expected": 27
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_f_37_employees_logger_sqlite_sort",
+    "description": "Using a 7-node workflow, read data.csv, drop null values, remove duplicate rows, log the intermediate data, store into a SQLite database called f37_emp.db in table employees, run a SQL query to retrieve all rows, sort by salary descending, then export to f37_emp_sorted.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/employees.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "f37_emp_sorted.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f37_emp_sorted.csv",
+        "column": "name"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f37_emp_sorted.csv",
+        "column": "salary"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_f_38_products_logger_sqlite",
+    "description": "Using a 7-node workflow, read input.json, drop null values, filter rows where price is greater than 50, log the intermediate data, store into a SQLite database called f38_prod.db in table products, run a SQL query to retrieve all rows, then export to f38_prod_out.csv.",
+    "fixtures": {
+      "input.json": "benchmark/fixtures/products.json"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "f38_prod_out.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f38_prod_out.csv",
+        "column": "name"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f38_prod_out.csv",
+        "column": "price"
+      },
+      {
+        "type": "file_row_count",
+        "path": "f38_prod_out.csv",
+        "expected": 15
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_f_39_events_logger_sqlite_sort",
+    "description": "Using a 7-node workflow, read input.json, validate schema, drop null values, log the intermediate data, store into a SQLite database called f39_events.db in table events, run a SQL query to retrieve all rows, sort by value descending, then export to f39_events_sorted.csv.",
+    "fixtures": {
+      "input.json": "benchmark/fixtures/events.json"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "f39_events_sorted.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f39_events_sorted.csv",
+        "column": "event_type"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f39_events_sorted.csv",
+        "column": "value"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_f_40_predictions_logger_sqlite",
+    "description": "Using a 6-node workflow, read data.csv, drop null values, log the intermediate data, store into a SQLite database called f40_preds.db in table predictions, run a SQL query to retrieve all rows, then export to f40_preds_out.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/predictions.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "f40_preds_out.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f40_preds_out.csv",
+        "column": "score"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f40_preds_out.csv",
+        "column": "label"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_f_41_sales_dedup_sqlite_sort",
+    "description": "Using a 6-node workflow, read data.csv, drop null values, remove duplicate rows, store into a SQLite database called f41_sales.db in table sales, run a SQL query to retrieve all rows, sort by revenue descending, then export to f41_sales_sorted.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/sales.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "f41_sales_sorted.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f41_sales_sorted.csv",
+        "column": "product"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f41_sales_sorted.csv",
+        "column": "revenue"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_f_42_employees_typecast_sqlite",
+    "description": "Using a 6-node workflow, read data.csv, drop null values, cast column types using an empty mapping, store into a SQLite database called f42_emp.db in table employees, run a SQL query to retrieve all rows, then export to f42_emp_out.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/employees.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "f42_emp_out.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f42_emp_out.csv",
+        "column": "name"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f42_emp_out.csv",
+        "column": "department"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f42_emp_out.csv",
+        "column": "salary"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_f_43_products_dedup_sqlite_sort",
+    "description": "Using a 6-node workflow, read input.json, drop null values, remove duplicate rows, store into a SQLite database called f43_prod.db in table products, run a SQL query to retrieve all rows, sort by price ascending, then export to f43_prod_asc.csv.",
+    "fixtures": {
+      "input.json": "benchmark/fixtures/products.json"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "f43_prod_asc.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f43_prod_asc.csv",
+        "column": "name"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f43_prod_asc.csv",
+        "column": "price"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_f_44_events_dedup_sqlite",
+    "description": "Using a 6-node workflow, read input.json, drop null values, remove duplicate rows, store into a SQLite database called f44_events.db in table events, run a SQL query to retrieve all rows, then export to f44_events_out.csv.",
+    "fixtures": {
+      "input.json": "benchmark/fixtures/events.json"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "f44_events_out.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f44_events_out.csv",
+        "column": "event_type"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f44_events_out.csv",
+        "column": "value"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_f_45_sales_typecast_logger_sqlite",
+    "description": "Using a 7-node workflow, read data.csv, drop null values, cast column types using an empty mapping, log the intermediate data, store into a SQLite database called f45_sales.db in table sales, run a SQL query to retrieve all rows, then export to f45_sales_out.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/sales.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "f45_sales_out.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f45_sales_out.csv",
+        "column": "product"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f45_sales_out.csv",
+        "column": "category"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f45_sales_out.csv",
+        "column": "revenue"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_f_46_predictions_filter_sqlite_sort",
+    "description": "Using a 7-node workflow, read data.csv, drop null values, filter rows where score is greater than 0.5, cast column types using an empty mapping, store into a SQLite database called f46_preds.db in table predictions, run a SQL query to retrieve all rows, sort by score descending, then export to f46_preds_sorted.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/predictions.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "f46_preds_sorted.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f46_preds_sorted.csv",
+        "column": "score"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f46_preds_sorted.csv",
+        "column": "label"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_f_47_employees_schema_sqlite_sort",
+    "description": "Using a 7-node workflow, read data.csv, validate schema, drop null values, filter rows where salary is greater than 40000, store into a SQLite database called f47_emp.db in table employees, run a SQL query to retrieve all rows, sort by salary descending, then export to f47_emp_sorted.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/employees.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "f47_emp_sorted.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f47_emp_sorted.csv",
+        "column": "name"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f47_emp_sorted.csv",
+        "column": "salary"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_f_48_events_typecast_sqlite_sort",
+    "description": "Using a 6-node workflow, read input.json, drop null values, cast column types using an empty mapping, store into a SQLite database called f48_events.db in table events, run a SQL query to retrieve all rows, sort by value ascending, then export to f48_events_asc.csv.",
+    "fixtures": {
+      "input.json": "benchmark/fixtures/events.json"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "f48_events_asc.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f48_events_asc.csv",
+        "column": "event_type"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f48_events_asc.csv",
+        "column": "value"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_f_49_products_logger_sqlite",
+    "description": "Using a 7-node workflow, read input.json, validate schema, drop null values, log the intermediate data, filter rows where price is greater than 50, store into a SQLite database called f49_prod.db in table products, run a SQL query to retrieve all rows, then export to f49_prod_out.csv.",
+    "fixtures": {
+      "input.json": "benchmark/fixtures/products.json"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "f49_prod_out.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f49_prod_out.csv",
+        "column": "name"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f49_prod_out.csv",
+        "column": "price"
+      },
+      {
+        "type": "file_row_count",
+        "path": "f49_prod_out.csv",
+        "expected": 15
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_f_50_sales_schema_logger_sqlite",
+    "description": "Using a 8-node workflow, read data.csv, validate schema, drop null values, remove duplicate rows, filter rows where revenue is greater than 100, log the intermediate data, store into a SQLite database called f50_sales.db in table sales, run a SQL query to retrieve all rows, then export to f50_sales_out.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/sales.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "f50_sales_out.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f50_sales_out.csv",
+        "column": "product"
+      },
+      {
+        "type": "file_has_column",
+        "path": "f50_sales_out.csv",
+        "column": "revenue"
+      },
+      {
+        "type": "file_row_count",
+        "path": "f50_sales_out.csv",
+        "expected": 27
+      }
+    ],
+    "timeout_seconds": 40
   }
 ]

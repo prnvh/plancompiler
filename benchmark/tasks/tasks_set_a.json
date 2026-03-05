@@ -783,5 +783,485 @@
       }
     ],
     "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_a_31_sales_agg_category",
+    "description": "Using a 4-node workflow, read data.csv, drop null values, group by category and count rows, then export to a31_cat_counts.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/sales.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "a31_cat_counts.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a31_cat_counts.csv",
+        "column": "category"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a31_cat_counts.csv",
+        "column": "count"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_a_32_products_agg_category",
+    "description": "Using a 3-node workflow, read input.json, group by category and count rows, then export to a32_prod_cats.csv.",
+    "fixtures": {
+      "input.json": "benchmark/fixtures/products.json"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "a32_prod_cats.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a32_prod_cats.csv",
+        "column": "category"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a32_prod_cats.csv",
+        "column": "count"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_a_33_employees_agg_dept",
+    "description": "Using a 4-node workflow, read data.csv, drop null values, group by department and count rows, then export to a33_dept_counts.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/employees.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "a33_dept_counts.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a33_dept_counts.csv",
+        "column": "department"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a33_dept_counts.csv",
+        "column": "count"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_a_34_events_agg_type",
+    "description": "Using a 3-node workflow, read input.json, group by event_type and count rows, then export to a34_event_counts.csv.",
+    "fixtures": {
+      "input.json": "benchmark/fixtures/events.json"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "a34_event_counts.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a34_event_counts.csv",
+        "column": "event_type"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a34_event_counts.csv",
+        "column": "count"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_a_35_predictions_agg_label",
+    "description": "Using a 4-node workflow, read data.csv, drop null values, group by label and count rows, then export to a35_label_counts.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/predictions.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "a35_label_counts.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a35_label_counts.csv",
+        "column": "label"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a35_label_counts.csv",
+        "column": "count"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_a_36_sales_logger_filter",
+    "description": "Using a 4-node workflow, read data.csv, log the intermediate data, filter rows where revenue is greater than 100, then export to a36_logged_sales.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/sales.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "a36_logged_sales.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a36_logged_sales.csv",
+        "column": "revenue"
+      },
+      {
+        "type": "file_row_count",
+        "path": "a36_logged_sales.csv",
+        "expected": 27
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_a_37_employees_logger_sort",
+    "description": "Using a 4-node workflow, read data.csv, log the intermediate data, sort by salary descending, then export to a37_logged_emp.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/employees.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "a37_logged_emp.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a37_logged_emp.csv",
+        "column": "salary"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_a_38_products_logger_filter",
+    "description": "Using a 5-node workflow, read input.json, validate schema, log the intermediate data, filter rows where price is greater than 50, then export to a38_logged_prod.csv.",
+    "fixtures": {
+      "input.json": "benchmark/fixtures/products.json"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "a38_logged_prod.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a38_logged_prod.csv",
+        "column": "price"
+      },
+      {
+        "type": "file_row_count",
+        "path": "a38_logged_prod.csv",
+        "expected": 15
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_a_39_events_logger_select",
+    "description": "Using a 4-node workflow, read input.json, log the intermediate data, select event_type and value, then export to a39_events_slim.csv.",
+    "fixtures": {
+      "input.json": "benchmark/fixtures/events.json"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "a39_events_slim.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a39_events_slim.csv",
+        "column": "event_type"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a39_events_slim.csv",
+        "column": "value"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_a_40_predictions_logger_drop",
+    "description": "Using a 4-node workflow, read data.csv, log the intermediate data, drop null values, then export to a40_preds_logged.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/predictions.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "a40_preds_logged.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a40_preds_logged.csv",
+        "column": "score"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a40_preds_logged.csv",
+        "column": "label"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_a_41_sales_filter_rev",
+    "description": "Using a 3-node workflow, read data.csv, filter rows where revenue is greater than 100, then export to a41_high_rev.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/sales.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "a41_high_rev.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a41_high_rev.csv",
+        "column": "product"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a41_high_rev.csv",
+        "column": "revenue"
+      },
+      {
+        "type": "file_row_count",
+        "path": "a41_high_rev.csv",
+        "expected": 27
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_a_42_employees_null_sort",
+    "description": "Using a 4-node workflow, read data.csv, drop null values, sort by name ascending, then export to a42_emp_sorted.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/employees.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "a42_emp_sorted.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a42_emp_sorted.csv",
+        "column": "name"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_a_43_products_filter_price",
+    "description": "Using a 3-node workflow, read input.json, filter rows where price is greater than 50, then export to a43_expensive.csv.",
+    "fixtures": {
+      "input.json": "benchmark/fixtures/products.json"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "a43_expensive.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a43_expensive.csv",
+        "column": "name"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a43_expensive.csv",
+        "column": "price"
+      },
+      {
+        "type": "file_row_count",
+        "path": "a43_expensive.csv",
+        "expected": 15
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_a_44_events_null_select",
+    "description": "Using a 4-node workflow, read input.json, drop null values, select event_id and event_type, then export to a44_events_sel.csv.",
+    "fixtures": {
+      "input.json": "benchmark/fixtures/events.json"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "a44_events_sel.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a44_events_sel.csv",
+        "column": "event_id"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a44_events_sel.csv",
+        "column": "event_type"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_a_45_predictions_filter_sort",
+    "description": "Using a 4-node workflow, read data.csv, filter rows where score is greater than 0.5, sort by score descending, then export to a45_top_scores.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/predictions.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "a45_top_scores.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a45_top_scores.csv",
+        "column": "score"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a45_top_scores.csv",
+        "column": "label"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_a_46_sales_select_cols",
+    "description": "Using a 3-node workflow, read data.csv, select only product, category, and revenue, then export to a46_sales_slim.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/sales.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "a46_sales_slim.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a46_sales_slim.csv",
+        "column": "product"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a46_sales_slim.csv",
+        "column": "category"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a46_sales_slim.csv",
+        "column": "revenue"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_a_47_employees_filter_dept",
+    "description": "Using a 4-node workflow, read data.csv, drop null values, filter rows where department equals Engineering, then export to a47_eng_emp.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/employees.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "a47_eng_emp.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a47_eng_emp.csv",
+        "column": "name"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a47_eng_emp.csv",
+        "column": "department"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_a_48_products_sort_desc",
+    "description": "Using a 3-node workflow, read input.json, sort by price descending, then export to a48_prod_desc.csv.",
+    "fixtures": {
+      "input.json": "benchmark/fixtures/products.json"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "a48_prod_desc.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a48_prod_desc.csv",
+        "column": "name"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a48_prod_desc.csv",
+        "column": "price"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_a_49_sales_typecast_sort",
+    "description": "Using a 4-node workflow, read data.csv, cast column types using an empty mapping, sort by revenue descending, then export to a49_sales_cast.csv.",
+    "fixtures": {
+      "data.csv": "benchmark/fixtures/sales.csv"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "a49_sales_cast.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a49_sales_cast.csv",
+        "column": "revenue"
+      }
+    ],
+    "timeout_seconds": 40
+  },
+  {
+    "task_id": "set_a_50_events_sort_val",
+    "description": "Using a 3-node workflow, read input.json, sort by value descending, then export to a50_events_val.csv.",
+    "fixtures": {
+      "input.json": "benchmark/fixtures/events.json"
+    },
+    "success_criteria": [
+      {
+        "type": "file_exists",
+        "path": "a50_events_val.csv"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a50_events_val.csv",
+        "column": "event_type"
+      },
+      {
+        "type": "file_has_column",
+        "path": "a50_events_val.csv",
+        "column": "value"
+      }
+    ],
+    "timeout_seconds": 40
   }
 ]

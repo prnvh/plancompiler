@@ -1,6 +1,6 @@
 {
-  "run_at": "2026-03-04T17:39:53.684963",
-  "task_count": 30,
+  "run_at": "2026-03-05T05:27:15.030032",
+  "task_count": 50,
   "compiler_first_pass_rate": 1.0,
   "results": [
     {
@@ -63,11 +63,11 @@
       "run_stderr": "",
       "run_returncode": 0,
       "criteria_failures": [],
-      "duration_seconds": 7.17,
+      "duration_seconds": 8.72,
       "error": null,
-      "baseline_success": null,
+      "baseline_success": true,
       "baseline_error": null,
-      "baseline_duration_seconds": null
+      "baseline_duration_seconds": 6.67
     },
     {
       "task_id": "set_b_02_salary_typecast_select_sort",
@@ -139,11 +139,11 @@
       "run_stderr": "",
       "run_returncode": 0,
       "criteria_failures": [],
-      "duration_seconds": 7.97,
+      "duration_seconds": 8.02,
       "error": null,
-      "baseline_success": null,
+      "baseline_success": true,
       "baseline_error": null,
-      "baseline_duration_seconds": null
+      "baseline_duration_seconds": 5.45
     },
     {
       "task_id": "set_b_03_salary_filter_select_sort_asc",
@@ -217,11 +217,11 @@
       "run_stderr": "",
       "run_returncode": 0,
       "criteria_failures": [],
-      "duration_seconds": 7.07,
+      "duration_seconds": 7.43,
       "error": null,
-      "baseline_success": null,
+      "baseline_success": true,
       "baseline_error": null,
-      "baseline_duration_seconds": null
+      "baseline_duration_seconds": 5.67
     },
     {
       "task_id": "set_b_04_active_customers_sort_signup",
@@ -289,11 +289,11 @@
       "run_stderr": "",
       "run_returncode": 0,
       "criteria_failures": [],
-      "duration_seconds": 7.0,
+      "duration_seconds": 6.19,
       "error": null,
-      "baseline_success": null,
+      "baseline_success": true,
       "baseline_error": null,
-      "baseline_duration_seconds": null
+      "baseline_duration_seconds": 4.02
     },
     {
       "task_id": "set_b_05_score_filter_null_export",
@@ -357,11 +357,11 @@
       "run_stderr": "",
       "run_returncode": 0,
       "criteria_failures": [],
-      "duration_seconds": 7.25,
+      "duration_seconds": 7.0,
       "error": null,
-      "baseline_success": null,
+      "baseline_success": true,
       "baseline_error": null,
-      "baseline_duration_seconds": null
+      "baseline_duration_seconds": 3.43
     },
     {
       "task_id": "set_b_06_events_transform_agg_count",
@@ -438,11 +438,11 @@
       "run_stderr": "",
       "run_returncode": 0,
       "criteria_failures": [],
-      "duration_seconds": 7.97,
+      "duration_seconds": 8.22,
       "error": null,
-      "baseline_success": null,
-      "baseline_error": null,
-      "baseline_duration_seconds": null
+      "baseline_success": false,
+      "baseline_error": "Baseline execution timed out",
+      "baseline_duration_seconds": 47.36
     },
     {
       "task_id": "set_b_07_employees_null_dedup_select",
@@ -507,11 +507,11 @@
       "run_stderr": "",
       "run_returncode": 0,
       "criteria_failures": [],
-      "duration_seconds": 6.24,
+      "duration_seconds": 6.8,
       "error": null,
-      "baseline_success": null,
+      "baseline_success": true,
       "baseline_error": null,
-      "baseline_duration_seconds": null
+      "baseline_duration_seconds": 4.5
     },
     {
       "task_id": "set_b_08_employees_typecast_sort_desc",
@@ -581,11 +581,11 @@
       "run_stderr": "",
       "run_returncode": 0,
       "criteria_failures": [],
-      "duration_seconds": 8.06,
+      "duration_seconds": 7.78,
       "error": null,
-      "baseline_success": null,
-      "baseline_error": null,
-      "baseline_duration_seconds": null
+      "baseline_success": false,
+      "baseline_error": "Criteria failures:\nfile_has_column: column 'count' not in 'b_region_counts.csv'",
+      "baseline_duration_seconds": 4.54
     },
     {
       "task_id": "set_b_09_salary_filter_sqlite_query",
@@ -669,11 +669,11 @@
       "run_stderr": "",
       "run_returncode": 0,
       "criteria_failures": [],
-      "duration_seconds": 9.36,
+      "duration_seconds": 8.42,
       "error": null,
-      "baseline_success": null,
-      "baseline_error": null,
-      "baseline_duration_seconds": null
+      "baseline_success": false,
+      "baseline_error": "Baseline runtime error (exit 1):\nTraceback (most recent call last):\n  File \"C:\\Users\\pranav h\\Documents\\GitHub\\llm-code-graph-compiler\\.venv\\Lib\\site-packages\\sqlalchemy\\engine\\base.py\", line 1415, in execute\n    meth = statement._execute_on_connection\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'str' object has no attribute '_execute_on_connection'\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"C:\\Users\\PRANAV~1\\AppData\\Local\\Temp\\tmp1uh_4my5\\ap",
+      "baseline_duration_seconds": 11.21
     },
     {
       "task_id": "set_b_10_employees_null_dedup_sort_asc",
@@ -735,11 +735,11 @@
       "run_stderr": "",
       "run_returncode": 0,
       "criteria_failures": [],
-      "duration_seconds": 6.26,
+      "duration_seconds": 6.65,
       "error": null,
-      "baseline_success": null,
+      "baseline_success": true,
       "baseline_error": null,
-      "baseline_duration_seconds": null
+      "baseline_duration_seconds": 4.95
     },
     {
       "task_id": "set_b_11_null_filter_sort_name_asc",
@@ -803,11 +803,11 @@
       "run_stderr": "",
       "run_returncode": 0,
       "criteria_failures": [],
-      "duration_seconds": 5.91,
+      "duration_seconds": 6.3,
       "error": null,
-      "baseline_success": null,
+      "baseline_success": true,
       "baseline_error": null,
-      "baseline_duration_seconds": null
+      "baseline_duration_seconds": 4.31
     },
     {
       "task_id": "set_b_12_score_filter_dedup_select",
@@ -880,11 +880,11 @@
       "run_stderr": "",
       "run_returncode": 0,
       "criteria_failures": [],
-      "duration_seconds": 6.68,
+      "duration_seconds": 6.32,
       "error": null,
-      "baseline_success": null,
+      "baseline_success": true,
       "baseline_error": null,
-      "baseline_duration_seconds": null
+      "baseline_duration_seconds": 4.37
     },
     {
       "task_id": "set_b_13_events_validate_dedup_sort_asc",
@@ -944,11 +944,11 @@
       "run_stderr": "",
       "run_returncode": 0,
       "criteria_failures": [],
-      "duration_seconds": 6.76,
+      "duration_seconds": 5.59,
       "error": null,
-      "baseline_success": null,
-      "baseline_error": null,
-      "baseline_duration_seconds": null
+      "baseline_success": false,
+      "baseline_error": "Baseline execution timed out",
+      "baseline_duration_seconds": 54.91
     },
     {
       "task_id": "set_b_14_dept_count_agg",
@@ -1010,11 +1010,11 @@
       "run_stderr": "",
       "run_returncode": 0,
       "criteria_failures": [],
-      "duration_seconds": 6.26,
+      "duration_seconds": 5.99,
       "error": null,
-      "baseline_success": null,
+      "baseline_success": true,
       "baseline_error": null,
-      "baseline_duration_seconds": null
+      "baseline_duration_seconds": 4.17
     },
     {
       "task_id": "set_b_15_age_filter_city_select_sort_asc",
@@ -1097,11 +1097,11 @@
       "run_stderr": "",
       "run_returncode": 0,
       "criteria_failures": [],
-      "duration_seconds": 8.4,
+      "duration_seconds": 8.13,
       "error": null,
-      "baseline_success": null,
+      "baseline_success": true,
       "baseline_error": null,
-      "baseline_duration_seconds": null
+      "baseline_duration_seconds": 3.72
     },
     {
       "task_id": "set_b_16_active_region_count",
@@ -1163,11 +1163,11 @@
       "run_stderr": "",
       "run_returncode": 0,
       "criteria_failures": [],
-      "duration_seconds": 6.14,
+      "duration_seconds": 7.4,
       "error": null,
-      "baseline_success": null,
+      "baseline_success": true,
       "baseline_error": null,
-      "baseline_duration_seconds": null
+      "baseline_duration_seconds": 4.08
     },
     {
       "task_id": "set_b_17_high_salary_dept_count",
@@ -1237,11 +1237,11 @@
       "run_stderr": "",
       "run_returncode": 0,
       "criteria_failures": [],
-      "duration_seconds": 5.46,
+      "duration_seconds": 8.49,
       "error": null,
-      "baseline_success": null,
+      "baseline_success": true,
       "baseline_error": null,
-      "baseline_duration_seconds": null
+      "baseline_duration_seconds": 6.54
     },
     {
       "task_id": "set_b_18_score_filter_dedup_select_sort_desc",
@@ -1323,11 +1323,11 @@
       "run_stderr": "",
       "run_returncode": 0,
       "criteria_failures": [],
-      "duration_seconds": 8.86,
+      "duration_seconds": 9.6,
       "error": null,
-      "baseline_success": null,
+      "baseline_success": true,
       "baseline_error": null,
-      "baseline_duration_seconds": null
+      "baseline_duration_seconds": 3.97
     },
     {
       "task_id": "set_b_19_salary_select_sort_desc",
@@ -1409,11 +1409,11 @@
       "run_stderr": "",
       "run_returncode": 0,
       "criteria_failures": [],
-      "duration_seconds": 12.01,
+      "duration_seconds": 8.63,
       "error": null,
-      "baseline_success": null,
+      "baseline_success": true,
       "baseline_error": null,
-      "baseline_duration_seconds": null
+      "baseline_duration_seconds": 3.41
     },
     {
       "task_id": "set_b_20_events_validate_dedup_agg",
@@ -1473,11 +1473,11 @@
       "run_stderr": "",
       "run_returncode": 0,
       "criteria_failures": [],
-      "duration_seconds": 5.77,
+      "duration_seconds": 7.58,
       "error": null,
-      "baseline_success": null,
-      "baseline_error": null,
-      "baseline_duration_seconds": null
+      "baseline_success": false,
+      "baseline_error": "Baseline execution timed out",
+      "baseline_duration_seconds": 49.06
     },
     {
       "task_id": "set_b_21_sales_null_dedup_filter_export",
@@ -1538,11 +1538,11 @@
       "run_stderr": "",
       "run_returncode": 0,
       "criteria_failures": [],
-      "duration_seconds": 5.53,
+      "duration_seconds": 6.18,
       "error": null,
-      "baseline_success": null,
+      "baseline_success": true,
       "baseline_error": null,
-      "baseline_duration_seconds": null
+      "baseline_duration_seconds": 4.56
     },
     {
       "task_id": "set_b_22_sales_filter_select_sort_desc",
@@ -1618,11 +1618,11 @@
       "run_stderr": "",
       "run_returncode": 0,
       "criteria_failures": [],
-      "duration_seconds": 8.09,
+      "duration_seconds": 9.93,
       "error": null,
-      "baseline_success": null,
+      "baseline_success": true,
       "baseline_error": null,
-      "baseline_duration_seconds": null
+      "baseline_duration_seconds": 5.65
     },
     {
       "task_id": "set_b_23_products_dedup_filter_select_sort",
@@ -1695,11 +1695,11 @@
       "run_stderr": "",
       "run_returncode": 0,
       "criteria_failures": [],
-      "duration_seconds": 6.27,
+      "duration_seconds": 7.48,
       "error": null,
-      "baseline_success": null,
+      "baseline_success": true,
       "baseline_error": null,
-      "baseline_duration_seconds": null
+      "baseline_duration_seconds": 6.24
     },
     {
       "task_id": "set_b_24_products_filter_agg_count",
@@ -1763,11 +1763,11 @@
       "run_stderr": "",
       "run_returncode": 0,
       "criteria_failures": [],
-      "duration_seconds": 5.87,
+      "duration_seconds": 7.19,
       "error": null,
-      "baseline_success": null,
-      "baseline_error": null,
-      "baseline_duration_seconds": null
+      "baseline_success": false,
+      "baseline_error": "Baseline execution timed out",
+      "baseline_duration_seconds": 48.17
     },
     {
       "task_id": "set_b_25_sales_filter_sqlite_query",
@@ -1851,11 +1851,11 @@
       "run_stderr": "",
       "run_returncode": 0,
       "criteria_failures": [],
-      "duration_seconds": 8.86,
+      "duration_seconds": 10.5,
       "error": null,
-      "baseline_success": null,
-      "baseline_error": null,
-      "baseline_duration_seconds": null
+      "baseline_success": false,
+      "baseline_error": "Baseline execution timed out",
+      "baseline_duration_seconds": 47.33
     },
     {
       "task_id": "set_b_26_products_validate_filter_agg",
@@ -1917,11 +1917,11 @@
       "run_stderr": "",
       "run_returncode": 0,
       "criteria_failures": [],
-      "duration_seconds": 7.61,
+      "duration_seconds": 7.72,
       "error": null,
-      "baseline_success": null,
-      "baseline_error": null,
-      "baseline_duration_seconds": null
+      "baseline_success": false,
+      "baseline_error": "Baseline execution timed out",
+      "baseline_duration_seconds": 61.58
     },
     {
       "task_id": "set_b_27_sales_null_dedup_agg_sort_desc",
@@ -1992,11 +1992,11 @@
       "run_stderr": "",
       "run_returncode": 0,
       "criteria_failures": [],
-      "duration_seconds": 7.53,
+      "duration_seconds": 12.62,
       "error": null,
-      "baseline_success": null,
+      "baseline_success": true,
       "baseline_error": null,
-      "baseline_duration_seconds": null
+      "baseline_duration_seconds": 4.98
     },
     {
       "task_id": "set_b_28_products_null_filter_sort_asc",
@@ -2066,11 +2066,11 @@
       "run_stderr": "",
       "run_returncode": 0,
       "criteria_failures": [],
-      "duration_seconds": 6.32,
+      "duration_seconds": 11.96,
       "error": null,
-      "baseline_success": null,
+      "baseline_success": true,
       "baseline_error": null,
-      "baseline_duration_seconds": null
+      "baseline_duration_seconds": 5.89
     },
     {
       "task_id": "set_b_29_sales_null_filter_sqlite_query",
@@ -2150,11 +2150,11 @@
       "run_stderr": "",
       "run_returncode": 0,
       "criteria_failures": [],
-      "duration_seconds": 12.4,
+      "duration_seconds": 10.49,
       "error": null,
-      "baseline_success": null,
-      "baseline_error": null,
-      "baseline_duration_seconds": null
+      "baseline_success": false,
+      "baseline_error": "Baseline runtime error (exit 1):\nTraceback (most recent call last):\n  File \"C:\\Users\\pranav h\\Documents\\GitHub\\llm-code-graph-compiler\\.venv\\Lib\\site-packages\\sqlalchemy\\engine\\base.py\", line 1415, in execute\n    meth = statement._execute_on_connection\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'str' object has no attribute '_execute_on_connection'\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"C:\\Users\\PRANAV~1\\AppData\\Local\\Temp\\tmp_fk3ac0t\\ap",
+      "baseline_duration_seconds": 5.21
     },
     {
       "task_id": "set_b_30_sales_validate_typecast_agg",
@@ -2224,11 +2224,1537 @@
       "run_stderr": "",
       "run_returncode": 0,
       "criteria_failures": [],
-      "duration_seconds": 8.83,
+      "duration_seconds": 6.46,
       "error": null,
-      "baseline_success": null,
+      "baseline_success": false,
+      "baseline_error": "Baseline execution timed out",
+      "baseline_duration_seconds": 52.09
+    },
+    {
+      "task_id": "set_b_31_sales_null_dedup_agg_sort",
+      "description": "Using a 6-node workflow, read data.csv, drop null values, remove duplicate rows, group by category and count rows, sort by count descending, then export to b31_cat_ranked.csv.",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": true,
+      "criteria_passed": true,
+      "first_pass_success": true,
+      "plan": {
+        "nodes": [
+          "CSVParser",
+          "NullHandler",
+          "DataDeduplicator",
+          "Aggregator",
+          "DataSorter",
+          "CSVExporter"
+        ],
+        "edges": [
+          [
+            "CSVParser",
+            "NullHandler"
+          ],
+          [
+            "NullHandler",
+            "DataDeduplicator"
+          ],
+          [
+            "DataDeduplicator",
+            "Aggregator"
+          ],
+          [
+            "Aggregator",
+            "DataSorter"
+          ],
+          [
+            "DataSorter",
+            "CSVExporter"
+          ]
+        ],
+        "parameters": {
+          "CSVParser": {
+            "file_path": "data.csv"
+          },
+          "NullHandler": {
+            "strategy": "drop"
+          },
+          "DataDeduplicator": {},
+          "Aggregator": {
+            "group_by": "category",
+            "agg_func": "count"
+          },
+          "DataSorter": {
+            "by": "count",
+            "ascending": false
+          },
+          "CSVExporter": {
+            "output_path": "b31_cat_ranked.csv"
+          }
+        },
+        "flags": [],
+        "glue_code": ""
+      },
+      "validation_errors": [],
+      "compile_error": null,
+      "run_stdout": "[CSVParser] Loaded 40 rows from data.csv\n[NullHandler] Dropped null rows\n[DataDeduplicator] Removed duplicate rows\n[Aggregator] Aggregated using count\n[DataSorter] Sorted by 'count' (descending)\n[CSVExporter] Exported to b31_cat_ranked.csv\nb31_cat_ranked.csv\n",
+      "run_stderr": "",
+      "run_returncode": 0,
+      "criteria_failures": [],
+      "duration_seconds": 8.94,
+      "error": null,
+      "baseline_success": true,
       "baseline_error": null,
-      "baseline_duration_seconds": null
+      "baseline_duration_seconds": 3.9
+    },
+    {
+      "task_id": "set_b_32_employees_filter_agg",
+      "description": "Using a 5-node workflow, read data.csv, drop null values, filter rows where salary is greater than 35000, group by department and count rows, then export to b32_dept_counts.csv.",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": true,
+      "criteria_passed": true,
+      "first_pass_success": true,
+      "plan": {
+        "nodes": [
+          "CSVParser",
+          "NullHandler",
+          "DataFilter",
+          "Aggregator",
+          "CSVExporter"
+        ],
+        "edges": [
+          [
+            "CSVParser",
+            "NullHandler"
+          ],
+          [
+            "NullHandler",
+            "DataFilter"
+          ],
+          [
+            "DataFilter",
+            "Aggregator"
+          ],
+          [
+            "Aggregator",
+            "CSVExporter"
+          ]
+        ],
+        "parameters": {
+          "CSVParser": {
+            "file_path": "data.csv"
+          },
+          "NullHandler": {
+            "strategy": "drop"
+          },
+          "DataFilter": {
+            "condition": "salary > 35000"
+          },
+          "Aggregator": {
+            "group_by": "department",
+            "agg_func": "count"
+          },
+          "CSVExporter": {
+            "output_path": "b32_dept_counts.csv"
+          }
+        },
+        "flags": [],
+        "glue_code": ""
+      },
+      "validation_errors": [],
+      "compile_error": null,
+      "run_stdout": "[CSVParser] Loaded 23 rows from data.csv\n[NullHandler] Dropped null rows\n[DataFilter] Applied condition: salary > 35000\n[Aggregator] Aggregated using count\n[CSVExporter] Exported to b32_dept_counts.csv\nb32_dept_counts.csv\n",
+      "run_stderr": "",
+      "run_returncode": 0,
+      "criteria_failures": [],
+      "duration_seconds": 6.54,
+      "error": null,
+      "baseline_success": true,
+      "baseline_error": null,
+      "baseline_duration_seconds": 4.43
+    },
+    {
+      "task_id": "set_b_33_events_schema_agg_sort",
+      "description": "Using a 5-node workflow, read input.json, validate schema, drop null values, group by event_type and count rows, sort by count descending, then export to b33_event_ranked.csv.",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": true,
+      "criteria_passed": true,
+      "first_pass_success": true,
+      "plan": {
+        "nodes": [
+          "JSONParser",
+          "SchemaValidator",
+          "NullHandler",
+          "Aggregator",
+          "DataSorter",
+          "CSVExporter"
+        ],
+        "edges": [
+          [
+            "JSONParser",
+            "SchemaValidator"
+          ],
+          [
+            "SchemaValidator",
+            "NullHandler"
+          ],
+          [
+            "NullHandler",
+            "Aggregator"
+          ],
+          [
+            "Aggregator",
+            "DataSorter"
+          ],
+          [
+            "DataSorter",
+            "CSVExporter"
+          ]
+        ],
+        "parameters": {
+          "JSONParser": {
+            "file_path": "input.json"
+          },
+          "SchemaValidator": {},
+          "NullHandler": {
+            "strategy": "drop"
+          },
+          "Aggregator": {
+            "group_by": "event_type",
+            "agg_func": "count"
+          },
+          "DataSorter": {
+            "by": "count",
+            "ascending": false
+          },
+          "CSVExporter": {
+            "output_path": "b33_event_ranked.csv"
+          }
+        },
+        "flags": [],
+        "glue_code": ""
+      },
+      "validation_errors": [],
+      "compile_error": null,
+      "run_stdout": "[JSONParser] Loaded 50 rows from input.json\n[SchemaValidator] Schema validated\n[NullHandler] Dropped null rows\n[Aggregator] Aggregated using count\n[DataSorter] Sorted by 'count' (descending)\n[CSVExporter] Exported to b33_event_ranked.csv\nb33_event_ranked.csv\n",
+      "run_stderr": "",
+      "run_returncode": 0,
+      "criteria_failures": [],
+      "duration_seconds": 8.02,
+      "error": null,
+      "baseline_success": false,
+      "baseline_error": "Baseline execution timed out",
+      "baseline_duration_seconds": 48.01
+    },
+    {
+      "task_id": "set_b_34_predictions_null_agg_sqlite",
+      "description": "Using a 7-node workflow, read data.csv, drop null values, group by label and count rows, cast column types using an empty mapping, store into a SQLite database called b34_labels.db in table label_counts, run a SQL query to retrieve all rows, then export to b34_label_counts.csv.",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": true,
+      "criteria_passed": true,
+      "first_pass_success": true,
+      "plan": {
+        "nodes": [
+          "CSVParser",
+          "NullHandler",
+          "Aggregator",
+          "TypeCaster",
+          "SQLiteConnector",
+          "QueryEngine",
+          "CSVExporter"
+        ],
+        "edges": [
+          [
+            "CSVParser",
+            "NullHandler"
+          ],
+          [
+            "NullHandler",
+            "Aggregator"
+          ],
+          [
+            "Aggregator",
+            "TypeCaster"
+          ],
+          [
+            "TypeCaster",
+            "SQLiteConnector"
+          ],
+          [
+            "SQLiteConnector",
+            "QueryEngine"
+          ],
+          [
+            "QueryEngine",
+            "CSVExporter"
+          ]
+        ],
+        "parameters": {
+          "CSVParser": {
+            "file_path": "data.csv"
+          },
+          "NullHandler": {
+            "strategy": "drop"
+          },
+          "Aggregator": {
+            "group_by": "label",
+            "agg_func": "count"
+          },
+          "TypeCaster": {
+            "mapping": {}
+          },
+          "SQLiteConnector": {
+            "db_path": "b34_labels.db",
+            "table_name": "label_counts"
+          },
+          "QueryEngine": {
+            "query": "SELECT * FROM label_counts"
+          },
+          "CSVExporter": {
+            "output_path": "b34_label_counts.csv"
+          }
+        },
+        "flags": [],
+        "glue_code": ""
+      },
+      "validation_errors": [],
+      "compile_error": null,
+      "run_stdout": "[CSVParser] Loaded 30 rows from data.csv\n[NullHandler] Dropped null rows\n[Aggregator] Aggregated using count\n[TypeCaster] Cast columns: {}\n[SQLiteConnector] Stored table 'label_counts' in b34_labels.db\n[QueryEngine] Query executed\n[CSVExporter] Exported to b34_label_counts.csv\nb34_label_counts.csv\n",
+      "run_stderr": "",
+      "run_returncode": 0,
+      "criteria_failures": [],
+      "duration_seconds": 8.98,
+      "error": null,
+      "baseline_success": false,
+      "baseline_error": "Baseline runtime error (exit 1):\nTraceback (most recent call last):\n  File \"C:\\Users\\pranav h\\Documents\\GitHub\\llm-code-graph-compiler\\.venv\\Lib\\site-packages\\sqlalchemy\\engine\\base.py\", line 1415, in execute\n    meth = statement._execute_on_connection\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'str' object has no attribute '_execute_on_connection'\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"C:\\Users\\PRANAV~1\\AppData\\Local\\Temp\\tmpagjbh4_u\\ap",
+      "baseline_duration_seconds": 4.15
+    },
+    {
+      "task_id": "set_b_35_sales_filter_logger_sqlite",
+      "description": "Using a 7-node workflow, read data.csv, drop null values, filter rows where revenue is greater than 100, log the intermediate data, store into a SQLite database called b35_sales.db in table sales, run a SQL query to retrieve all rows, then export to b35_sales_log.csv.",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": true,
+      "criteria_passed": true,
+      "first_pass_success": true,
+      "plan": {
+        "nodes": [
+          "CSVParser",
+          "NullHandler",
+          "DataFilter",
+          "Logger",
+          "SQLiteConnector",
+          "QueryEngine",
+          "CSVExporter"
+        ],
+        "edges": [
+          [
+            "CSVParser",
+            "NullHandler"
+          ],
+          [
+            "NullHandler",
+            "DataFilter"
+          ],
+          [
+            "DataFilter",
+            "Logger"
+          ],
+          [
+            "Logger",
+            "SQLiteConnector"
+          ],
+          [
+            "SQLiteConnector",
+            "QueryEngine"
+          ],
+          [
+            "QueryEngine",
+            "CSVExporter"
+          ]
+        ],
+        "parameters": {
+          "CSVParser": {
+            "file_path": "data.csv"
+          },
+          "NullHandler": {
+            "strategy": "drop"
+          },
+          "DataFilter": {
+            "condition": "revenue > 100"
+          },
+          "Logger": {},
+          "SQLiteConnector": {
+            "db_path": "b35_sales.db",
+            "table_name": "sales"
+          },
+          "QueryEngine": {
+            "query": "SELECT * FROM sales"
+          },
+          "CSVExporter": {
+            "output_path": "b35_sales_log.csv"
+          }
+        },
+        "flags": [],
+        "glue_code": ""
+      },
+      "validation_errors": [],
+      "compile_error": null,
+      "run_stdout": "[CSVParser] Loaded 40 rows from data.csv\n[NullHandler] Dropped null rows\n[DataFilter] Applied condition: revenue > 100\n[Logger] Data snapshot:\n    id      product     category  revenue  quantity\n0    1  Product_E01  Electronics    120.0        18\n1    2  Product_E02  Electronics    135.3         5\n2    3  Product_E03  Electronics    150.6        14\n3    4  Product_E04  Electronics    165.9        37\n4    5  Product_E05  Electronics    181.2        46\n5    6  Product_E06  Electronics    196.5        21\n6    7  Product_E07  Electronics    211.8        14\n7    8  Product_E08  Electronics    227.1        42\n8    9  Product_E09  Electronics    242.4        32\n9   10  Product_E10  Electronics    257.7        26\n10  11  Product_E11  Electronics    273.0        42\n11  12  Product_E12  Electronics    288.3        30\n15  16  Product_C01     Clothing    105.0         8\n16  17  Product_C02     Clothing    113.7        24\n17  18  Product_C03     Clothing    122.4        18\n18  19  Product_C04     Clothing    131.1        18\n19  20  Product_C05     Clothing    139.8         9\n20  21  Product_C06     Clothing    148.5        24\n21  22  Product_C07     Clothing    157.2        19\n25  26  Product_F01         Food    110.0        56\n26  27  Product_F02         Food    119.1        51\n27  28  Product_F03         Food    128.2        33\n28  29  Product_F04         Food    137.3        22\n29  30  Product_F05         Food    146.4        70\n30  31  Product_F06         Food    155.5        68\n38  39  Product_E01  Electronics    120.0        18\n39  40  Product_E02  Electronics    135.3         5\n[SQLiteConnector] Stored table 'sales' in b35_sales.db\n[QueryEngine] Query executed\n[CSVExporter] Exported to b35_sales_log.csv\nb35_sales_log.csv\n",
+      "run_stderr": "",
+      "run_returncode": 0,
+      "criteria_failures": [],
+      "duration_seconds": 9.21,
+      "error": null,
+      "baseline_success": false,
+      "baseline_error": "Baseline runtime error (exit 1):\nTraceback (most recent call last):\n  File \"C:\\Users\\pranav h\\Documents\\GitHub\\llm-code-graph-compiler\\.venv\\Lib\\site-packages\\sqlalchemy\\engine\\base.py\", line 1415, in execute\n    meth = statement._execute_on_connection\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'str' object has no attribute '_execute_on_connection'\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"C:\\Users\\PRANAV~1\\AppData\\Local\\Temp\\tmp3aaop_ab\\ap",
+      "baseline_duration_seconds": 5.67
+    },
+    {
+      "task_id": "set_b_36_employees_logger_sqlite_query",
+      "description": "Using a 7-node workflow, read data.csv, drop null values, remove duplicate rows, log the intermediate data, filter rows where salary is greater than 40000, store into a SQLite database called b36_emp.db in table employees, run a SQL query to retrieve all rows, then export to b36_emp_log.csv.",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": true,
+      "criteria_passed": true,
+      "first_pass_success": true,
+      "plan": {
+        "nodes": [
+          "CSVParser",
+          "NullHandler",
+          "DataDeduplicator",
+          "Logger",
+          "DataFilter",
+          "SQLiteConnector",
+          "QueryEngine",
+          "CSVExporter"
+        ],
+        "edges": [
+          [
+            "CSVParser",
+            "NullHandler"
+          ],
+          [
+            "NullHandler",
+            "DataDeduplicator"
+          ],
+          [
+            "DataDeduplicator",
+            "Logger"
+          ],
+          [
+            "Logger",
+            "DataFilter"
+          ],
+          [
+            "DataFilter",
+            "SQLiteConnector"
+          ],
+          [
+            "SQLiteConnector",
+            "QueryEngine"
+          ],
+          [
+            "QueryEngine",
+            "CSVExporter"
+          ]
+        ],
+        "parameters": {
+          "CSVParser": {
+            "file_path": "data.csv"
+          },
+          "NullHandler": {
+            "strategy": "drop"
+          },
+          "DataDeduplicator": {},
+          "Logger": {},
+          "DataFilter": {
+            "condition": "salary > 40000"
+          },
+          "SQLiteConnector": {
+            "db_path": "b36_emp.db",
+            "table_name": "employees"
+          },
+          "QueryEngine": {
+            "query": "SELECT * FROM employees"
+          },
+          "CSVExporter": {
+            "output_path": "b36_emp_log.csv"
+          }
+        },
+        "flags": [],
+        "glue_code": ""
+      },
+      "validation_errors": [],
+      "compile_error": null,
+      "run_stdout": "[CSVParser] Loaded 23 rows from data.csv\n[NullHandler] Dropped null rows\n[DataDeduplicator] Removed duplicate rows\n[Logger] Data snapshot:\n           name   department   region   salary  tenure\n0    Employee_0  Engineering     East  44592.0      10\n1    Employee_1    Marketing     West  33278.0       5\n2    Employee_2        Sales  Central  66048.0       1\n4    Employee_4  Engineering     West  59256.0       7\n5    Employee_5        Sales  Central  48289.0       6\n6    Employee_6  Engineering     East  43434.0       5\n7    Employee_7    Marketing     West  41395.0       3\n8    Employee_8        Sales  Central  85302.0       4\n9    Employee_9           HR     East  34165.0       6\n10  Employee_10  Engineering     West  33905.0       2\n11  Employee_11        Sales  Central  42280.0       2\n12  Employee_12  Engineering     East  58657.0       7\n13  Employee_13    Marketing     West  60495.0       2\n14  Employee_14        Sales  Central  96237.0       6\n15  Employee_15           HR     East  33478.0       6\n16  Employee_16  Engineering     West  56062.0      10\n17  Employee_17        Sales  Central  84987.0       5\n18  Employee_18  Engineering     East  58893.0       1\n19  Employee_19    Marketing     West  88878.0       8\n[DataFilter] Applied condition: salary > 40000\n[SQLiteConnector] Stored table 'employees' in b36_emp.db\n[QueryEngine] Query executed\n[CSVExporter] Exported to b36_emp_log.csv\nb36_emp_log.csv\n",
+      "run_stderr": "",
+      "run_returncode": 0,
+      "criteria_failures": [],
+      "duration_seconds": 10.53,
+      "error": null,
+      "baseline_success": false,
+      "baseline_error": "Baseline runtime error (exit 1):\nTraceback (most recent call last):\n  File \"C:\\Users\\pranav h\\Documents\\GitHub\\llm-code-graph-compiler\\.venv\\Lib\\site-packages\\sqlalchemy\\engine\\base.py\", line 1415, in execute\n    meth = statement._execute_on_connection\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'str' object has no attribute '_execute_on_connection'\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"C:\\Users\\PRANAV~1\\AppData\\Local\\Temp\\tmp50_l6grz\\ap",
+      "baseline_duration_seconds": 5.71
+    },
+    {
+      "task_id": "set_b_37_products_schema_filter_agg",
+      "description": "Using a 5-node workflow, read input.json, validate schema, filter rows where price is greater than 50, group by category and count rows, then export to b37_prod_cats.csv.",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": true,
+      "criteria_passed": true,
+      "first_pass_success": true,
+      "plan": {
+        "nodes": [
+          "JSONParser",
+          "SchemaValidator",
+          "DataFilter",
+          "Aggregator",
+          "CSVExporter"
+        ],
+        "edges": [
+          [
+            "JSONParser",
+            "SchemaValidator"
+          ],
+          [
+            "SchemaValidator",
+            "DataFilter"
+          ],
+          [
+            "DataFilter",
+            "Aggregator"
+          ],
+          [
+            "Aggregator",
+            "CSVExporter"
+          ]
+        ],
+        "parameters": {
+          "JSONParser": {
+            "file_path": "input.json"
+          },
+          "SchemaValidator": {},
+          "DataFilter": {
+            "condition": "price > 50"
+          },
+          "Aggregator": {
+            "group_by": "category",
+            "agg_func": "count"
+          },
+          "CSVExporter": {
+            "output_path": "b37_prod_cats.csv"
+          }
+        },
+        "flags": [],
+        "glue_code": ""
+      },
+      "validation_errors": [],
+      "compile_error": null,
+      "run_stdout": "[JSONParser] Loaded 25 rows from input.json\n[SchemaValidator] Schema validated\n[DataFilter] Applied condition: price > 50\n[Aggregator] Aggregated using count\n[CSVExporter] Exported to b37_prod_cats.csv\nb37_prod_cats.csv\n",
+      "run_stderr": "",
+      "run_returncode": 0,
+      "criteria_failures": [],
+      "duration_seconds": 10.34,
+      "error": null,
+      "baseline_success": false,
+      "baseline_error": "Baseline execution timed out",
+      "baseline_duration_seconds": 49.74
+    },
+    {
+      "task_id": "set_b_38_sales_filter_select_sort",
+      "description": "Using a 6-node workflow, read data.csv, drop null values, filter rows where revenue is greater than 100, select product, category, and revenue, sort by revenue ascending, then export to b38_rev_asc.csv.",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": true,
+      "criteria_passed": true,
+      "first_pass_success": true,
+      "plan": {
+        "nodes": [
+          "CSVParser",
+          "NullHandler",
+          "DataFilter",
+          "ColumnSelector",
+          "DataSorter",
+          "CSVExporter"
+        ],
+        "edges": [
+          [
+            "CSVParser",
+            "NullHandler"
+          ],
+          [
+            "NullHandler",
+            "DataFilter"
+          ],
+          [
+            "DataFilter",
+            "ColumnSelector"
+          ],
+          [
+            "ColumnSelector",
+            "DataSorter"
+          ],
+          [
+            "DataSorter",
+            "CSVExporter"
+          ]
+        ],
+        "parameters": {
+          "CSVParser": {
+            "file_path": "data.csv"
+          },
+          "NullHandler": {
+            "strategy": "drop"
+          },
+          "DataFilter": {
+            "condition": "revenue > 100"
+          },
+          "ColumnSelector": {
+            "columns": [
+              "product",
+              "category",
+              "revenue"
+            ]
+          },
+          "DataSorter": {
+            "by": "revenue",
+            "ascending": true
+          },
+          "CSVExporter": {
+            "output_path": "b38_rev_asc.csv"
+          }
+        },
+        "flags": [],
+        "glue_code": ""
+      },
+      "validation_errors": [],
+      "compile_error": null,
+      "run_stdout": "[CSVParser] Loaded 40 rows from data.csv\n[NullHandler] Dropped null rows\n[DataFilter] Applied condition: revenue > 100\n[ColumnSelector] Selected columns: ['product', 'category', 'revenue']\n[DataSorter] Sorted by 'revenue' (ascending)\n[CSVExporter] Exported to b38_rev_asc.csv\nb38_rev_asc.csv\n",
+      "run_stderr": "",
+      "run_returncode": 0,
+      "criteria_failures": [],
+      "duration_seconds": 7.35,
+      "error": null,
+      "baseline_success": true,
+      "baseline_error": null,
+      "baseline_duration_seconds": 3.76
+    },
+    {
+      "task_id": "set_b_39_events_logger_agg_sort",
+      "description": "Using a 6-node workflow, read input.json, drop null values, log the intermediate data, group by event_type and count rows, sort by count ascending, then export to b39_events_asc.csv.",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": true,
+      "criteria_passed": true,
+      "first_pass_success": true,
+      "plan": {
+        "nodes": [
+          "JSONParser",
+          "NullHandler",
+          "Logger",
+          "Aggregator",
+          "DataSorter",
+          "CSVExporter"
+        ],
+        "edges": [
+          [
+            "JSONParser",
+            "NullHandler"
+          ],
+          [
+            "NullHandler",
+            "Logger"
+          ],
+          [
+            "Logger",
+            "Aggregator"
+          ],
+          [
+            "Aggregator",
+            "DataSorter"
+          ],
+          [
+            "DataSorter",
+            "CSVExporter"
+          ]
+        ],
+        "parameters": {
+          "JSONParser": {
+            "file_path": "input.json"
+          },
+          "NullHandler": {
+            "strategy": "drop"
+          },
+          "Logger": {},
+          "Aggregator": {
+            "group_by": "event_type",
+            "agg_func": "count"
+          },
+          "DataSorter": {
+            "by": "count",
+            "ascending": true
+          },
+          "CSVExporter": {
+            "output_path": "b39_events_asc.csv"
+          }
+        },
+        "flags": [],
+        "glue_code": ""
+      },
+      "validation_errors": [],
+      "compile_error": null,
+      "run_stdout": "[JSONParser] Loaded 50 rows from input.json\n[NullHandler] Dropped null rows\n[Logger] Data snapshot:\n    event_id event_type  user_id             timestamp   value\n0          0       view     1058  2024-01-18T16:00:00Z  380.98\n1          1     logout     1013  2024-05-26T19:00:00Z   99.46\n2          2   purchase     1097  2024-03-27T16:00:00Z  459.25\n3          3     logout     1041  2024-08-10T03:00:00Z  464.55\n4          4   purchase     1030  2024-01-17T18:00:00Z  473.47\n5          5      click     1093  2024-08-12T17:00:00Z  382.92\n6          6       view     1084  2024-08-27T05:00:00Z  132.53\n7          7     logout     1054  2024-04-27T23:00:00Z  344.93\n8          8   purchase     1051  2024-06-24T16:00:00Z  225.74\n9          9       view     1028  2024-02-20T00:00:00Z  294.15\n10        10       view     1075  2024-04-10T02:00:00Z  353.92\n11        11      click     1029  2024-02-11T10:00:00Z   35.43\n12        12       view     1035  2024-08-16T17:00:00Z   66.16\n13        13     logout     1073  2024-08-17T15:00:00Z  403.75\n14        14       view     1012  2024-02-23T11:00:00Z  211.79\n15        15     signup     1093  2024-01-13T01:00:00Z  201.31\n16        16   purchase     1013  2024-04-16T06:00:00Z  268.14\n17        17       view     1054  2024-03-18T14:00:00Z  124.90\n18        18      click     1056  2024-09-13T01:00:00Z  326.07\n19        19     logout     1001  2024-02-17T05:00:00Z  203.21\n20        20     signup     1027  2024-07-11T05:00:00Z  189.49\n21        21     signup     1033  2024-08-19T13:00:00Z  348.30\n22        22     logout     1084  2024-08-14T06:00:00Z  148.35\n23        23      click     1074  2024-09-11T23:00:00Z  156.80\n24        24      click     1074  2024-08-26T16:00:00Z   78.72\n25        25     logout     1010  2024-03-12T19:00:00Z   33.98\n26        26       view     1051  2024-02-28T07:00:00Z  289.46\n27        27      click     1079  2024-02-23T21:00:00Z  291.84\n28        28     logout     1040  2024-05-16T21:00:00Z  358.10\n29        29       view     1033  2024-07-14T21:00:00Z  322.75\n30        30     signup     1040  2024-02-10T14:00:00Z  310.58\n31        31     logout     1012  2024-02-27T06:00:00Z  252.94\n32        32       view     1044  2024-02-17T11:00:00Z  142.49\n33        33     signup     1069  2024-05-26T00:00:00Z  333.93\n34        34     logout     1038  2024-02-14T08:00:00Z   57.71\n35        35      click     1095  2024-09-14T08:00:00Z  140.88\n36        36       view     1091  2024-06-16T21:00:00Z  317.12\n37        37   purchase     1064  2024-08-18T01:00:00Z   46.15\n38        38     signup     1035  2024-01-10T10:00:00Z  385.56\n39        39   purchase     1020  2024-08-27T22:00:00Z  213.84\n40        40      click     1014  2024-02-14T17:00:00Z   18.01\n41        41   purchase     1074  2024-09-14T13:00:00Z   63.72\n42        42   purchase     1046  2024-01-21T06:00:00Z  341.03\n43        43      click     1045  2024-09-23T19:00:00Z  374.74\n44        44       view     1020  2024-03-23T00:00:00Z   89.68\n45        45   purchase     1052  2024-04-18T05:00:00Z  393.69\n46        46      click     1048  2024-01-25T07:00:00Z   99.79\n47        47     signup     1044  2024-05-17T07:00:00Z   11.83\n48        48       view     1051  2024-06-18T02:00:00Z  483.44\n49        49   purchase     1044  2024-09-22T21:00:00Z  490.57\n[Aggregator] Aggregated using count\n[DataSorter] Sorted by 'count' (ascending)\n[CSVExporter] Exported to b39_events_asc.csv\nb39_events_asc.csv\n",
+      "run_stderr": "",
+      "run_returncode": 0,
+      "criteria_failures": [],
+      "duration_seconds": 9.03,
+      "error": null,
+      "baseline_success": true,
+      "baseline_error": null,
+      "baseline_duration_seconds": 4.62
+    },
+    {
+      "task_id": "set_b_40_predictions_filter_sqlite",
+      "description": "Using a 6-node workflow, read data.csv, drop null values, filter rows where score is greater than 0.6, store into a SQLite database called b40_scores.db in table results, run a SQL query to retrieve all rows, then export to b40_scores_out.csv.",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": true,
+      "criteria_passed": true,
+      "first_pass_success": true,
+      "plan": {
+        "nodes": [
+          "CSVParser",
+          "NullHandler",
+          "DataFilter",
+          "SQLiteConnector",
+          "QueryEngine",
+          "CSVExporter"
+        ],
+        "edges": [
+          [
+            "CSVParser",
+            "NullHandler"
+          ],
+          [
+            "NullHandler",
+            "DataFilter"
+          ],
+          [
+            "DataFilter",
+            "SQLiteConnector"
+          ],
+          [
+            "SQLiteConnector",
+            "QueryEngine"
+          ],
+          [
+            "QueryEngine",
+            "CSVExporter"
+          ]
+        ],
+        "parameters": {
+          "CSVParser": {
+            "file_path": "data.csv"
+          },
+          "NullHandler": {
+            "strategy": "drop"
+          },
+          "DataFilter": {
+            "condition": "score > 0.6"
+          },
+          "SQLiteConnector": {
+            "db_path": "b40_scores.db",
+            "table_name": "results"
+          },
+          "QueryEngine": {
+            "query": "SELECT * FROM results"
+          },
+          "CSVExporter": {
+            "output_path": "b40_scores_out.csv"
+          }
+        },
+        "flags": [],
+        "glue_code": ""
+      },
+      "validation_errors": [],
+      "compile_error": null,
+      "run_stdout": "[CSVParser] Loaded 30 rows from data.csv\n[NullHandler] Dropped null rows\n[DataFilter] Applied condition: score > 0.6\n[SQLiteConnector] Stored table 'results' in b40_scores.db\n[QueryEngine] Query executed\n[CSVExporter] Exported to b40_scores_out.csv\nb40_scores_out.csv\n",
+      "run_stderr": "",
+      "run_returncode": 0,
+      "criteria_failures": [],
+      "duration_seconds": 8.46,
+      "error": null,
+      "baseline_success": false,
+      "baseline_error": "Baseline runtime error (exit 1):\nTraceback (most recent call last):\n  File \"C:\\Users\\pranav h\\Documents\\GitHub\\llm-code-graph-compiler\\.venv\\Lib\\site-packages\\sqlalchemy\\engine\\base.py\", line 1415, in execute\n    meth = statement._execute_on_connection\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'str' object has no attribute '_execute_on_connection'\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"C:\\Users\\PRANAV~1\\AppData\\Local\\Temp\\tmppc_79040\\ap",
+      "baseline_duration_seconds": 3.96
+    },
+    {
+      "task_id": "set_b_41_employees_null_dedup_sort_sel",
+      "description": "Using a 6-node workflow, read data.csv, drop null values, remove duplicate rows, sort by salary descending, select name, department, and salary, then export to b41_emp_sorted.csv.",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": true,
+      "criteria_passed": true,
+      "first_pass_success": true,
+      "plan": {
+        "nodes": [
+          "CSVParser",
+          "NullHandler",
+          "DataDeduplicator",
+          "DataSorter",
+          "ColumnSelector",
+          "CSVExporter"
+        ],
+        "edges": [
+          [
+            "CSVParser",
+            "NullHandler"
+          ],
+          [
+            "NullHandler",
+            "DataDeduplicator"
+          ],
+          [
+            "DataDeduplicator",
+            "DataSorter"
+          ],
+          [
+            "DataSorter",
+            "ColumnSelector"
+          ],
+          [
+            "ColumnSelector",
+            "CSVExporter"
+          ]
+        ],
+        "parameters": {
+          "CSVParser": {
+            "file_path": "data.csv"
+          },
+          "NullHandler": {
+            "strategy": "drop"
+          },
+          "DataDeduplicator": {},
+          "DataSorter": {
+            "by": "salary",
+            "ascending": false
+          },
+          "ColumnSelector": {
+            "columns": [
+              "name",
+              "department",
+              "salary"
+            ]
+          },
+          "CSVExporter": {
+            "output_path": "b41_emp_sorted.csv"
+          }
+        },
+        "flags": [],
+        "glue_code": ""
+      },
+      "validation_errors": [],
+      "compile_error": null,
+      "run_stdout": "[CSVParser] Loaded 23 rows from data.csv\n[NullHandler] Dropped null rows\n[DataDeduplicator] Removed duplicate rows\n[DataSorter] Sorted by 'salary' (descending)\n[ColumnSelector] Selected columns: ['name', 'department', 'salary']\n[CSVExporter] Exported to b41_emp_sorted.csv\nb41_emp_sorted.csv\n",
+      "run_stderr": "",
+      "run_returncode": 0,
+      "criteria_failures": [],
+      "duration_seconds": 8.76,
+      "error": null,
+      "baseline_success": true,
+      "baseline_error": null,
+      "baseline_duration_seconds": 3.4
+    },
+    {
+      "task_id": "set_b_42_sales_typecast_agg",
+      "description": "Using a 5-node workflow, read data.csv, drop null values, cast column types using an empty mapping, group by category and count rows, then export to b42_sales_cats.csv.",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": true,
+      "criteria_passed": true,
+      "first_pass_success": true,
+      "plan": {
+        "nodes": [
+          "CSVParser",
+          "NullHandler",
+          "TypeCaster",
+          "Aggregator",
+          "CSVExporter"
+        ],
+        "edges": [
+          [
+            "CSVParser",
+            "NullHandler"
+          ],
+          [
+            "NullHandler",
+            "TypeCaster"
+          ],
+          [
+            "TypeCaster",
+            "Aggregator"
+          ],
+          [
+            "Aggregator",
+            "CSVExporter"
+          ]
+        ],
+        "parameters": {
+          "CSVParser": {
+            "file_path": "data.csv"
+          },
+          "NullHandler": {
+            "strategy": "drop"
+          },
+          "TypeCaster": {
+            "mapping": {}
+          },
+          "Aggregator": {
+            "group_by": "category",
+            "agg_func": "count"
+          },
+          "CSVExporter": {
+            "output_path": "b42_sales_cats.csv"
+          }
+        },
+        "flags": [],
+        "glue_code": ""
+      },
+      "validation_errors": [],
+      "compile_error": null,
+      "run_stdout": "[CSVParser] Loaded 40 rows from data.csv\n[NullHandler] Dropped null rows\n[TypeCaster] Cast columns: {}\n[Aggregator] Aggregated using count\n[CSVExporter] Exported to b42_sales_cats.csv\nb42_sales_cats.csv\n",
+      "run_stderr": "",
+      "run_returncode": 0,
+      "criteria_failures": [],
+      "duration_seconds": 11.39,
+      "error": null,
+      "baseline_success": true,
+      "baseline_error": null,
+      "baseline_duration_seconds": 3.76
+    },
+    {
+      "task_id": "set_b_43_products_filter_sort_sel",
+      "description": "Using a 6-node workflow, read input.json, drop null values, filter rows where price is greater than 50, sort by price descending, select name, category, and price, then export to b43_prod_sorted.csv.",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": true,
+      "criteria_passed": true,
+      "first_pass_success": true,
+      "plan": {
+        "nodes": [
+          "JSONParser",
+          "NullHandler",
+          "DataFilter",
+          "DataSorter",
+          "ColumnSelector",
+          "CSVExporter"
+        ],
+        "edges": [
+          [
+            "JSONParser",
+            "NullHandler"
+          ],
+          [
+            "NullHandler",
+            "DataFilter"
+          ],
+          [
+            "DataFilter",
+            "DataSorter"
+          ],
+          [
+            "DataSorter",
+            "ColumnSelector"
+          ],
+          [
+            "ColumnSelector",
+            "CSVExporter"
+          ]
+        ],
+        "parameters": {
+          "JSONParser": {
+            "file_path": "input.json"
+          },
+          "NullHandler": {
+            "strategy": "drop"
+          },
+          "DataFilter": {
+            "condition": "price > 50"
+          },
+          "DataSorter": {
+            "by": "price",
+            "ascending": false
+          },
+          "ColumnSelector": {
+            "columns": [
+              "name",
+              "category",
+              "price"
+            ]
+          },
+          "CSVExporter": {
+            "output_path": "b43_prod_sorted.csv"
+          }
+        },
+        "flags": [],
+        "glue_code": ""
+      },
+      "validation_errors": [],
+      "compile_error": null,
+      "run_stdout": "[JSONParser] Loaded 25 rows from input.json\n[NullHandler] Dropped null rows\n[DataFilter] Applied condition: price > 50\n[DataSorter] Sorted by 'price' (descending)\n[ColumnSelector] Selected columns: ['name', 'category', 'price']\n[CSVExporter] Exported to b43_prod_sorted.csv\nb43_prod_sorted.csv\n",
+      "run_stderr": "",
+      "run_returncode": 0,
+      "criteria_failures": [],
+      "duration_seconds": 9.05,
+      "error": null,
+      "baseline_success": true,
+      "baseline_error": null,
+      "baseline_duration_seconds": 3.72
+    },
+    {
+      "task_id": "set_b_44_events_schema_null_sel_sort",
+      "description": "Using a 6-node workflow, read input.json, validate schema, drop null values, select event_type and value, sort by value descending, then export to b44_events_val.csv.",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": true,
+      "criteria_passed": true,
+      "first_pass_success": true,
+      "plan": {
+        "nodes": [
+          "JSONParser",
+          "SchemaValidator",
+          "NullHandler",
+          "ColumnSelector",
+          "DataSorter",
+          "CSVExporter"
+        ],
+        "edges": [
+          [
+            "JSONParser",
+            "SchemaValidator"
+          ],
+          [
+            "SchemaValidator",
+            "NullHandler"
+          ],
+          [
+            "NullHandler",
+            "ColumnSelector"
+          ],
+          [
+            "ColumnSelector",
+            "DataSorter"
+          ],
+          [
+            "DataSorter",
+            "CSVExporter"
+          ]
+        ],
+        "parameters": {
+          "JSONParser": {
+            "file_path": "input.json"
+          },
+          "SchemaValidator": {},
+          "NullHandler": {
+            "strategy": "drop"
+          },
+          "ColumnSelector": {
+            "columns": [
+              "event_type",
+              "value"
+            ]
+          },
+          "DataSorter": {
+            "by": "value",
+            "ascending": false
+          },
+          "CSVExporter": {
+            "output_path": "b44_events_val.csv"
+          }
+        },
+        "flags": [],
+        "glue_code": ""
+      },
+      "validation_errors": [],
+      "compile_error": null,
+      "run_stdout": "[JSONParser] Loaded 50 rows from input.json\n[SchemaValidator] Schema validated\n[NullHandler] Dropped null rows\n[ColumnSelector] Selected columns: ['event_type', 'value']\n[DataSorter] Sorted by 'value' (descending)\n[CSVExporter] Exported to b44_events_val.csv\nb44_events_val.csv\n",
+      "run_stderr": "",
+      "run_returncode": 0,
+      "criteria_failures": [],
+      "duration_seconds": 8.12,
+      "error": null,
+      "baseline_success": false,
+      "baseline_error": "Baseline execution timed out",
+      "baseline_duration_seconds": 50.18
+    },
+    {
+      "task_id": "set_b_45_sales_null_dedup_filter_sqlite",
+      "description": "Using a 7-node workflow, read data.csv, drop null values, remove duplicate rows, filter rows where revenue is greater than 100, store into a SQLite database called b45_sales.db in table high_rev, run a SQL query to retrieve all rows, then export to b45_high_rev.csv.",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": true,
+      "criteria_passed": true,
+      "first_pass_success": true,
+      "plan": {
+        "nodes": [
+          "CSVParser",
+          "NullHandler",
+          "DataDeduplicator",
+          "DataFilter",
+          "SQLiteConnector",
+          "QueryEngine",
+          "CSVExporter"
+        ],
+        "edges": [
+          [
+            "CSVParser",
+            "NullHandler"
+          ],
+          [
+            "NullHandler",
+            "DataDeduplicator"
+          ],
+          [
+            "DataDeduplicator",
+            "DataFilter"
+          ],
+          [
+            "DataFilter",
+            "SQLiteConnector"
+          ],
+          [
+            "SQLiteConnector",
+            "QueryEngine"
+          ],
+          [
+            "QueryEngine",
+            "CSVExporter"
+          ]
+        ],
+        "parameters": {
+          "CSVParser": {
+            "file_path": "data.csv"
+          },
+          "NullHandler": {
+            "strategy": "drop"
+          },
+          "DataDeduplicator": {},
+          "DataFilter": {
+            "condition": "revenue > 100"
+          },
+          "SQLiteConnector": {
+            "db_path": "b45_sales.db",
+            "table_name": "high_rev"
+          },
+          "QueryEngine": {
+            "query": "SELECT * FROM high_rev"
+          },
+          "CSVExporter": {
+            "output_path": "b45_high_rev.csv"
+          }
+        },
+        "flags": [],
+        "glue_code": ""
+      },
+      "validation_errors": [],
+      "compile_error": null,
+      "run_stdout": "[CSVParser] Loaded 40 rows from data.csv\n[NullHandler] Dropped null rows\n[DataDeduplicator] Removed duplicate rows\n[DataFilter] Applied condition: revenue > 100\n[SQLiteConnector] Stored table 'high_rev' in b45_sales.db\n[QueryEngine] Query executed\n[CSVExporter] Exported to b45_high_rev.csv\nb45_high_rev.csv\n",
+      "run_stderr": "",
+      "run_returncode": 0,
+      "criteria_failures": [],
+      "duration_seconds": 9.49,
+      "error": null,
+      "baseline_success": false,
+      "baseline_error": "Baseline execution timed out",
+      "baseline_duration_seconds": 43.34
+    },
+    {
+      "task_id": "set_b_46_predictions_logger_filter_sort",
+      "description": "Using a 6-node workflow, read data.csv, log the intermediate data, drop null values, filter rows where score is greater than 0.4, sort by score descending, then export to b46_preds_log.csv.",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": true,
+      "criteria_passed": true,
+      "first_pass_success": true,
+      "plan": {
+        "nodes": [
+          "CSVParser",
+          "Logger",
+          "NullHandler",
+          "DataFilter",
+          "DataSorter",
+          "CSVExporter"
+        ],
+        "edges": [
+          [
+            "CSVParser",
+            "Logger"
+          ],
+          [
+            "Logger",
+            "NullHandler"
+          ],
+          [
+            "NullHandler",
+            "DataFilter"
+          ],
+          [
+            "DataFilter",
+            "DataSorter"
+          ],
+          [
+            "DataSorter",
+            "CSVExporter"
+          ]
+        ],
+        "parameters": {
+          "CSVParser": {
+            "file_path": "data.csv"
+          },
+          "Logger": {},
+          "NullHandler": {
+            "strategy": "drop"
+          },
+          "DataFilter": {
+            "condition": "score > 0.4"
+          },
+          "DataSorter": {
+            "by": "score",
+            "ascending": false
+          },
+          "CSVExporter": {
+            "output_path": "b46_preds_log.csv"
+          }
+        },
+        "flags": [],
+        "glue_code": ""
+      },
+      "validation_errors": [],
+      "compile_error": null,
+      "run_stdout": "[CSVParser] Loaded 30 rows from data.csv\n[Logger] Data snapshot:\n       name  score label\n0    Item_0  0.245     B\n1    Item_1  0.462     A\n2    Item_2  0.270     A\n3    Item_3  0.925     A\n4    Item_4  0.688     A\n5    Item_5    NaN     C\n6    Item_6  0.324     A\n7    Item_7  0.768     C\n8    Item_8  0.056     B\n9    Item_9  0.822     C\n10  Item_10  0.805     A\n11  Item_11  0.401     B\n12  Item_12  0.066     B\n13  Item_13  0.913     C\n14  Item_14  0.567     B\n15  Item_15  0.718     C\n16  Item_16  0.213     B\n17  Item_17  0.499     C\n18  Item_18  0.885     A\n19  Item_19  0.643     C\n20  Item_20  0.143     C\n21  Item_21  0.140     A\n22  Item_22  0.745     C\n23  Item_23  0.539     C\n24  Item_24  0.747     B\n25  Item_25  0.428     C\n26  Item_26  0.584     B\n27  Item_27  0.362     A\n28  Item_28  0.997     B\n29  Item_29  0.138     B\n[NullHandler] Dropped null rows\n[DataFilter] Applied condition: score > 0.4\n[DataSorter] Sorted by 'score' (descending)\n[CSVExporter] Exported to b46_preds_log.csv\nb46_preds_log.csv\n",
+      "run_stderr": "",
+      "run_returncode": 0,
+      "criteria_failures": [],
+      "duration_seconds": 7.88,
+      "error": null,
+      "baseline_success": false,
+      "baseline_error": "Baseline execution timed out",
+      "baseline_duration_seconds": 45.15
+    },
+    {
+      "task_id": "set_b_47_employees_schema_filter_agg",
+      "description": "Using a 6-node workflow, read data.csv, validate schema, drop null values, filter rows where salary is greater than 45000, group by region and count rows, then export to b47_region_counts.csv.",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": true,
+      "criteria_passed": true,
+      "first_pass_success": true,
+      "plan": {
+        "nodes": [
+          "CSVParser",
+          "SchemaValidator",
+          "NullHandler",
+          "DataFilter",
+          "Aggregator",
+          "CSVExporter"
+        ],
+        "edges": [
+          [
+            "CSVParser",
+            "SchemaValidator"
+          ],
+          [
+            "SchemaValidator",
+            "NullHandler"
+          ],
+          [
+            "NullHandler",
+            "DataFilter"
+          ],
+          [
+            "DataFilter",
+            "Aggregator"
+          ],
+          [
+            "Aggregator",
+            "CSVExporter"
+          ]
+        ],
+        "parameters": {
+          "CSVParser": {
+            "file_path": "data.csv"
+          },
+          "SchemaValidator": {},
+          "NullHandler": {
+            "strategy": "drop"
+          },
+          "DataFilter": {
+            "condition": "salary > 45000"
+          },
+          "Aggregator": {
+            "group_by": "region",
+            "agg_func": "count"
+          },
+          "CSVExporter": {
+            "output_path": "b47_region_counts.csv"
+          }
+        },
+        "flags": [],
+        "glue_code": ""
+      },
+      "validation_errors": [],
+      "compile_error": null,
+      "run_stdout": "[CSVParser] Loaded 23 rows from data.csv\n[SchemaValidator] Schema validated\n[NullHandler] Dropped null rows\n[DataFilter] Applied condition: salary > 45000\n[Aggregator] Aggregated using count\n[CSVExporter] Exported to b47_region_counts.csv\nb47_region_counts.csv\n",
+      "run_stderr": "",
+      "run_returncode": 0,
+      "criteria_failures": [],
+      "duration_seconds": 11.77,
+      "error": null,
+      "baseline_success": false,
+      "baseline_error": "Baseline runtime error (exit 1):\nTraceback (most recent call last):\n  File \"C:\\Users\\PRANAV~1\\AppData\\Local\\Temp\\tmpdx5kz9m7\\app.py\", line 49, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\PRANAV~1\\AppData\\Local\\Temp\\tmpdx5kz9m7\\app.py\", line 41, in main\n    df = validate_schema(df, expected_columns)\n  File \"C:\\Users\\PRANAV~1\\AppData\\Local\\Temp\\tmpdx5kz9m7\\app.py\", line 15, in validate_schema\n    raise ValueError(\"Schema does not match expected columns\")\nValueError: Schema does not match expected columns\n",
+      "baseline_duration_seconds": 7.52
+    },
+    {
+      "task_id": "set_b_48_sales_null_sel_typecast_sort",
+      "description": "Using a 6-node workflow, read data.csv, drop null values, select product, category, and revenue, cast column types using an empty mapping, sort by category ascending, then export to b48_sales_cat.csv.",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": true,
+      "criteria_passed": true,
+      "first_pass_success": true,
+      "plan": {
+        "nodes": [
+          "CSVParser",
+          "NullHandler",
+          "ColumnSelector",
+          "TypeCaster",
+          "DataSorter",
+          "CSVExporter"
+        ],
+        "edges": [
+          [
+            "CSVParser",
+            "NullHandler"
+          ],
+          [
+            "NullHandler",
+            "ColumnSelector"
+          ],
+          [
+            "ColumnSelector",
+            "TypeCaster"
+          ],
+          [
+            "TypeCaster",
+            "DataSorter"
+          ],
+          [
+            "DataSorter",
+            "CSVExporter"
+          ]
+        ],
+        "parameters": {
+          "CSVParser": {
+            "file_path": "data.csv"
+          },
+          "NullHandler": {
+            "strategy": "drop"
+          },
+          "ColumnSelector": {
+            "columns": [
+              "product",
+              "category",
+              "revenue"
+            ]
+          },
+          "TypeCaster": {
+            "mapping": {}
+          },
+          "DataSorter": {
+            "by": "category",
+            "ascending": true
+          },
+          "CSVExporter": {
+            "output_path": "b48_sales_cat.csv"
+          }
+        },
+        "flags": [],
+        "glue_code": ""
+      },
+      "validation_errors": [],
+      "compile_error": null,
+      "run_stdout": "[CSVParser] Loaded 40 rows from data.csv\n[NullHandler] Dropped null rows\n[ColumnSelector] Selected columns: ['product', 'category', 'revenue']\n[TypeCaster] Cast columns: {}\n[DataSorter] Sorted by 'category' (ascending)\n[CSVExporter] Exported to b48_sales_cat.csv\nb48_sales_cat.csv\n",
+      "run_stderr": "",
+      "run_returncode": 0,
+      "criteria_failures": [],
+      "duration_seconds": 7.91,
+      "error": null,
+      "baseline_success": true,
+      "baseline_error": null,
+      "baseline_duration_seconds": 4.15
+    },
+    {
+      "task_id": "set_b_49_products_dedup_filter_agg",
+      "description": "Using a 5-node workflow, read input.json, remove duplicate rows, filter rows where price is greater than 50, group by category and count rows, then export to b49_prod_cat_counts.csv.",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": true,
+      "criteria_passed": true,
+      "first_pass_success": true,
+      "plan": {
+        "nodes": [
+          "JSONParser",
+          "DataDeduplicator",
+          "DataFilter",
+          "Aggregator",
+          "CSVExporter"
+        ],
+        "edges": [
+          [
+            "JSONParser",
+            "DataDeduplicator"
+          ],
+          [
+            "DataDeduplicator",
+            "DataFilter"
+          ],
+          [
+            "DataFilter",
+            "Aggregator"
+          ],
+          [
+            "Aggregator",
+            "CSVExporter"
+          ]
+        ],
+        "parameters": {
+          "JSONParser": {
+            "file_path": "input.json"
+          },
+          "DataDeduplicator": {},
+          "DataFilter": {
+            "condition": "price > 50"
+          },
+          "Aggregator": {
+            "group_by": "category",
+            "agg_func": "count"
+          },
+          "CSVExporter": {
+            "output_path": "b49_prod_cat_counts.csv"
+          }
+        },
+        "flags": [],
+        "glue_code": ""
+      },
+      "validation_errors": [],
+      "compile_error": null,
+      "run_stdout": "[JSONParser] Loaded 25 rows from input.json\n[DataDeduplicator] Removed duplicate rows\n[DataFilter] Applied condition: price > 50\n[Aggregator] Aggregated using count\n[CSVExporter] Exported to b49_prod_cat_counts.csv\nb49_prod_cat_counts.csv\n",
+      "run_stderr": "",
+      "run_returncode": 0,
+      "criteria_failures": [],
+      "duration_seconds": 7.01,
+      "error": null,
+      "baseline_success": false,
+      "baseline_error": "Baseline execution timed out",
+      "baseline_duration_seconds": 46.43
+    },
+    {
+      "task_id": "set_b_50_events_null_typecast_sqlite",
+      "description": "Using a 6-node workflow, read input.json, drop null values, cast column types using an empty mapping, store into a SQLite database called b50_events.db in table events, run a SQL query to retrieve all rows, then export to b50_events_out.csv.",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": true,
+      "criteria_passed": true,
+      "first_pass_success": true,
+      "plan": {
+        "nodes": [
+          "JSONParser",
+          "NullHandler",
+          "TypeCaster",
+          "SQLiteConnector",
+          "QueryEngine",
+          "CSVExporter"
+        ],
+        "edges": [
+          [
+            "JSONParser",
+            "NullHandler"
+          ],
+          [
+            "NullHandler",
+            "TypeCaster"
+          ],
+          [
+            "TypeCaster",
+            "SQLiteConnector"
+          ],
+          [
+            "SQLiteConnector",
+            "QueryEngine"
+          ],
+          [
+            "QueryEngine",
+            "CSVExporter"
+          ]
+        ],
+        "parameters": {
+          "JSONParser": {
+            "file_path": "input.json"
+          },
+          "NullHandler": {
+            "strategy": "drop"
+          },
+          "TypeCaster": {
+            "mapping": {}
+          },
+          "SQLiteConnector": {
+            "db_path": "b50_events.db",
+            "table_name": "events"
+          },
+          "QueryEngine": {
+            "query": "SELECT * FROM events"
+          },
+          "CSVExporter": {
+            "output_path": "b50_events_out.csv"
+          }
+        },
+        "flags": [],
+        "glue_code": ""
+      },
+      "validation_errors": [],
+      "compile_error": null,
+      "run_stdout": "[JSONParser] Loaded 50 rows from input.json\n[NullHandler] Dropped null rows\n[TypeCaster] Cast columns: {}\n[SQLiteConnector] Stored table 'events' in b50_events.db\n[QueryEngine] Query executed\n[CSVExporter] Exported to b50_events_out.csv\nb50_events_out.csv\n",
+      "run_stderr": "",
+      "run_returncode": 0,
+      "criteria_failures": [],
+      "duration_seconds": 9.77,
+      "error": null,
+      "baseline_success": false,
+      "baseline_error": "Baseline runtime error (exit 1):\nTraceback (most recent call last):\n  File \"C:\\Users\\pranav h\\Documents\\GitHub\\llm-code-graph-compiler\\.venv\\Lib\\site-packages\\sqlalchemy\\engine\\base.py\", line 1415, in execute\n    meth = statement._execute_on_connection\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'str' object has no attribute '_execute_on_connection'\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"C:\\Users\\PRANAV~1\\AppData\\Local\\Temp\\tmplf9gci20\\ap",
+      "baseline_duration_seconds": 6.94
     }
-  ]
+  ],
+  "baseline_first_pass_rate": 0.56
 }

@@ -32,6 +32,9 @@ from core.compiler import compile_output
 from benchmark.criteria import check_criteria
 from benchmark.baseline import run_baseline
 
+# Number of times each task is run to measure reliability
+N_RUNS = 5
+
 
 # ─────────────────────────────────────────────────────────────────────
 # Result structure
@@ -42,17 +45,21 @@ def empty_result(task_id: str, description: str) -> dict:
         "task_id": task_id,
         "description": description,
 
-        # Compiler pipeline stages
+        # Compiler pipeline stages (from the representative/last run)
         "plan_success": False,
         "validation_success": False,
         "compile_success": False,
         "run_success": False,
         "criteria_passed": False,
 
-        # Final verdict
+        # Final verdict — True only if ALL N_RUNS passed
         "first_pass_success": False,
 
-        # Detail
+        # Multi-run aggregates
+        "pass_count": 0,
+        "run_count": N_RUNS,
+
+        # Detail (from last run — use runs[] for per-run breakdown)
         "plan": None,
         "validation_errors": [],
         "compile_error": None,
@@ -63,6 +70,9 @@ def empty_result(task_id: str, description: str) -> dict:
         "duration_seconds": None,
         "error": None,
 
+        # Per-run breakdown for debugging
+        "runs": [],
+
         # Baseline (filled separately)
         "baseline_success": None,
         "baseline_error": None,
@@ -71,7 +81,7 @@ def empty_result(task_id: str, description: str) -> dict:
 
 
 # ─────────────────────────────────────────────────────────────────────
-# Single task runner
+# Single task runner (unchanged — one run, one result)
 # ─────────────────────────────────────────────────────────────────────
 
 def run_task(task: dict, skip_baseline: bool = False) -> dict:
@@ -204,6 +214,61 @@ def run_task(task: dict, skip_baseline: bool = False) -> dict:
 
 
 # ─────────────────────────────────────────────────────────────────────
+# Multi-run aggregator — runs a task N_RUNS times, returns one record
+# ─────────────────────────────────────────────────────────────────────
+
+def run_task_repeated(task: dict, skip_baseline: bool = False) -> dict:
+    """
+    Calls run_task N_RUNS times and merges into a single result record.
+
+    - pass_count         : number of runs where first_pass_success was True
+    - run_count          : N_RUNS
+    - first_pass_success : True only if ALL runs passed
+    - runs[]             : compact per-run snapshots for debugging
+    - All other fields reflect the LAST run (representative detail)
+    """
+    runs = []
+    last_full = None
+
+    for run_idx in range(N_RUNS):
+        print(f"    run {run_idx + 1}/{N_RUNS} ...", end=" ", flush=True)
+        single = run_task(task, skip_baseline=skip_baseline)
+        status = "✓" if single["first_pass_success"] else "✗"
+        print(f"{status} ({single['duration_seconds']}s)")
+
+        # Compact per-run snapshot — avoids bloating JSON with full stdout on every run
+        runs.append({
+            "run": run_idx + 1,
+            "first_pass_success": single["first_pass_success"],
+            "plan_success": single["plan_success"],
+            "validation_success": single["validation_success"],
+            "compile_success": single["compile_success"],
+            "run_success": single["run_success"],
+            "criteria_passed": single["criteria_passed"],
+            "duration_seconds": single["duration_seconds"],
+            "error": single.get("error"),
+            "criteria_failures": single.get("criteria_failures", []),
+            "validation_errors": single.get("validation_errors", []),
+        })
+
+        last_full = single
+
+        # Small delay between LLM calls to avoid rate limits
+        if run_idx < N_RUNS - 1:
+            time.sleep(2)
+
+    pass_count = sum(1 for r in runs if r["first_pass_success"])
+
+    # Overlay multi-run aggregates onto the last full result record
+    last_full["pass_count"] = pass_count
+    last_full["run_count"] = N_RUNS
+    last_full["first_pass_success"] = (pass_count == N_RUNS)
+    last_full["runs"] = runs
+
+    return last_full
+
+
+# ─────────────────────────────────────────────────────────────────────
 # Summary printer
 # ─────────────────────────────────────────────────────────────────────
 
@@ -211,24 +276,27 @@ def print_summary(results: list[dict], skip_baseline: bool):
     n = len(results)
     compiler_passes = sum(1 for r in results if r["first_pass_success"])
 
-    print("\n" + "=" * 60)
+    print("\n" + "=" * 72)
     print("BENCHMARK RESULTS")
-    print("=" * 60)
+    print("=" * 72)
     print(f"Tasks run:              {n}")
+    print(f"Runs per task:          {N_RUNS}")
     print(f"Compiler first-pass:    {compiler_passes}/{n} ({100*compiler_passes//n}%)")
+    print(f"  (task passes only if all {N_RUNS} runs pass)")
 
     if not skip_baseline:
         baseline_passes = sum(1 for r in results if r.get("baseline_success"))
         print(f"Baseline first-pass:    {baseline_passes}/{n} ({100*baseline_passes//n}%)")
 
     print()
-    print(f"{'ID':<20} {'Compiler':<12} {'Baseline':<12} Stage Failed")
-    print("-" * 60)
+    print(f"{'ID':<20} {'Passes':<10} {'Compiler':<12} {'Baseline':<12} Stage Failed")
+    print("-" * 72)
     for r in results:
+        pass_str = f"{r.get('pass_count', '?')}/{r.get('run_count', N_RUNS)}"
         compiler = "✓ PASS" if r["first_pass_success"] else "✗ FAIL"
         baseline = ("✓ PASS" if r.get("baseline_success") else "✗ FAIL") if not skip_baseline else "—"
 
-        # Identify first failed stage
+        # Identify first failed stage from the representative (last) run
         if not r["plan_success"]:
             stage = "planner"
         elif not r["validation_success"]:
@@ -242,9 +310,9 @@ def print_summary(results: list[dict], skip_baseline: bool):
         else:
             stage = "—"
 
-        print(f"{r['task_id']:<20} {compiler:<12} {baseline:<12} {stage}")
+        print(f"{r['task_id']:<20} {pass_str:<10} {compiler:<12} {baseline:<12} {stage}")
 
-    print("=" * 60)
+    print("=" * 72)
 
 
 # ─────────────────────────────────────────────────────────────────────
@@ -270,12 +338,12 @@ def main():
 
     results = []
     for i, task in enumerate(tasks):
-        print(f"\n[{i+1}/{len(tasks)}] Running: {task['task_id']}")
+        print(f"\n[{i+1}/{len(tasks)}] Running: {task['task_id']} ({N_RUNS} runs)")
         print(f"  {task['description']}")
-        result = run_task(task, skip_baseline=True)
+        result = run_task_repeated(task, skip_baseline=args.skip_baseline)
 
         status = "✓ PASS" if result["first_pass_success"] else "✗ FAIL"
-        print(f"  → {status} ({result['duration_seconds']}s)")
+        print(f"  → {status} ({result['pass_count']}/{result['run_count']} runs passed, {result['duration_seconds']}s last run)")
         if result.get("error"):
             print(f"  ! {result['error']}")
         if result.get("criteria_failures"):
@@ -294,6 +362,7 @@ def main():
     output = {
         "run_at": datetime.utcnow().isoformat(),
         "task_count": len(results),
+        "runs_per_task": N_RUNS,
         "compiler_first_pass_rate": sum(1 for r in results if r["first_pass_success"]) / len(results),
         "results": results,
     }
