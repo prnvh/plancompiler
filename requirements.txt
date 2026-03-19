@@ -5,3 +5,7 @@ jsonschema>=4.26.0
 pandas==3.0.1
 sqlalchemy==2.0.48
 anthropic>=0.38.0
+python-dotenv>=1.0.1
+requests>=2.32.0
+flask>=3.0.0
+openpyxl>=3.1.0

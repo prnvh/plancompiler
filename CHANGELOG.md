@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Synchronized `README.md` with the current registry size: 25 nodes across seven categories
+- Corrected `main.review.tex` failure-count wording to distinguish failed tasks from failed runs
+- Refreshed the `main.review.tex` appendix artifact so it matches the current node templates
+
 ## v1.0 - March 2026
 
 ### 21/02/2026

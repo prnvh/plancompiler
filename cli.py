@@ -27,9 +27,19 @@ def main():
         plan = load_plan(args.plan)
 
     elif args.task:
-        plan = get_plan(args.task)
         import pprint
+        plan_result = get_plan(args.task)
+        plan_usage = None
+
+        if isinstance(plan_result, tuple) and len(plan_result) == 2:
+            plan, plan_usage = plan_result
+        else:
+            plan = plan_result
+
         pprint.pprint(plan)
+        if plan_usage is not None:
+            print("\nPlanner Usage:")
+            pprint.pprint(plan_usage)
 
     elif args.nodes:
         plan = plan_from_nodes(args.nodes)

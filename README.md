@@ -4,6 +4,13 @@ A constraint-guided program synthesis system that uses an LLM to generate typed 
 
 **PlanCompiler** was previously released as **LLM Code Graph Compiler v1.0.0**; this repository now uses the PlanCompiler name going forward.
 
+## Paper
+
+- [Paper PDF](./paper/PlanCompiler.pdf)
+- [Technical Writeup](https://prnvh.github.io/compiler.html)
+
+An arXiv link will be added here once available.
+
 ---
 
 ## The Problem
@@ -83,10 +90,6 @@ The LLM cannot produce a wrong column name when the node implementation is fixed
 
 First-pass success rate (plan → validate → compile → execute → criteria, zero human intervention). Evaluated at **N=3, all-must-pass**: a task is scored as a success only if all three runs pass independently. Baselines are GPT-4.1 and Claude Sonnet 4.6 generating free-form Python under the same evaluation protocol.
 
-## Results
-
-First-pass success rate (plan → validate → compile → execute → criteria, zero human intervention). Evaluated at **N=3, all-must-pass**: a task is scored as a success only if all three runs pass independently. Baselines are GPT-4.1 and Claude Sonnet 4.6 generating free-form Python under the same evaluation protocol.
-
 | Set | Pipeline / Focus | PlanCompiler | GPT-4.1 | Claude Sonnet 4.6 | Delta (vs GPT-4.1) |
 |-----|------------------|--------------|---------|-------------------|--------------------|
 | A   | 3–5 nodes        | 50/50 (100%) | 38/50 (76%) | 30/50 (60%) | +24pts |
@@ -110,7 +113,7 @@ PlanCompiler consists of five components in a strictly ordered pipeline. Only on
 
 ### Node Registry
 
-The ground truth of all available primitives. 26 nodes across six categories: ingestion, DataFrame processing, storage, exporters, API/HTTP, and observability. Each node declares:
+The ground truth of all available primitives. 25 nodes across seven categories: ingestion, DataFrame processing, storage, exporters, API/HTTP, observability, and adapters. Each node declares:
 
 - `input_type` and `output_type` — one of `FilePath`, `DataFrame`, `DBHandle`, `HTTPResponse`, `ANY`
 - `required_params` — enforced by the validator before compilation
@@ -357,4 +360,4 @@ Fixture row counts are fixed. `sales.csv`: 40 rows, 38 after deduplication, 27 w
 
 ---
 
-*March 2026 · Pranav H.*
+*March 2026 · Pranav Harikumar*

@@ -1,7 +1,6 @@
 # Paper
 
-A writeup of this project is currently being prepared for submission.
+- [Paper PDF](./PlanCompiler.pdf)
+- [Technical Writeup](https://prnvh.github.io/compiler.html)
 
-The PDF will be added here once available, alongside a link to the arXiv preprint.
-
-**Technical writeup:** https://prnvh.github.io/compiler.html
+An arXiv link will be added here once available.
