@@ -360,4 +360,4 @@ Fixture row counts are fixed. `sales.csv`: 40 rows, 38 after deduplication, 27 w
 
 ---
 
-*March 2026 · Pranav Harikumar*
+*March 2026 · Pranav H.*
