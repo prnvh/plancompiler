@@ -64,7 +64,14 @@
 - Cleaned up repo for v1.0
 - Updated README to match the finished system
 
+# v1.1.0 - PlanCompiler 
+
 ### 18/03/2026
 - Changed name from LLM Code Graph Compiler to PlanCompiler 
 - Updated README.md to reflect changes
 - Released as v1.1.0
+
+
+# v1.2.0 - 
+### 09/04/2026 
+- Added repeat node support 
