@@ -1,10 +1,27 @@
-import pandas as pd  
-  
-def json_exporter(df: pd.DataFrame, output_path: str) -> str:  
-    """  
-    Exports DataFrame to JSON.  
-    Node: JSONExporter  
-    """  
-    df.to_json(output_path, orient="records")  
-    print(f"[JSONExporter] Exported to {output_path}")  
+import pandas as pd
+
+
+def _as_export_frame(data: pd.DataFrame | pd.Series) -> pd.DataFrame:
+    if isinstance(data, pd.Series):
+        value_name = data.name or "count"
+        index_names = [
+            name if name is not None else f"level_{index}"
+            for index, name in enumerate(data.index.names)
+        ]
+        if len(index_names) == 1:
+            axis_name = index_names[0]
+        else:
+            axis_name = index_names
+        return data.rename(value_name).rename_axis(axis_name).reset_index()
+    return data
+
+
+def json_exporter(df: pd.DataFrame | pd.Series, output_path: str) -> str:
+    """
+    Exports DataFrame or Series to JSON.
+    Node: JSONExporter
+    """
+    export_frame = _as_export_frame(df)
+    export_frame.to_json(output_path, orient="records")
+    print(f"[JSONExporter] Exported to {output_path}")
     return output_path

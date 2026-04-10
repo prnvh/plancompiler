@@ -9,8 +9,11 @@ def schema_validator(df: pd.DataFrame, schema: dict | None = None) -> pd.DataFra
         for col, dtype in schema.items():
             if col not in df.columns:
                 raise ValueError(f"[SchemaValidator] Missing column: {col}")
-            if not pd.api.types.is_dtype_equal(df[col].dtype, dtype):
-                print(f"[SchemaValidator] Warning: Column {col} dtype mismatch")
+            if str(df[col].dtype) != str(dtype):
+                raise ValueError(
+                    f"[SchemaValidator] Column {col} dtype mismatch: "
+                    f"expected {dtype}, got {df[col].dtype}"
+                )
 
     print("[SchemaValidator] Schema validated")
     return df

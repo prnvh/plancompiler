@@ -1,0 +1,382 @@
+[
+    {
+        "task_id":  "set_d_01_monorepo_staged",
+        "description":  "Using a 10-node workflow, read data.csv, drop null values, remove duplicate rows, filter rows where salary is greater than 35000, select name, department, region, salary, cast column types using an empty mapping, store into a SQLite database called d_employees.db in table employees, run a SQL query to retrieve all rows, group by department and count rows, then export to d_dept_counts.csv.",
+        "fixtures":  {
+                         "data.csv":  "benchmark/fixtures/employees.csv"
+                     },
+        "success_criteria":  [
+                                 {
+                                     "type":  "file_exists",
+                                     "path":  "d_dept_counts.csv"
+                                 },
+                                 {
+                                     "type":  "file_has_column",
+                                     "path":  "d_dept_counts.csv",
+                                     "column":  "department"
+                                 },
+                                 {
+                                     "type":  "file_has_column",
+                                     "path":  "d_dept_counts.csv",
+                                     "column":  "count"
+                                 }
+                             ],
+        "timeout_seconds":  40
+    },
+    {
+        "task_id":  "set_d_02_plugin_lifecycle",
+        "description":  "Using an 11-node workflow, read input.json, validate schema, apply a data transformation with no operations, drop null values, store into a SQLite database called d_events.db in table raw_events, run a SQL query to retrieve all rows, cast column types using an empty mapping, group by event_type and count rows, sort by count descending, then export to d_event_counts.csv.",
+        "fixtures":  {
+                         "input.json":  "benchmark/fixtures/events.json"
+                     },
+        "success_criteria":  [
+                                 {
+                                     "type":  "file_exists",
+                                     "path":  "d_event_counts.csv"
+                                 },
+                                 {
+                                     "type":  "file_has_column",
+                                     "path":  "d_event_counts.csv",
+                                     "column":  "event_type"
+                                 },
+                                 {
+                                     "type":  "file_has_column",
+                                     "path":  "d_event_counts.csv",
+                                     "column":  "count"
+                                 }
+                             ],
+        "timeout_seconds":  40
+    },
+    {
+        "task_id":  "set_d_03_cache_invalidation",
+        "description":  "Using a 12-node workflow, read data.csv, drop null values, remove duplicate rows, filter rows where age is greater than 20, select name, age, region, salary, cast column types using an empty mapping, store into a SQLite database called d_people.db in table contacts, run a SQL query to retrieve all rows, sort by salary descending, group by region and count rows, then export to d_region_counts.csv.",
+        "fixtures":  {
+                         "data.csv":  "benchmark/fixtures/people.csv"
+                     },
+        "success_criteria":  [
+                                 {
+                                     "type":  "file_exists",
+                                     "path":  "d_region_counts.csv"
+                                 },
+                                 {
+                                     "type":  "file_has_column",
+                                     "path":  "d_region_counts.csv",
+                                     "column":  "region"
+                                 },
+                                 {
+                                     "type":  "file_has_column",
+                                     "path":  "d_region_counts.csv",
+                                     "column":  "count"
+                                 }
+                             ],
+        "timeout_seconds":  40
+    },
+    {
+        "task_id":  "set_d_04_security_graph",
+        "description":  "Using a 10-node workflow, read data.csv, drop null values, remove duplicate rows, filter rows where score is greater than 0.25, select name, score, label, cast column types using an empty mapping, group by label and count rows, sort by count descending, then export to d_label_counts.csv.",
+        "fixtures":  {
+                         "data.csv":  "benchmark/fixtures/predictions.csv"
+                     },
+        "success_criteria":  [
+                                 {
+                                     "type":  "file_exists",
+                                     "path":  "d_label_counts.csv"
+                                 },
+                                 {
+                                     "type":  "file_has_column",
+                                     "path":  "d_label_counts.csv",
+                                     "column":  "label"
+                                 },
+                                 {
+                                     "type":  "file_has_column",
+                                     "path":  "d_label_counts.csv",
+                                     "column":  "count"
+                                 }
+                             ],
+        "timeout_seconds":  40
+    },
+    {
+        "task_id":  "set_d_05_refactor_sim",
+        "description":  "Using an 11-node workflow, read data.csv, filter rows where status equals active, drop null values, remove duplicate rows, select name, status, signup_date, region, cast column types using an empty mapping, store into a SQLite database called d_customers.db in table active_customers, run a SQL query to retrieve all rows, sort by signup_date ascending, then export to d_active_customers.csv.",
+        "fixtures":  {
+                         "data.csv":  "benchmark/fixtures/customers.csv"
+                     },
+        "success_criteria":  [
+                                 {
+                                     "type":  "file_exists",
+                                     "path":  "d_active_customers.csv"
+                                 },
+                                 {
+                                     "type":  "file_has_column",
+                                     "path":  "d_active_customers.csv",
+                                     "column":  "name"
+                                 },
+                                 {
+                                     "type":  "file_has_column",
+                                     "path":  "d_active_customers.csv",
+                                     "column":  "status"
+                                 },
+                                 {
+                                     "type":  "file_has_column",
+                                     "path":  "d_active_customers.csv",
+                                     "column":  "signup_date"
+                                 },
+                                 {
+                                     "type":  "file_has_column",
+                                     "path":  "d_active_customers.csv",
+                                     "column":  "region"
+                                 }
+                             ],
+        "timeout_seconds":  40
+    },
+    {
+        "task_id":  "set_d_06_event_sourced",
+        "description":  "Using a 12-node workflow, read data.csv, drop null values, remove duplicate rows, filter rows where salary is greater than 45000, select name, department, region, salary, cast column types using an empty mapping, store into a SQLite database called d_salary.db in table salary_rows, run a SQL query to retrieve all rows, group by region and count rows, sort by count descending, then export to d_salary_regions.csv.",
+        "fixtures":  {
+                         "data.csv":  "benchmark/fixtures/employees.csv"
+                     },
+        "success_criteria":  [
+                                 {
+                                     "type":  "file_exists",
+                                     "path":  "d_salary_regions.csv"
+                                 },
+                                 {
+                                     "type":  "file_has_column",
+                                     "path":  "d_salary_regions.csv",
+                                     "column":  "region"
+                                 },
+                                 {
+                                     "type":  "file_has_column",
+                                     "path":  "d_salary_regions.csv",
+                                     "column":  "count"
+                                 }
+                             ],
+        "timeout_seconds":  40
+    },
+    {
+        "task_id":  "set_d_07_fault_injection",
+        "description":  "Using a 10-node workflow, read data.csv, drop null values, remove duplicate rows, filter rows where age is greater than 30, select name, age, city, region, cast column types using an empty mapping, group by city and count rows, then export to d_city_counts.csv.",
+        "fixtures":  {
+                         "data.csv":  "benchmark/fixtures/people.csv"
+                     },
+        "success_criteria":  [
+                                 {
+                                     "type":  "file_exists",
+                                     "path":  "d_city_counts.csv"
+                                 },
+                                 {
+                                     "type":  "file_has_column",
+                                     "path":  "d_city_counts.csv",
+                                     "column":  "city"
+                                 },
+                                 {
+                                     "type":  "file_has_column",
+                                     "path":  "d_city_counts.csv",
+                                     "column":  "count"
+                                 }
+                             ],
+        "timeout_seconds":  40
+    },
+    {
+        "task_id":  "set_d_08_incremental_parity",
+        "description":  "Using an 11-node workflow, read data.csv, drop null values, remove duplicate rows, filter rows where score is greater than 0.6, select name, score, label, cast column types using an empty mapping, store into a SQLite database called d_scores.db in table results, run a SQL query to retrieve all rows, group by label and count rows, then export to d_high_score_labels.csv.",
+        "fixtures":  {
+                         "data.csv":  "benchmark/fixtures/predictions.csv"
+                     },
+        "success_criteria":  [
+                                 {
+                                     "type":  "file_exists",
+                                     "path":  "d_high_score_labels.csv"
+                                 },
+                                 {
+                                     "type":  "file_has_column",
+                                     "path":  "d_high_score_labels.csv",
+                                     "column":  "label"
+                                 },
+                                 {
+                                     "type":  "file_has_column",
+                                     "path":  "d_high_score_labels.csv",
+                                     "column":  "count"
+                                 }
+                             ],
+        "timeout_seconds":  40
+    },
+    {
+        "task_id":  "set_d_09_ownership_constraints",
+        "description":  "Using a 10-node workflow, read input.json, validate schema, apply a data transformation with no operations, drop null values, group by event_type and count rows, cast column types using an empty mapping, sort by count descending, then export to d_event_summary.csv.",
+        "fixtures":  {
+                         "input.json":  "benchmark/fixtures/events.json"
+                     },
+        "success_criteria":  [
+                                 {
+                                     "type":  "file_exists",
+                                     "path":  "d_event_summary.csv"
+                                 },
+                                 {
+                                     "type":  "file_has_column",
+                                     "path":  "d_event_summary.csv",
+                                     "column":  "event_type"
+                                 },
+                                 {
+                                     "type":  "file_has_column",
+                                     "path":  "d_event_summary.csv",
+                                     "column":  "count"
+                                 }
+                             ],
+        "timeout_seconds":  40
+    },
+    {
+        "task_id":  "set_d_10_multi_target",
+        "description":  "Using a 12-node workflow, read data.csv, drop null values, remove duplicate rows, filter rows where salary is greater than 30000, select name, department, region, salary, cast column types using an empty mapping, store into a SQLite database called d_multi.db in table employees, run a SQL query to retrieve all rows, sort by salary ascending, group by department and count rows, then export to d_multi_counts.csv.",
+        "fixtures":  {
+                         "data.csv":  "benchmark/fixtures/employees.csv"
+                     },
+        "success_criteria":  [
+                                 {
+                                     "type":  "file_exists",
+                                     "path":  "d_multi_counts.csv"
+                                 },
+                                 {
+                                     "type":  "file_has_column",
+                                     "path":  "d_multi_counts.csv",
+                                     "column":  "department"
+                                 },
+                                 {
+                                     "type":  "file_has_column",
+                                     "path":  "d_multi_counts.csv",
+                                     "column":  "count"
+                                 }
+                             ],
+        "timeout_seconds":  40
+    },
+    {
+        "task_id":  "set_d_11_employees_sqlite_dept_agg",
+        "description":  "Using a 10-node workflow, read data.csv, drop null values, remove duplicate rows, filter rows where salary is greater than 35000, select name, department, region, and salary, cast column types using an empty mapping, store into a SQLite database called d_employees2.db in table employees, run a SQL query to retrieve all rows, group by department and count rows, then export to d_dept_counts2.csv.",
+        "fixtures":  {
+                         "data.csv":  "benchmark/fixtures/employees.csv"
+                     },
+        "success_criteria":  [
+                                 {
+                                     "type":  "file_exists",
+                                     "path":  "d_dept_counts2.csv"
+                                 },
+                                 {
+                                     "type":  "file_has_column",
+                                     "path":  "d_dept_counts2.csv",
+                                     "column":  "department"
+                                 },
+                                 {
+                                     "type":  "file_has_column",
+                                     "path":  "d_dept_counts2.csv",
+                                     "column":  "count"
+                                 }
+                             ],
+        "timeout_seconds":  40
+    },
+    {
+        "task_id":  "set_d_12_employees_sqlite_region_agg_sort_desc",
+        "description":  "Using an 11-node workflow, read data.csv, drop null values, remove duplicate rows, filter rows where salary is greater than 40000, select name, department, region, and salary, cast column types using an empty mapping, store into a SQLite database called d_salary2.db in table salary_rows, run a SQL query to retrieve all rows, group by region and count rows, sort by count descending, then export to d_region_salary.csv.",
+        "fixtures":  {
+                         "data.csv":  "benchmark/fixtures/employees.csv"
+                     },
+        "success_criteria":  [
+                                 {
+                                     "type":  "file_exists",
+                                     "path":  "d_region_salary.csv"
+                                 },
+                                 {
+                                     "type":  "file_has_column",
+                                     "path":  "d_region_salary.csv",
+                                     "column":  "region"
+                                 },
+                                 {
+                                     "type":  "file_has_column",
+                                     "path":  "d_region_salary.csv",
+                                     "column":  "count"
+                                 }
+                             ],
+        "timeout_seconds":  40
+    },
+    {
+        "task_id":  "set_d_13_events_sqlite_agg_sort_desc_export",
+        "description":  "Using an 11-node workflow, read input.json, validate schema, apply a data transformation with no operations, drop null values, remove duplicate rows, cast column types using an empty mapping, store into a SQLite database called d_events2.db in table events, run a SQL query to retrieve all rows, group by event_type and count rows, sort by count descending, then export to d_event_counts2.csv.",
+        "fixtures":  {
+                         "input.json":  "benchmark/fixtures/events.json"
+                     },
+        "success_criteria":  [
+                                 {
+                                     "type":  "file_exists",
+                                     "path":  "d_event_counts2.csv"
+                                 },
+                                 {
+                                     "type":  "file_has_column",
+                                     "path":  "d_event_counts2.csv",
+                                     "column":  "event_type"
+                                 },
+                                 {
+                                     "type":  "file_has_column",
+                                     "path":  "d_event_counts2.csv",
+                                     "column":  "count"
+                                 }
+                             ],
+        "timeout_seconds":  40
+    },
+    {
+        "task_id":  "set_d_14_people_sqlite_sort_desc_export",
+        "description":  "Using a 10-node workflow, read data.csv, drop null values, remove duplicate rows, filter rows where age is greater than 20, select name, age, city, and salary, cast column types using an empty mapping, store into a SQLite database called d_people2.db in table people, run a SQL query to retrieve all rows, sort by salary descending, then export to d_people_salary.csv.",
+        "fixtures":  {
+                         "data.csv":  "benchmark/fixtures/people.csv"
+                     },
+        "success_criteria":  [
+                                 {
+                                     "type":  "file_exists",
+                                     "path":  "d_people_salary.csv"
+                                 },
+                                 {
+                                     "type":  "file_has_column",
+                                     "path":  "d_people_salary.csv",
+                                     "column":  "name"
+                                 },
+                                 {
+                                     "type":  "file_has_column",
+                                     "path":  "d_people_salary.csv",
+                                     "column":  "age"
+                                 },
+                                 {
+                                     "type":  "file_has_column",
+                                     "path":  "d_people_salary.csv",
+                                     "column":  "city"
+                                 },
+                                 {
+                                     "type":  "file_has_column",
+                                     "path":  "d_people_salary.csv",
+                                     "column":  "salary"
+                                 }
+                             ],
+        "timeout_seconds":  40
+    },
+    {
+        "task_id":  "set_d_15_predictions_sqlite_label_agg_sort_desc",
+        "description":  "Using an 11-node workflow, read data.csv, drop null values, remove duplicate rows, filter rows where score is greater than 0.2, select name, score, and label, cast column types using an empty mapping, store into a SQLite database called d_predictions2.db in table results, run a SQL query to retrieve all rows, group by label and count rows, sort by count descending, then export to d_label_counts2.csv.",
+        "fixtures":  {
+                         "data.csv":  "benchmark/fixtures/predictions.csv"
+                     },
+        "success_criteria":  [
+                                 {
+                                     "type":  "file_exists",
+                                     "path":  "d_label_counts2.csv"
+                                 },
+                                 {
+                                     "type":  "file_has_column",
+                                     "path":  "d_label_counts2.csv",
+                                     "column":  "label"
+                                 },
+                                 {
+                                     "type":  "file_has_column",
+                                     "path":  "d_label_counts2.csv",
+                                     "column":  "count"
+                                 }
+                             ],
+        "timeout_seconds":  40
+    }
+]
