@@ -1,7 +1,108 @@
 from collections import defaultdict, deque
+
 from core.plan_utils import normalize_plan_shape
 from nodes.registry import NODE_REGISTRY
 from nodes.types import NodeType
+
+MAX_PLAN_NODES = 20
+
+
+def _value_matches_type(value, expected_type: str) -> bool:
+    if expected_type == "any":
+        return True
+    if expected_type == "str":
+        return isinstance(value, str)
+    if expected_type == "bool":
+        return isinstance(value, bool)
+    if expected_type == "int":
+        return isinstance(value, int) and not isinstance(value, bool)
+    if expected_type == "float":
+        return isinstance(value, (int, float)) and not isinstance(value, bool)
+    if expected_type == "dict":
+        return isinstance(value, dict)
+    if expected_type == "list":
+        return isinstance(value, list)
+    if expected_type == "scalar":
+        return not isinstance(value, (dict, list, tuple, set))
+    return False
+
+
+def _validate_param_contract(node_id: str, node_type: str, provided: dict) -> list[str]:
+    node = NODE_REGISTRY[node_type]
+    errors: list[str] = []
+    schema = node.param_schema or {}
+
+    if not isinstance(provided, dict):
+        return [f"INVALID_PARAM_BAG: '{node_id}' ({node_type}) parameters must be a dict."]
+
+    if not node.allow_extra_params:
+        unexpected = sorted(set(provided) - set(schema))
+        for key in unexpected:
+            errors.append(
+                f"UNEXPECTED_PARAM: '{node_id}' ({node_type}) does not accept '{key}'."
+            )
+
+    for param_name, spec in schema.items():
+        if param_name not in provided:
+            continue
+
+        value = provided[param_name]
+        if value is None and spec.get("allow_none"):
+            continue
+
+        expected_types = spec.get("types", ["any"])
+        if not any(_value_matches_type(value, expected_type) for expected_type in expected_types):
+            errors.append(
+                f"INVALID_PARAM_TYPE: '{node_id}' ({node_type}) param '{param_name}' "
+                f"expected {expected_types}, got {type(value).__name__}."
+            )
+            continue
+
+        if spec.get("choices") is not None and value not in spec["choices"]:
+            errors.append(
+                f"INVALID_PARAM_VALUE: '{node_id}' ({node_type}) param '{param_name}' "
+                f"must be one of {spec['choices']}, got {value!r}."
+            )
+
+        if isinstance(value, list):
+            min_items = spec.get("min_items")
+            if min_items is not None and len(value) < min_items:
+                errors.append(
+                    f"INVALID_PARAM_VALUE: '{node_id}' ({node_type}) param '{param_name}' "
+                    f"must contain at least {min_items} item(s)."
+                )
+
+            item_types = spec.get("item_types")
+            if item_types:
+                for index, item in enumerate(value):
+                    if not any(_value_matches_type(item, item_type) for item_type in item_types):
+                        errors.append(
+                            f"INVALID_PARAM_TYPE: '{node_id}' ({node_type}) param '{param_name}[{index}]' "
+                            f"expected {item_types}, got {type(item).__name__}."
+                        )
+
+    return errors
+
+
+def _edge_types_are_compatible(source_type: NodeType, target_node) -> bool:
+    accepted_inputs = target_node.accepted_input_types or [target_node.input_type]
+
+    return (
+        NodeType.ANY in accepted_inputs
+        or source_type == NodeType.ANY
+        or source_type in accepted_inputs
+    )
+
+
+def _describe_expected_inputs(node) -> str:
+    min_inputs = node.min_inputs
+    max_inputs = node.max_inputs
+
+    if max_inputs is None:
+        return f"at least {min_inputs} inbound edge(s)"
+    if min_inputs == max_inputs:
+        return f"{min_inputs} inbound edge(s)"
+    return f"between {min_inputs} and {max_inputs} inbound edge(s)"
 
 
 def validate_plan(plan: dict) -> tuple[bool, list[str]]:
@@ -13,6 +114,12 @@ def validate_plan(plan: dict) -> tuple[bool, list[str]]:
     parameters = plan.get("parameters", {})
     node_ids = [node["id"] for node in nodes]
     node_type_by_id = {node["id"]: node["type"] for node in nodes}
+
+    # ---- CHECK 0: Plan length guard ----
+    if len(nodes) > MAX_PLAN_NODES:
+        errors.append(
+            f"PLAN_TOO_LONG: plan has {len(nodes)} nodes, maximum supported is {MAX_PLAN_NODES}."
+        )
 
     # ---- CHECK 1: Unique ids + node existence ----
     seen_ids = set()
@@ -45,16 +152,13 @@ def validate_plan(plan: dict) -> tuple[bool, list[str]]:
             continue
 
         source_output = NODE_REGISTRY[node_type_by_id[source]].output_type
-        target_input = NODE_REGISTRY[node_type_by_id[target]].input_type
+        target_node = NODE_REGISTRY[node_type_by_id[target]]
+        accepted_inputs = target_node.accepted_input_types or [target_node.input_type]
 
-        if (
-            target_input != NodeType.ANY
-            and source_output != NodeType.ANY
-            and source_output != target_input
-        ):
+        if not _edge_types_are_compatible(source_output, target_node):
             errors.append(
                 f"TYPE_MISMATCH: [{source} -> {target}] "
-                f"{source_output} != {target_input}"
+                f"{source_output} not in {accepted_inputs}"
             )
 
     # ---- CHECK 4: Cycle detection (topological sort) ----
@@ -89,8 +193,7 @@ def validate_plan(plan: dict) -> tuple[bool, list[str]]:
         if len(node_ids) > 1 and node_id not in connected:
             errors.append(f"ORPHAN_NODE: '{node_id}' is disconnected.")
 
-    # ---- CHECK 6: Input arity (branch-safe structural integrity) ----
-    # Recompute in-degree cleanly (cycle step mutated it)
+    # ---- CHECK 6: Input arity ----
     in_degree = {node_id: 0 for node_id in node_ids}
     for source, target in edges:
         in_degree[target] += 1
@@ -98,16 +201,18 @@ def validate_plan(plan: dict) -> tuple[bool, list[str]]:
     for node_id in node_ids:
         node_type = node_type_by_id[node_id]
         node = NODE_REGISTRY[node_type]
+        inbound_count = in_degree[node_id]
+        min_inputs = node.min_inputs
+        max_inputs = node.max_inputs
 
-        # Nodes that require an input must have exactly one inbound edge
-        if node.input_type != NodeType.FILE_PATH:
-            if in_degree[node_id] != 1:
-                errors.append(
-                    f"INVALID_ARITY: '{node_id}' expects 1 inbound edge "
-                    f"(input_type={node.input_type}), got {in_degree[node_id]}."
-                )
+        if inbound_count < min_inputs or (max_inputs is not None and inbound_count > max_inputs):
+            contract_hint = "source node" if node.is_source else "node contract"
+            errors.append(
+                f"INVALID_ARITY: '{node_id}' expects {_describe_expected_inputs(node)} "
+                f"({contract_hint}), got {inbound_count}."
+            )
 
-    # ---- CHECK 7: Required parameters present ----
+    # ---- CHECK 7: Required parameters + contract checks ----
     for node_id in node_ids:
         node_type = node_type_by_id[node_id]
         node = NODE_REGISTRY[node_type]
@@ -119,7 +224,10 @@ def validate_plan(plan: dict) -> tuple[bool, list[str]]:
                     f"MISSING_PARAM: '{node_id}' ({node_type}) requires '{param}'."
                 )
 
+        errors.extend(_validate_param_contract(node_id, node_type, provided))
+
     return len(errors) == 0, errors
+
 
 def topological_sort(nodes: list[str], edges: list[tuple[str, str]]) -> list[str]:
     """

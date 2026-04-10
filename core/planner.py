@@ -1,13 +1,15 @@
 import json
 import os
 import re
-from openai import OpenAI
-from nodes.registry import NODE_REGISTRY
-from core.plan_utils import linearize_plan_edges, normalize_plan_shape
+import time
+
+import requests as req
 from dotenv import load_dotenv
 
+from core.plan_utils import linearize_plan_edges, normalize_plan_shape
+from nodes.registry import NODE_REGISTRY
+
 load_dotenv()
-client = OpenAI(timeout=30.0, max_retries=1)
 
 
 def build_node_summary() -> str:
@@ -68,7 +70,6 @@ Response format must be:
 }
 
 Rules:
-
 - Only use nodes from the provided library.
 - Never invent nodes.
 - Every node instance must have a unique id.
@@ -82,7 +83,64 @@ Rules:
 """
 
 
-def get_plan(task_description: str) -> dict:
+def _extract_json_candidates(raw: str) -> list[str]:
+    stripped = raw.strip()
+    candidates: list[str] = []
+
+    if stripped:
+        candidates.append(stripped)
+
+    for match in re.findall(r"```(?:json)?\s*(.*?)```", raw, flags=re.IGNORECASE | re.DOTALL):
+        candidate = match.strip()
+        if candidate:
+            candidates.append(candidate)
+
+    decoder = json.JSONDecoder()
+    for text in list(candidates):
+        for index, char in enumerate(text):
+            if char not in "{[":
+                continue
+            try:
+                parsed, end = decoder.raw_decode(text[index:])
+            except json.JSONDecodeError:
+                continue
+
+            if isinstance(parsed, dict):
+                candidates.append(text[index:index + end])
+
+    deduped = []
+    seen = set()
+    for candidate in candidates:
+        if candidate in seen:
+            continue
+        seen.add(candidate)
+        deduped.append(candidate)
+
+    return deduped
+
+
+def _parse_plan_json(raw: str) -> dict:
+    last_error = None
+
+    for candidate in _extract_json_candidates(raw):
+        try:
+            parsed = json.loads(candidate)
+        except json.JSONDecodeError as error:
+            last_error = error
+            continue
+
+        if isinstance(parsed, dict):
+            return parsed
+
+        last_error = ValueError("Planner returned JSON that was not an object.")
+
+    if last_error is None:
+        raise ValueError("Planner returned no JSON content.")
+
+    raise last_error
+
+
+def get_plan(task_description: str, domain: str | None = None) -> dict:
     node_summary = build_node_summary()
 
     user_message = f"""
@@ -92,9 +150,6 @@ Available Nodes:
 Task:
 {task_description}
 """
-
-    import time
-    import requests as req
 
     headers = {
         "Content-Type": "application/json",
@@ -134,18 +189,28 @@ Task:
             resp.raise_for_status()
 
             body = resp.json()
-            raw  = body["choices"][0]["message"]["content"].strip()
-            _usage = body.get("usage", {})
+            raw = body["choices"][0]["message"]["content"].strip()
+            usage = body.get("usage", {})
             plan_usage = {
-                "input_tokens":  _usage.get("prompt_tokens", 0),
-                "output_tokens": _usage.get("completion_tokens", 0),
-                "total_tokens":  _usage.get("total_tokens", 0),
+                "input_tokens": usage.get("prompt_tokens", 0),
+                "output_tokens": usage.get("completion_tokens", 0),
+                "total_tokens": usage.get("total_tokens", 0),
                 "cost_usd": round(
-                    (_usage.get("prompt_tokens", 0) / 1_000_000) * 0.15 +
-                    (_usage.get("completion_tokens", 0) / 1_000_000) * 0.60, 6
+                    (usage.get("prompt_tokens", 0) / 1_000_000) * 0.15
+                    + (usage.get("completion_tokens", 0) / 1_000_000) * 0.60,
+                    6,
                 ),
             }
-            break
+
+            try:
+                plan = _parse_plan_json(raw)
+                break
+            except (json.JSONDecodeError, ValueError) as e:
+                if attempt == 3:
+                    raise RuntimeError(f"Planner returned invalid JSON: {e}") from e
+                print(f"  [planner] invalid JSON, retrying (attempt {attempt+1}/4)...")
+                time.sleep(2)
+                continue
 
         except req.exceptions.Timeout:
             if attempt == 3:
@@ -162,14 +227,7 @@ Task:
     else:
         raise RuntimeError("Planner failed after 4 attempts")
 
-    plan = json.loads(raw)
     return normalize_plan(plan), plan_usage
-
-
-def _to_snake_case(name: str) -> str:
-    s = re.sub(r'([a-z0-9])([A-Z])', r'\1_\2', name)
-    s = re.sub(r'([A-Z]+)([A-Z][a-z])', r'\1_\2', s)
-    return s.lower()
 
 
 def normalize_plan(plan: dict) -> dict:

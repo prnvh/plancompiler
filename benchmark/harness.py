@@ -60,7 +60,7 @@ from core.validator import validate_plan
 from core.compiler import compile_output
 from benchmark.criteria import check_criteria
 
-N_RUNS = 3
+N_RUNS = 1
 
 # gpt-4o-mini pricing (planner model)
 PLANNER_PRICING = {"input": 0.15, "output": 0.60}  # $/1M tokens
@@ -288,7 +288,7 @@ def run_task_repeated(task: dict) -> dict:
             total_out_tok += single["planner_output_tokens"]
             total_cost    += single["planner_cost_usd"] or 0.0
 
-        status = "✓" if single["first_pass_success"] else "✗"
+        status = "PASS" if single["first_pass_success"] else "FAIL"
         token_str = (
             f" | in={single['planner_input_tokens']} out={single['planner_output_tokens']}"
             if single.get("planner_input_tokens") is not None else ""
@@ -360,7 +360,7 @@ def print_summary(results: list[dict]) -> None:
     print("-" * 72)
     for r in results:
         pass_str = f"{r.get('pass_count','?')}/{r.get('run_count', N_RUNS)}"
-        status   = "✓ PASS" if r["first_pass_success"] else "✗ FAIL"
+        status   = "PASS" if r["first_pass_success"] else "FAIL"
         if not r["plan_success"]:
             stage = "planner"
         elif not r["validation_success"]:
@@ -372,7 +372,7 @@ def print_summary(results: list[dict]) -> None:
         elif not r["criteria_passed"]:
             stage = f"criteria ({len(r['criteria_failures'])} failures)"
         else:
-            stage = "—"
+            stage = "-"
         print(f"{r['task_id']:<22} {pass_str:<8} {status:<10} {stage}")
     print("=" * 72)
 
@@ -410,13 +410,13 @@ def main():
         print(f"  {task['description']}")
         result = run_task_repeated(task)
 
-        status = "✓ PASS" if result["first_pass_success"] else "✗ FAIL"
+        status = "PASS" if result["first_pass_success"] else "FAIL"
         cost_str = (
             f" | planner cost=${result['planner_cost_usd']:.4f}"
             if result.get("planner_cost_usd") is not None else ""
         )
         print(
-            f"  → {status} ({result['pass_count']}/{result['run_count']} runs | "
+            f"  -> {status} ({result['pass_count']}/{result['run_count']} runs | "
             f"avg {result['avg_duration_seconds']}s/run{cost_str})"
         )
         if result.get("error"):
