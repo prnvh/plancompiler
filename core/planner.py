@@ -3,6 +3,7 @@ import os
 import re
 from openai import OpenAI
 from nodes.registry import NODE_REGISTRY
+from core.plan_utils import linearize_plan_edges, normalize_plan_shape
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -28,17 +29,20 @@ def plan_from_nodes(nodes: list[str]) -> dict:
         return {"nodes": [], "edges": [], "parameters": {}, "glue_code": ""}
 
     for i in range(len(nodes) - 1):
-        edges.append((nodes[i], nodes[i + 1]))
-        parameters.setdefault(nodes[i], {})
+        edges.append((f"n{i + 1}", f"n{i + 2}"))
+        parameters.setdefault(f"n{i + 1}", {})
 
-    parameters.setdefault(nodes[-1], {})
+    parameters.setdefault(f"n{len(nodes)}", {})
 
-    return {
-        "nodes": nodes,
+    return normalize_plan_shape({
+        "nodes": [
+            {"id": f"n{i + 1}", "type": node_type}
+            for i, node_type in enumerate(nodes)
+        ],
         "edges": edges,
         "parameters": parameters,
         "glue_code": ""
-    }
+    })
 
 
 def load_plan(path: str) -> dict:
@@ -56,8 +60,8 @@ Output STRICTLY raw JSON.
 Response format must be:
 
 {
-  "nodes": [],
-  "edges": [],
+  "nodes": [{"id": "n1", "type": "CSVParser"}],
+  "edges": [["n1", "n2"]],
   "parameters": {},
   "flags": [],
   "glue_code": ""
@@ -67,7 +71,10 @@ Rules:
 
 - Only use nodes from the provided library.
 - Never invent nodes.
+- Every node instance must have a unique id.
 - Every edge must be type-compatible.
+- Edges must reference node ids, not node type names.
+- Parameters must be keyed by node id.
 - If a required node is missing, add flag MISSING_NODE.
 - If credentials are needed, add flag REQUIRED_CREDENTIAL.
 - Glue code must follow topological execution order.
@@ -166,78 +173,4 @@ def _to_snake_case(name: str) -> str:
 
 
 def normalize_plan(plan: dict) -> dict:
-    snake_to_camel = {node.function_name: name for name, node in NODE_REGISTRY.items()}
-
-    raw_nodes = plan.get("nodes", [])
-    if raw_nodes and isinstance(raw_nodes[0], dict):
-        plan["nodes"] = [n["type"] for n in raw_nodes]
-        if not plan.get("parameters"):
-            plan["parameters"] = {n["type"]: n.get("params", {}) for n in raw_nodes}
-
-    raw_nodes = plan.get("nodes", [])
-    raw_edges = plan.get("edges", [])
-    normalized_edges = []
-
-    def resolve_node_ref(ref, nodes_list):
-        if ref is None:
-            return None
-        if isinstance(ref, int):
-            idx = ref - 1
-            if 0 <= idx < len(nodes_list):
-                return nodes_list[idx]
-            if 0 <= ref < len(nodes_list):
-                return nodes_list[ref]
-            return None
-        if isinstance(ref, str) and ref.isdigit():
-            return resolve_node_ref(int(ref), nodes_list)
-        return snake_to_camel.get(ref, ref)
-
-    for edge in raw_edges:
-        try:
-            if isinstance(edge, dict):
-                source = edge.get("from") or edge.get("source") or edge.get("start")
-                target = edge.get("to") or edge.get("target") or edge.get("end")
-            elif isinstance(edge, (list, tuple)) and len(edge) == 2:
-                source, target = edge
-            elif isinstance(edge, str) and "->" in edge:
-                parts = edge.split("->")
-                source, target = parts[0].strip(), parts[1].strip()
-            else:
-                continue
-
-            source = resolve_node_ref(source, raw_nodes)
-            target = resolve_node_ref(target, raw_nodes)
-
-            if source is None or target is None:
-                continue
-
-            normalized_edges.append([source, target])
-
-        except Exception:
-            continue
-
-    plan["edges"] = [e for e in normalized_edges if e[0] != e[1]]
-
-    # Strictly linearize edges for benchmark stability.
-    # Some model outputs create back-edges/cycles that can stall execution planning.
-    # For this compiler, tasks are modeled as ordered pipelines, so we enforce
-    # node[i] -> node[i+1] regardless of model-proposed edge shape.
-    if len(plan.get("nodes", [])) > 1:
-        index = {name: i for i, name in enumerate(plan["nodes"])}
-        expected_edges = len(plan["nodes"]) - 1
-
-        def is_forward_edge(edge: list[str]) -> bool:
-            source, target = edge
-            if source not in index or target not in index:
-                return False
-            return index[source] < index[target]
-
-        has_non_forward = any(not is_forward_edge(e) for e in plan["edges"])
-
-        if len(plan["edges"]) != expected_edges or has_non_forward:
-            plan["edges"] = [
-                [plan["nodes"][i], plan["nodes"][i + 1]]
-                for i in range(len(plan["nodes"]) - 1)
-            ]
-
-    return plan
+    return linearize_plan_edges(normalize_plan_shape(plan))

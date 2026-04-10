@@ -31,6 +31,7 @@ if str(REPO_ROOT) not in sys.path:
 
 from benchmark.criteria import check_criteria
 from core.compiler import compile_output
+from core.plan_utils import normalize_plan_shape
 from core.validator import validate_plan
 from nodes.registry import NODE_REGISTRY
 
@@ -214,62 +215,7 @@ def _raw_chat_completion(system_prompt, user_prompt):
 
 
 def _normalize_no_linearize(plan):
-    snake_to_camel = {
-        node.function_name: name for name, node in NODE_REGISTRY.items()
-    }
-
-    raw_nodes = plan.get("nodes", [])
-    if raw_nodes and isinstance(raw_nodes[0], dict):
-        plan["nodes"] = [n["type"] for n in raw_nodes]
-        if not plan.get("parameters"):
-            plan["parameters"] = {
-                n["type"]: n.get("params", {}) for n in raw_nodes
-            }
-
-    raw_nodes = plan.get("nodes", [])
-    raw_edges = plan.get("edges", [])
-    normalized_edges = []
-
-    def resolve_node_ref(ref, nodes_list):
-        if ref is None:
-            return None
-        if isinstance(ref, int):
-            idx = ref - 1
-            if 0 <= idx < len(nodes_list):
-                return nodes_list[idx]
-            if 0 <= ref < len(nodes_list):
-                return nodes_list[ref]
-            return None
-        if isinstance(ref, str) and ref.isdigit():
-            return resolve_node_ref(int(ref), nodes_list)
-        return snake_to_camel.get(ref, ref)
-
-    for edge in raw_edges:
-        try:
-            if isinstance(edge, dict):
-                source = edge.get("from") or edge.get("source") or edge.get("start")
-                target = edge.get("to") or edge.get("target") or edge.get("end")
-            elif isinstance(edge, (list, tuple)) and len(edge) == 2:
-                source, target = edge
-            elif isinstance(edge, str) and "->" in edge:
-                left, right = edge.split("->", 1)
-                source, target = left.strip(), right.strip()
-            else:
-                continue
-
-            source = resolve_node_ref(source, raw_nodes)
-            target = resolve_node_ref(target, raw_nodes)
-
-            if source is None or target is None:
-                continue
-            if source != target:
-                normalized_edges.append([source, target])
-
-        except Exception:
-            continue
-
-    plan["edges"] = normalized_edges
-    return plan
+    return normalize_plan_shape(plan)
 
 
 def _get_plan_custom(task_description, include_registry=True, include_types=True, linearize=True):

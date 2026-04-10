@@ -1,39 +1,57 @@
 from collections import defaultdict, deque
+from core.plan_utils import normalize_plan_shape
 from nodes.registry import NODE_REGISTRY
 from nodes.types import NodeType
 
 
 def validate_plan(plan: dict) -> tuple[bool, list[str]]:
+    plan = normalize_plan_shape(plan)
     errors: list[str] = []
 
     nodes = plan.get("nodes", [])
     edges = plan.get("edges", [])
     parameters = plan.get("parameters", {})
+    node_ids = [node["id"] for node in nodes]
+    node_type_by_id = {node["id"]: node["type"] for node in nodes}
 
-    # ---- CHECK 1: Node existence ----
-    for node_name in nodes:
-        if node_name not in NODE_REGISTRY:
-            errors.append(f"NODE_NOT_FOUND: '{node_name}' not in registry.")
+    # ---- CHECK 1: Unique ids + node existence ----
+    seen_ids = set()
+    for node in nodes:
+        node_id = node["id"]
+        node_type = node["type"]
+
+        if node_id in seen_ids:
+            errors.append(f"DUPLICATE_NODE_ID: '{node_id}' appears more than once.")
+            continue
+
+        seen_ids.add(node_id)
+
+        if node_type not in NODE_REGISTRY:
+            errors.append(f"NODE_NOT_FOUND: '{node_type}' not in registry.")
 
     if errors:
         return False, errors
 
     # ---- CHECK 2: Edge references valid nodes ----
     for source, target in edges:
-        if source not in nodes or target not in nodes:
+        if source not in node_ids or target not in node_ids:
             errors.append(
                 f"EDGE_INVALID: [{source} -> {target}] references undefined node."
             )
 
     # ---- CHECK 3: Type compatibility ----
     for source, target in edges:
-        if source not in NODE_REGISTRY or target not in NODE_REGISTRY:
+        if source not in node_type_by_id or target not in node_type_by_id:
             continue
 
-        source_output = NODE_REGISTRY[source].output_type
-        target_input = NODE_REGISTRY[target].input_type
+        source_output = NODE_REGISTRY[node_type_by_id[source]].output_type
+        target_input = NODE_REGISTRY[node_type_by_id[target]].input_type
 
-        if target_input != NodeType.ANY and source_output != NodeType.ANY and source_output != target_input:
+        if (
+            target_input != NodeType.ANY
+            and source_output != NodeType.ANY
+            and source_output != target_input
+        ):
             errors.append(
                 f"TYPE_MISMATCH: [{source} -> {target}] "
                 f"{source_output} != {target_input}"
@@ -41,13 +59,13 @@ def validate_plan(plan: dict) -> tuple[bool, list[str]]:
 
     # ---- CHECK 4: Cycle detection (topological sort) ----
     adj = defaultdict(list)
-    in_degree = {node: 0 for node in nodes}
+    in_degree = {node_id: 0 for node_id in node_ids}
 
     for source, target in edges:
         adj[source].append(target)
         in_degree[target] += 1
 
-    queue = deque([n for n in nodes if in_degree[n] == 0])
+    queue = deque([node_id for node_id in node_ids if in_degree[node_id] == 0])
     visited = 0
 
     while queue:
@@ -58,7 +76,7 @@ def validate_plan(plan: dict) -> tuple[bool, list[str]]:
             if in_degree[neighbor] == 0:
                 queue.append(neighbor)
 
-    if visited != len(nodes):
+    if visited != len(node_ids):
         errors.append("CYCLE_DETECTED: graph contains a cycle.")
 
     # ---- CHECK 5: Orphan nodes ----
@@ -67,36 +85,38 @@ def validate_plan(plan: dict) -> tuple[bool, list[str]]:
         connected.add(source)
         connected.add(target)
 
-    for node in nodes:
-        if len(nodes) > 1 and node not in connected:
-            errors.append(f"ORPHAN_NODE: '{node}' is disconnected.")
+    for node_id in node_ids:
+        if len(node_ids) > 1 and node_id not in connected:
+            errors.append(f"ORPHAN_NODE: '{node_id}' is disconnected.")
 
     # ---- CHECK 6: Input arity (branch-safe structural integrity) ----
     # Recompute in-degree cleanly (cycle step mutated it)
-    in_degree = {node: 0 for node in nodes}
+    in_degree = {node_id: 0 for node_id in node_ids}
     for source, target in edges:
         in_degree[target] += 1
 
-    for node_name in nodes:
-        node = NODE_REGISTRY[node_name]
+    for node_id in node_ids:
+        node_type = node_type_by_id[node_id]
+        node = NODE_REGISTRY[node_type]
 
         # Nodes that require an input must have exactly one inbound edge
         if node.input_type != NodeType.FILE_PATH:
-            if in_degree[node_name] != 1:
+            if in_degree[node_id] != 1:
                 errors.append(
-                    f"INVALID_ARITY: '{node_name}' expects 1 inbound edge "
-                    f"(input_type={node.input_type}), got {in_degree[node_name]}."
+                    f"INVALID_ARITY: '{node_id}' expects 1 inbound edge "
+                    f"(input_type={node.input_type}), got {in_degree[node_id]}."
                 )
 
     # ---- CHECK 7: Required parameters present ----
-    for node_name in nodes:
-        node = NODE_REGISTRY[node_name]
-        provided = parameters.get(node_name, {})
+    for node_id in node_ids:
+        node_type = node_type_by_id[node_id]
+        node = NODE_REGISTRY[node_type]
+        provided = parameters.get(node_id, {})
 
         for param in node.required_params:
             if param not in provided:
                 errors.append(
-                    f"MISSING_PARAM: '{node_name}' requires '{param}'."
+                    f"MISSING_PARAM: '{node_id}' ({node_type}) requires '{param}'."
                 )
 
     return len(errors) == 0, errors

@@ -113,7 +113,7 @@ PlanCompiler consists of five components in a strictly ordered pipeline. Only on
 
 ### Node Registry
 
-The ground truth of all available primitives. 26 nodes across six categories: ingestion, DataFrame processing, storage, exporters, API/HTTP, and observability. Each node declares:
+The ground truth of all available primitives. 25 nodes across seven categories: ingestion, DataFrame processing, storage, exporters, API/HTTP, observability, and adapters. Each node declares:
 
 - `input_type` and `output_type` — one of `FilePath`, `DataFrame`, `DBHandle`, `HTTPResponse`, `ANY`
 - `required_params` — enforced by the validator before compilation
@@ -128,14 +128,20 @@ The only LLM call in the system. Uses `gpt-4o-mini`. Receives the task descripti
 
 ```json
 {
-  "nodes": ["CSVParser", "DataFilter", "SQLiteConnector", "QueryEngine", "CSVExporter"],
-  "edges": [["CSVParser", "DataFilter"], ["DataFilter", "SQLiteConnector"], ["SQLiteConnector", "QueryEngine"], ["QueryEngine", "CSVExporter"]],
+  "nodes": [
+    {"id": "n1", "type": "CSVParser"},
+    {"id": "n2", "type": "DataFilter"},
+    {"id": "n3", "type": "SQLiteConnector"},
+    {"id": "n4", "type": "QueryEngine"},
+    {"id": "n5", "type": "CSVExporter"}
+  ],
+  "edges": [["n1", "n2"], ["n2", "n3"], ["n3", "n4"], ["n4", "n5"]],
   "parameters": {
-    "CSVParser": {"file_path": "data.csv"},
-    "DataFilter": {"condition": "salary > 35000"},
-    "SQLiteConnector": {"db_path": "out.db", "table_name": "employees"},
-    "QueryEngine": {"query": "SELECT * FROM employees"},
-    "CSVExporter": {"output_path": "results.csv"}
+    "n1": {"file_path": "data.csv"},
+    "n2": {"condition": "salary > 35000"},
+    "n3": {"db_path": "out.db", "table_name": "employees"},
+    "n4": {"query": "SELECT * FROM employees"},
+    "n5": {"output_path": "results.csv"}
   },
   "flags": [],
   "glue_code": ""
@@ -145,6 +151,10 @@ The only LLM call in the system. Uses `gpt-4o-mini`. Receives the task descripti
 `normalize_plan()` handles non-standard LLM output formats — integer node references, dict-style edges, string arrow notation — before the plan reaches the validator.
 
 ### Validator
+
+Each node instance has a stable `id`. The `type` is the registry node it uses. This allows repeated node types in one plan, for example two `DataFilter` steps with different parameters.
+
+Legacy name-only plans are still accepted on input. `normalize_plan()` upgrades them into the id-based format before validation.
 
 Seven ordered checks. Any failure aborts compilation. No structurally invalid plan reaches the compiler.
 
@@ -164,7 +174,7 @@ Assembles the final output deterministically. No LLM involvement.
 
 1. Topological sort produces linear execution order from the DAG
 2. For each node in order, reads the template file verbatim from disk — no interpolation, no string manipulation
-3. Auto-generates the execution block: `out_{function_name} = {function_name}(out_{predecessor}, **params)`
+3. Auto-generates the execution block: `out_{function_name} = {function_name}(out_{predecessor}, **params)` for single-use node types, and numbered variants like `out_data_filter_2` when a node type repeats
 4. Uses LLM-provided `glue_code` only if present and non-empty
 
 Output is a single self-contained `app.py` with a standard `__main__` block.
@@ -316,6 +326,8 @@ Probe tasks 31–50 per set directly stress-test two systematic failure patterns
 
 ## Known Limitations
 
+Repeated node types are now supported through id-based plans. The remaining structural limit is still no fan-in or branching. The older node-uniqueness note below is retained only as historical context for benchmark writeup language from before id-based plans were added.
+
 **QueryEngine evasion** — the planner satisfies aggregation tasks by embedding `GROUP BY COUNT(*)` in the `QueryEngine` SQL string rather than routing through `Aggregator`. This produces column `COUNT(*)` not `count`, failing `file_has_column` criteria. `QueryEngine` is the single unconstrained surface in the system — it accepts arbitrary SQL — and the planner systematically exploits it. 13 confirmed instances across Sets C, D, E, F (81% of all compiler failures). Probe tasks 31–50 quantify the evasion rate per complexity tier.
 
 **Node uniqueness** — the plan schema uses node names as unique keys with no aliasing. Any pipeline requiring two instances of the same node type (two sorts, two database legs) is structurally inexpressible. Affected tasks are replaced with Logger-padded equivalents. Documented as approximate complexity tiers, not hard boundaries.
@@ -360,4 +372,4 @@ Fixture row counts are fixed. `sales.csv`: 40 rows, 38 after deduplication, 27 w
 
 ---
 
-*March 2026 · Pranav Harikumar*
+*March 2026 · Pranav H.*
