@@ -13,6 +13,7 @@ from nodes.templates.aggregator import aggregator
 from nodes.templates.chunk_aggregator import chunk_aggregator
 from nodes.templates.column_transformer import column_transformer
 from nodes.templates.data_filter import data_filter
+from nodes.templates.data_transformer import data_transformer
 from nodes.templates.date_range_expander import date_range_expander
 from nodes.templates.datetime_transformer import datetime_transformer
 from nodes.templates.reduce_output import reduce_output
@@ -326,6 +327,118 @@ class SemanticTransformerTests(unittest.TestCase):
 
         self.assertEqual(list(transformed.columns), ["A_Name", "B_Detail", "left", "right"])
 
+    def test_column_transformer_can_pivot_wider_and_split_rows(self):
+        long_frame = pd.DataFrame(
+            {
+                "country": ["US", "US", "IN", "IN"],
+                "year": [2024, 2024, 2024, 2024],
+                "metric": ["sales", "cost", "sales", "cost"],
+                "value": [10, 7, 12, 8],
+            }
+        )
+        list_frame = pd.DataFrame({"id": [1, 2], "tags": ["a,b", "c"]})
+
+        wide = column_transformer(
+            long_frame,
+            operations=[
+                {
+                    "type": "pivot_wider",
+                    "index": ["country", "year"],
+                    "columns": "metric",
+                    "values": "value",
+                }
+            ],
+        )
+        exploded = column_transformer(
+            list_frame,
+            operations=[
+                {"type": "split_rows", "source_column": "tags", "separator": ",", "ignore_index": True}
+            ],
+        )
+
+        self.assertEqual(list(wide.columns), ["country", "year", "sales", "cost"])
+        self.assertEqual(wide.columns.name, "metric")
+        self.assertEqual(exploded["tags"].tolist(), ["a", "b", "c"])
+
+    def test_data_transformer_can_derive_row_lists_from_column_expression(self):
+        frame = pd.DataFrame({"time": [1, 2], "amount": [10, 20]})
+
+        transformed = data_transformer(
+            frame,
+            operations=[
+                {"type": "derive_column", "new_column": "pair", "expression": "[time, amount]"}
+            ],
+        )
+
+        self.assertEqual(transformed["pair"].tolist(), [[1, 10], [2, 20]])
+
+    def test_transformers_can_compute_row_value_counts(self):
+        frame = pd.DataFrame(
+            {
+                "a": ["x", "x", None],
+                "b": ["x", "y", None],
+                "c": ["z", "y", "q"],
+            }
+        )
+
+        transformed = column_transformer(
+            frame,
+            operations=[
+                {
+                    "type": "row_value_counts",
+                    "source_columns": ["a", "b", "c"],
+                    "values_column": "frequent",
+                    "count_column": "freq_count",
+                }
+            ],
+        )
+
+        self.assertEqual(transformed["frequent"].tolist(), [["x"], ["y"], ["q"]])
+        self.assertEqual(transformed["freq_count"].tolist(), [2, 2, 1])
+
+    def test_data_transformer_can_compute_groupwise_extreme_neighbors(self):
+        frame = pd.DataFrame(
+            {
+                "time": [1, 1, 1, 2],
+                "car": [10, 20, 30, 40],
+                "x": [0.0, 3.0, 10.0, 5.0],
+                "y": [0.0, 4.0, 0.0, 5.0],
+            }
+        )
+
+        nearest = data_transformer(
+            frame,
+            operations=[
+                {
+                    "type": "groupwise_extreme_neighbor",
+                    "group_by": ["time"],
+                    "entity_column": "car",
+                    "coordinate_columns": ["x", "y"],
+                    "neighbor_column": "nearest_car",
+                    "distance_column": "nearest_distance",
+                }
+            ],
+        )
+        farthest = data_transformer(
+            frame,
+            operations=[
+                {
+                    "type": "groupwise_extreme_neighbor",
+                    "group_by": ["time"],
+                    "entity_column": "car",
+                    "coordinate_columns": ["x", "y"],
+                    "neighbor_column": "farthest_car",
+                    "distance_column": "farthest_distance",
+                    "extreme": "max",
+                }
+            ],
+        )
+
+        self.assertEqual(nearest["nearest_car"].iloc[:3].tolist(), [20, 10, 20])
+        self.assertAlmostEqual(float(nearest["nearest_distance"].iloc[0]), 5.0)
+        self.assertEqual(farthest["farthest_car"].iloc[:3].tolist(), [30, 30, 10])
+        self.assertTrue(pd.isna(nearest["nearest_car"].iloc[3]))
+
     def test_column_transformer_can_evaluate_rowwise_rule_without_lambda_wrapper(self):
         frame = pd.DataFrame({"text": ["a1", "abc", "z9!"]})
 
@@ -390,6 +503,24 @@ class SemanticTransformerTests(unittest.TestCase):
         self.assertEqual(list(transformed.columns), ["group", "value_std", "keep"])
         self.assertAlmostEqual(float(transformed.loc[0, "keep"]), 30.0)
 
+    def test_aggregator_can_materialize_series_expressions(self):
+        frame = pd.DataFrame(
+            {
+                "group": ["a", "a", "b"],
+                "text": ["one", "two", "three"],
+            }
+        )
+
+        transformed = aggregator(
+            frame,
+            group_keys=["group"],
+            aggregations=[
+                {"column": "col('text').str.contains('o')", "op": "sum", "output": "contains_o"}
+            ],
+        )
+
+        self.assertEqual(transformed["contains_o"].tolist(), [2, 0])
+
     def test_reduce_output_can_convert_dataframe_column_to_series(self):
         frame = pd.DataFrame(
             {
@@ -409,6 +540,13 @@ class SemanticTransformerTests(unittest.TestCase):
         result = reduce_output(frame, method="column_to_series", column="value", label="date", name=None)
 
         self.assertIsNone(result.name)
+
+    def test_reduce_output_can_join_column_values(self):
+        frame = pd.DataFrame({"text": ["a", "b", None, "c"]})
+
+        result = reduce_output(frame, method="scalar_agg", column="text", agg="join", separator=",")
+
+        self.assertEqual(result, "a,b,c")
 
     def test_data_filter_supports_datetime_index_normalize_conditions(self):
         frame = pd.DataFrame(
@@ -530,6 +668,30 @@ class SemanticTransformerTests(unittest.TestCase):
         self.assertEqual(transformed["priority"].tolist(), ["VIP", "low", "Other", "low"])
         self.assertEqual(transformed["tier"].tolist(), ["VIP", "silver", "Other", "silver"])
 
+    def test_value_transformer_accepts_column_rule_mapping(self):
+        frame = pd.DataFrame(
+            {
+                "Qu1": ["A", "A", "B", "C"],
+                "Qu2": ["X", "Y", "Y", "Z"],
+            }
+        )
+
+        transformed = value_transformer(
+            frame,
+            operations=[
+                {
+                    "type": "replace_infrequent",
+                    "column_rules": {
+                        "Qu1": {"threshold": 2, "replacement": "other"},
+                        "Qu2": {"threshold": 2, "replacement": "other"},
+                    },
+                }
+            ],
+        )
+
+        self.assertEqual(transformed["Qu1"].tolist(), ["A", "A", "other", "other"])
+        self.assertEqual(transformed["Qu2"].tolist(), ["other", "Y", "Y", "other"])
+
     def test_value_transformer_can_replace_substrings_strip_prefix_and_round(self):
         frame = pd.DataFrame(
             {
@@ -569,6 +731,19 @@ class SemanticTransformerTests(unittest.TestCase):
         self.assertEqual(transformed["left"].tolist(), ["<a", "<b"])
         self.assertEqual(transformed["right"].tolist(), ["x<", "y<"])
         self.assertEqual(transformed["count"].tolist(), [1, 2])
+
+    def test_value_transformer_can_remove_substrings(self):
+        frame = pd.DataFrame({"text": ["[a]", "[b]"]})
+
+        transformed = value_transformer(
+            frame,
+            operations=[
+                {"type": "remove_substring", "column": "text", "old": "["},
+                {"type": "remove_substring", "column": "text", "old": "]"},
+            ],
+        )
+
+        self.assertEqual(transformed["text"].tolist(), ["a", "b"])
 
     def test_value_transformer_can_coerce_numeric_and_clip(self):
         frame = pd.DataFrame({"raw": ["1", "20", "bad"]})

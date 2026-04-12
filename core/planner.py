@@ -198,6 +198,10 @@ def build_node_summary(context: PlanningContext | None = None, task_description:
 
         if name == "Aggregator":
             line += " | allowed aggregation ops: sum, mean, min, max, count, size, first, last, nunique, std, collect_list, collect_set, collect_rows"
+        if name == "ColumnTransformer":
+            line += " | common operations: extract_regex, split_column, pivot_wider, split_rows, row_value_counts, groupwise_extreme_neighbor"
+        if name == "DataTransformer":
+            line += " | common operations: rename_columns, cast_column, melt, pivot_wider, split_rows, row_value_counts, groupwise_extreme_neighbor"
         if name in {"ColumnTransformer", "DataTransformer", "DataFilter", "Aggregator"}:
             line += " | expression environment: pd, np, df, index, col(name), column(name), and dataframe column names directly; row is available only for rowwise rules"
 
@@ -298,9 +302,13 @@ def build_selected_node_details(nodes: list[dict[str, str]], edges: list[list[st
             lines.append(
                 "  allowed aggregation ops: sum, mean, min, max, count, size, first, last, nunique, std, collect_list, collect_set, collect_rows"
             )
+        if node_type in {"ColumnTransformer", "DataTransformer"}:
+            lines.append(
+                "  note: use structured operations for common reshapes, row expansion, row summaries, and groupwise geometry: melt, pivot_wider, split_rows, explode_column, row_value_counts, groupwise_extreme_neighbor, and concatenate_columns. Do not encode these as pandas scripts."
+            )
         if node_type in {"ColumnTransformer", "DataTransformer", "DataFilter", "Aggregator"}:
             lines.append(
-                "  expression environment: pd, np, df, index, col(name), column(name), and dataframe column names directly; row is available only for rowwise rules."
+                "  expression environment: pd, np, df, index, col(name), column(name), and dataframe column names directly; row is available only for rowwise rules. Expression and rowwise_rule fields must be one expression, not def/import/return/assignment scripts."
             )
 
     return "\n".join(lines)
@@ -457,6 +465,8 @@ Rules:
 - Never invent top-level parameter names.
 - For transformer nodes, use only the listed operation types and only the listed fields for each operation type.
 - Never put prose instructions, notes, scripts, code snippets, or alternate aliases into the final JSON.
+- Expression fields and rowwise_rule fields must be single Python expressions only. Never put def/import/return statements, assignments, semicolon-separated code, or multi-line scripts in them.
+- Prefer structured operations over pandas code strings when the contract has one, especially melt, pivot_wider, split_rows, explode_column, row_value_counts, groupwise_extreme_neighbor, concatenate_columns, map_values, and aggregation operations.
 - Omit optional parameters unless the task actually requires them.
 - Parameterize the general transformation described by the task, not only the visibly changed values in one example table.
 - When the task names multiple columns or fields for the same operation, include the full named set unless the task explicitly excludes some.

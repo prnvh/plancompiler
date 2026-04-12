@@ -8,6 +8,8 @@ import pandas as pd
 
 def resolve_column_label(df: pd.DataFrame, reference: Any) -> Any:
     reference = evaluate_dynamic_value(df, reference)
+    if isinstance(reference, (list, tuple, pd.Index, pd.Series)):
+        return reference
     columns = list(df.columns)
 
     if reference in columns:

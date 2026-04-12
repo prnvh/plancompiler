@@ -46,6 +46,40 @@ class PlanContractTests(unittest.TestCase):
             },
         )
 
+    def test_replace_infrequent_accepts_column_rule_mapping(self):
+        plan = {
+            "nodes": [
+                {"id": "n1", "type": "DataFrameInput"},
+                {"id": "n2", "type": "ValueTransformer"},
+            ],
+            "edges": [["n1", "n2"]],
+            "parameters": {
+                "n2": {
+                    "operations": [
+                        {
+                            "type": "replace_infrequent",
+                            "column_rules": {
+                                "Qu1": {"threshold": 3, "replacement": "other"},
+                                "Qu2": {"min_count": 2, "other_label": "other"},
+                            },
+                        }
+                    ]
+                }
+            },
+        }
+
+        normalized = normalize_plan_shape(plan)
+        is_valid, errors = validate_plan(plan)
+
+        self.assertTrue(is_valid, msg=errors)
+        self.assertEqual(
+            normalized["parameters"]["n2"]["operations"][0]["column_rules"],
+            [
+                {"column": "Qu1", "threshold": 3, "replacement": "other"},
+                {"column": "Qu2", "threshold": 2, "replacement": "other"},
+            ],
+        )
+
     def test_validator_rejects_prose_transformer_operations(self):
         plan = {
             "nodes": [
@@ -246,6 +280,107 @@ class PlanContractTests(unittest.TestCase):
 
         self.assertEqual(normalized["parameters"]["n2"]["method"], "column_to_series")
         self.assertIsNone(normalized["parameters"]["n2"]["name"])
+
+    def test_normalize_plan_shape_maps_reduce_output_aggregate_alias(self):
+        plan = {
+            "nodes": [
+                {"id": "n1", "type": "DataFrameInput"},
+                {"id": "n2", "type": "ReduceOutput"},
+            ],
+            "edges": [["n1", "n2"]],
+            "parameters": {
+                "n2": {"method": "aggregate", "column": "text", "agg": "join"}
+            },
+        }
+
+        normalized = normalize_plan_shape(plan)
+
+        self.assertEqual(normalized["parameters"]["n2"]["method"], "scalar_agg")
+
+    def test_normalize_plan_shape_maps_pandas_pivot_expression_to_pivot_wider(self):
+        plan = {
+            "nodes": [
+                {"id": "n1", "type": "DataFrameInput"},
+                {"id": "n2", "type": "ColumnTransformer"},
+            ],
+            "edges": [["n1", "n2"]],
+            "parameters": {
+                "n2": {
+                    "operations": [
+                        {
+                            "type": "derive_function_columns",
+                            "source_columns": ["country", "year", "metric", "value"],
+                            "function": "df.pivot(index=['country', 'year'], columns='metric', values='value').reset_index()",
+                        }
+                    ]
+                }
+            },
+        }
+
+        normalized = normalize_plan_shape(plan)
+
+        self.assertEqual(
+            normalized["parameters"]["n2"]["operations"],
+            [
+                {
+                    "type": "pivot_wider",
+                    "index": ["country", "year"],
+                    "columns": "metric",
+                    "values": "value",
+                    "reset_index": True,
+                }
+            ],
+        )
+
+    def test_normalize_plan_shape_maps_split_explode_expression_to_split_rows(self):
+        plan = {
+            "nodes": [
+                {"id": "n1", "type": "DataFrameInput"},
+                {"id": "n2", "type": "DataTransformer"},
+            ],
+            "edges": [["n1", "n2"]],
+            "parameters": {
+                "n2": {
+                    "operations": [
+                        {
+                            "type": "derive_column",
+                            "new_column": "tags",
+                            "expression": "df['tags'].str.split(',').explode()",
+                        }
+                    ]
+                }
+            },
+        }
+
+        normalized = normalize_plan_shape(plan)
+
+        self.assertEqual(
+            normalized["parameters"]["n2"]["operations"],
+            [{"type": "split_rows", "source_column": "tags", "separator": ","}],
+        )
+
+    def test_normalize_plan_shape_maps_missing_replacement_to_remove_substring(self):
+        plan = {
+            "nodes": [
+                {"id": "n1", "type": "DataFrameInput"},
+                {"id": "n2", "type": "ValueTransformer"},
+            ],
+            "edges": [["n1", "n2"]],
+            "parameters": {
+                "n2": {
+                    "operations": [
+                        {"type": "replace_substring", "column": "text", "old": "["},
+                    ]
+                }
+            },
+        }
+
+        normalized = normalize_plan_shape(plan)
+
+        self.assertEqual(
+            normalized["parameters"]["n2"]["operations"],
+            [{"type": "remove_substring", "column": "text", "old": "["}],
+        )
 
     def test_normalize_plan_shape_maps_shift_lambda_aliases(self):
         plan = {

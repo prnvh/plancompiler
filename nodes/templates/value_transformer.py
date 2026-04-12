@@ -115,10 +115,10 @@ def _apply_value_operation(df: pd.DataFrame, operation: dict) -> pd.DataFrame:
                 df[column] = series.str.strip()
         return df
 
-    if op_type == "replace_substring":
+    if op_type in {"replace_substring", "remove_substring"}:
         replace_kwargs = {
             "pat": operation["old"],
-            "repl": operation["new"],
+            "repl": operation.get("new", ""),
             "regex": bool(operation.get("regex", False)),
         }
         if "case" in operation:

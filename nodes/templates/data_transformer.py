@@ -1,6 +1,7 @@
 import operator
 import re
 
+import numpy as np
 import pandas as pd
 
 from nodes.templates.date_range_expander import date_range_expander
@@ -49,18 +50,170 @@ def _apply_assign(df: pd.DataFrame, column: str, value=None, expression: str | N
         column = resolved_column
     if expression:
         try:
-            df[column] = df.eval(expression)
+            result = df.eval(expression)
         except Exception:
             try:
-                df[column] = evaluate_frame_expression(df, expression)
+                result = evaluate_frame_expression(df, expression)
             except Exception:
                 def evaluate_row(row):
                     return evaluate_row_expression(row, expression, df=df)
 
-                df[column] = df.apply(evaluate_row, axis=1)
+                result = df.apply(evaluate_row, axis=1)
+        df[column] = _coerce_derived_result(df, result)
     else:
         df[column] = value
     return df
+
+
+def _coerce_derived_result(df: pd.DataFrame, value):
+    if isinstance(value, (list, tuple)) and value and all(isinstance(item, pd.Series) for item in value):
+        if all(item.index.equals(df.index) for item in value):
+            return pd.Series(list(zip(*[item.tolist() for item in value])), index=df.index).map(list)
+    return value
+
+
+def _flatten_columns(columns, separator: str = "_") -> list:
+    if not isinstance(columns, pd.MultiIndex):
+        return list(columns)
+    flattened = []
+    for column in columns:
+        parts = [str(part) for part in column if part not in (None, "")]
+        flattened.append(separator.join(parts))
+    return flattened
+
+
+def _pivot_wider(
+    df: pd.DataFrame,
+    *,
+    index,
+    columns,
+    values=None,
+    aggfunc=None,
+    fill_value=None,
+    reset_index: bool = True,
+    flatten_columns: bool = True,
+    separator: str = "_",
+) -> pd.DataFrame:
+    index_columns = resolve_column_labels(df, index) or []
+    column_key = resolve_column_label(df, columns)
+    value_columns = resolve_column_labels(df, values) if values is not None else None
+    if value_columns is not None and len(value_columns) == 1:
+        value_columns = value_columns[0]
+
+    if aggfunc:
+        result = pd.pivot_table(
+            df,
+            index=index_columns,
+            columns=column_key,
+            values=value_columns,
+            aggfunc=aggfunc,
+            fill_value=fill_value,
+            sort=False,
+        )
+    else:
+        result = df.pivot(index=index_columns, columns=column_key, values=value_columns)
+        if fill_value is not None:
+            result = result.fillna(fill_value)
+
+    column_axis_name = result.columns.name
+    if not isinstance(result.columns, pd.MultiIndex):
+        observed_columns = pd.Index(df[column_key].drop_duplicates(), name=result.columns.name)
+        result = result.reindex(columns=observed_columns)
+    if flatten_columns:
+        result.columns = _flatten_columns(result.columns, separator=separator)
+    if reset_index:
+        result = result.reset_index()
+        result.columns.name = column_axis_name
+    return result
+
+
+def _split_rows(
+    df: pd.DataFrame,
+    *,
+    source_column,
+    separator=",",
+    regex: bool = False,
+    ignore_index: bool = False,
+    strip: bool = False,
+    drop_empty: bool = False,
+) -> pd.DataFrame:
+    column = resolve_column_label(df, source_column)
+    result = df.copy()
+    result[column] = result[column].astype(str).str.split(separator, regex=regex)
+    result = result.explode(column, ignore_index=ignore_index)
+    if strip:
+        result[column] = result[column].astype(str).str.strip()
+    if drop_empty:
+        result = result[result[column].astype(str) != ""]
+    return result
+
+
+def _row_value_counts(
+    df: pd.DataFrame,
+    *,
+    values_column: str,
+    count_column: str,
+    source_columns=None,
+    dropna: bool = True,
+) -> pd.DataFrame:
+    target_columns = resolve_column_labels(df, source_columns) if source_columns is not None else list(df.columns)
+
+    def summarize(row):
+        values = row[target_columns]
+        if dropna:
+            values = values[values.notna()]
+        if values.empty:
+            return [], 0
+        counts = pd.Series(values.tolist()).value_counts(dropna=not dropna)
+        max_count = int(counts.iloc[0])
+        return counts[counts == max_count].index.tolist(), max_count
+
+    summaries = df.apply(summarize, axis=1)
+    result = df.copy()
+    result[values_column] = summaries.map(lambda item: item[0])
+    result[count_column] = summaries.map(lambda item: item[1])
+    return result
+
+
+def _groupwise_extreme_neighbor(
+    df: pd.DataFrame,
+    *,
+    group_by,
+    entity_column,
+    coordinate_columns,
+    neighbor_column: str,
+    distance_column: str,
+    extreme: str = "min",
+    metric: str = "euclidean",
+) -> pd.DataFrame:
+    if metric != "euclidean":
+        raise ValueError(f"Unsupported groupwise_extreme_neighbor metric: {metric}")
+
+    group_columns = resolve_column_labels(df, group_by) or []
+    entity = resolve_column_label(df, entity_column)
+    coordinates = resolve_column_labels(df, coordinate_columns) or []
+    result = df.copy()
+    result[neighbor_column] = np.nan
+    result[distance_column] = np.nan
+
+    choose_max = extreme in {"max", "farthest", "furthest"}
+    for _group_key, group in result.groupby(group_columns, dropna=False, sort=False):
+        if len(group) <= 1:
+            continue
+        coordinate_values = group[coordinates].apply(pd.to_numeric, errors="coerce").to_numpy(dtype=float)
+        deltas = coordinate_values[:, None, :] - coordinate_values[None, :, :]
+        distances = np.sqrt(np.square(deltas).sum(axis=2))
+        np.fill_diagonal(distances, -np.inf if choose_max else np.inf)
+        selector = np.nanargmax(distances, axis=1) if choose_max else np.nanargmin(distances, axis=1)
+        chosen_distances = distances[np.arange(len(group)), selector]
+        invalid = ~np.isfinite(chosen_distances)
+        group_index = group.index.to_numpy()
+        result.loc[group.index, neighbor_column] = group[entity].iloc[selector].to_numpy()
+        result.loc[group.index, distance_column] = chosen_distances
+        if invalid.any():
+            result.loc[group_index[invalid], [neighbor_column, distance_column]] = np.nan
+
+    return result
 
 
 def _apply_circular_shift(df: pd.DataFrame, column: str, shift: int) -> pd.DataFrame:
@@ -301,6 +454,12 @@ def _apply_transformation(df: pd.DataFrame, transform: dict) -> pd.DataFrame:
         "cast_column": "cast",
         "drop_duplicate_rows": "drop_duplicate_rows",
         "melt": "melt",
+        "pivot_wider": "pivot_wider",
+        "split_rows": "split_rows",
+        "row_value_counts": "row_value_counts",
+        "groupwise_extreme_neighbor": "groupwise_extreme_neighbor",
+        "groupwise_nearest_neighbor": "groupwise_extreme_neighbor",
+        "groupwise_farthest_neighbor": "groupwise_extreme_neighbor",
         "circular_shift": "circular_shift",
         "shift_non_nulls_left": "shift_non_nulls_left",
         "shift_nulls_to_top_per_column": "shift_nulls_to_top_per_column",
@@ -367,6 +526,51 @@ def _apply_transformation(df: pd.DataFrame, transform: dict) -> pd.DataFrame:
         if bool(transform.get("ignore_index", True)):
             melted = melted.reset_index(drop=True)
         return melted
+
+    if operation == "pivot_wider":
+        return _pivot_wider(
+            df,
+            index=transform["index"],
+            columns=transform["columns"],
+            values=transform.get("values"),
+            aggfunc=transform.get("aggfunc"),
+            fill_value=transform.get("fill_value"),
+            reset_index=bool(transform.get("reset_index", True)),
+            flatten_columns=bool(transform.get("flatten_columns", True)),
+            separator=str(transform.get("separator", "_")),
+        )
+
+    if operation == "split_rows":
+        return _split_rows(
+            df,
+            source_column=transform["source_column"],
+            separator=transform.get("separator", ","),
+            regex=bool(transform.get("regex", False)),
+            ignore_index=bool(transform.get("ignore_index", False)),
+            strip=bool(transform.get("strip", False)),
+            drop_empty=bool(transform.get("drop_empty", False)),
+        )
+
+    if operation == "row_value_counts":
+        return _row_value_counts(
+            df,
+            values_column=transform["values_column"],
+            count_column=transform["count_column"],
+            source_columns=transform.get("source_columns"),
+            dropna=bool(transform.get("dropna", True)),
+        )
+
+    if operation == "groupwise_extreme_neighbor":
+        return _groupwise_extreme_neighbor(
+            df,
+            group_by=transform["group_by"],
+            entity_column=transform["entity_column"],
+            coordinate_columns=transform["coordinate_columns"],
+            neighbor_column=transform["neighbor_column"],
+            distance_column=transform["distance_column"],
+            extreme=transform.get("extreme", "min"),
+            metric=transform.get("metric", "euclidean"),
+        )
 
     if operation == "cast":
         column = transform["column"]

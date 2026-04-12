@@ -140,6 +140,19 @@ def reduce_output(value, method: str = "identity", **options):
         agg = options.get("agg")
         if not agg:
             raise ValueError("ReduceOutput scalar_agg method requires 'agg'.")
+        if agg in {"join", "concat"}:
+            separator = str(options.get("separator", ""))
+            if isinstance(value, pd.DataFrame):
+                column = options.get("column")
+                if not column:
+                    raise ValueError("ReduceOutput join aggregation on DataFrame requires 'column'.")
+                result = separator.join(value[column].dropna().astype(str).tolist())
+            elif isinstance(value, pd.Series):
+                result = separator.join(value.dropna().astype(str).tolist())
+            else:
+                raise TypeError("ReduceOutput join aggregation requires a DataFrame or Series input.")
+            print(f"[ReduceOutput] Produced {_describe_result(result)} output")
+            return result
         if isinstance(value, pd.DataFrame):
             column = options.get("column")
             if not column:

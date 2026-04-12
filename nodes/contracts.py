@@ -134,6 +134,7 @@ NODE_CONTRACTS: dict[str, dict[str, Any]] = {
             "position": "int",
             "n": "int",
             "agg": "string",
+            "separator": "string",
             "anchor_extreme": "string",
             "anchor_occurrence": "string",
             "target_extreme": "string",
@@ -147,6 +148,7 @@ NODE_CONTRACTS: dict[str, dict[str, Any]] = {
             {"method": "column_to_series", "column": "value", "label": "date"},
             {"method": "column_to_series", "column": "value", "label": "date", "name": None},
             {"method": "scalar_agg", "column": "score", "agg": "max"},
+            {"method": "aggregate", "column": "tag", "agg": "join", "separator": ","},
             {
                 "method": "columnwise_extreme_index",
                 "anchor_extreme": "min",
@@ -170,6 +172,10 @@ NODE_CONTRACTS: dict[str, dict[str, Any]] = {
                 "required": [],
                 "optional": ["id_vars", "value_vars", "var_name", "value_name", "ignore_index", "preserve_row_order", "dropna"],
             },
+            "pivot_wider": {
+                "required": ["index", "columns"],
+                "optional": ["values", "aggfunc", "fill_value", "reset_index", "flatten_columns", "separator"],
+            },
             "drop_duplicate_rows": {"required": [], "optional": ["subset", "keep", "ignore_index"]},
             "derive_column": {
                 "required": ["new_column"],
@@ -182,6 +188,10 @@ NODE_CONTRACTS: dict[str, dict[str, Any]] = {
             "split_column": {
                 "required": ["source_column", "new_columns"],
                 "optional": ["separator", "regex", "max_splits", "strip"],
+            },
+            "split_rows": {
+                "required": ["source_column"],
+                "optional": ["separator", "regex", "ignore_index", "strip", "drop_empty"],
             },
             "map_values": {
                 "required": ["source_column", "mapping"],
@@ -210,6 +220,14 @@ NODE_CONTRACTS: dict[str, dict[str, Any]] = {
             "shift_nulls_to_top_per_column": {
                 "required": [],
                 "optional": ["columns"],
+            },
+            "row_value_counts": {
+                "required": ["values_column", "count_column"],
+                "optional": ["source_columns", "dropna"],
+            },
+            "groupwise_extreme_neighbor": {
+                "required": ["group_by", "entity_column", "coordinate_columns", "neighbor_column", "distance_column"],
+                "optional": ["extreme", "metric"],
             },
             "derive_first_matching_label": {
                 "required": ["new_column", "source_columns"],
@@ -292,6 +310,48 @@ NODE_CONTRACTS: dict[str, dict[str, Any]] = {
                     }
                 ]
             },
+            {
+                "operations": [
+                    {
+                        "type": "pivot_wider",
+                        "index": ["country", "year"],
+                        "columns": "metric",
+                        "values": "value",
+                    }
+                ]
+            },
+            {
+                "operations": [
+                    {
+                        "type": "split_rows",
+                        "source_column": "tags",
+                        "separator": ",",
+                        "ignore_index": True,
+                    }
+                ]
+            },
+            {
+                "operations": [
+                    {
+                        "type": "row_value_counts",
+                        "values_column": "most_common",
+                        "count_column": "most_common_count",
+                    }
+                ]
+            },
+            {
+                "operations": [
+                    {
+                        "type": "groupwise_extreme_neighbor",
+                        "group_by": ["time"],
+                        "entity_column": "car",
+                        "coordinate_columns": ["x", "y"],
+                        "neighbor_column": "nearest_car",
+                        "distance_column": "nearest_distance",
+                        "extreme": "min",
+                    }
+                ]
+            },
         ],
     },
     "ValueTransformer": {
@@ -325,6 +385,10 @@ NODE_CONTRACTS: dict[str, dict[str, Any]] = {
             },
             "replace_substring": {
                 "required": ["column", "old", "new"],
+                "optional": ["regex", "case"],
+            },
+            "remove_substring": {
+                "required": ["column", "old"],
                 "optional": ["regex", "case"],
             },
             "strip_prefix": {
@@ -388,6 +452,15 @@ NODE_CONTRACTS: dict[str, dict[str, Any]] = {
                         "column": "sku",
                         "old": "item-",
                         "new": "",
+                    }
+                ]
+            },
+            {
+                "operations": [
+                    {
+                        "type": "remove_substring",
+                        "column": "sku",
+                        "old": "[",
                     }
                 ]
             },
@@ -467,10 +540,14 @@ NODE_CONTRACTS: dict[str, dict[str, Any]] = {
             "rename_columns": {"required": ["mapping"], "optional": []},
             "cast_column": {"required": ["column"], "optional": ["to", "dtype", "target_type", "format", "utc", "errors"]},
             "melt": {"required": [], "optional": ["id_vars", "value_vars", "var_name", "value_name", "ignore_index", "preserve_row_order", "dropna"]},
+            "pivot_wider": {"required": ["index", "columns"], "optional": ["values", "aggfunc", "fill_value", "reset_index", "flatten_columns", "separator"]},
+            "split_rows": {"required": ["source_column"], "optional": ["separator", "regex", "ignore_index", "strip", "drop_empty"]},
             "drop_duplicate_rows": {"required": [], "optional": ["subset", "keep", "ignore_index"]},
             "circular_shift": {"required": ["column", "shift"], "optional": []},
             "shift_non_nulls_left": {"required": [], "optional": ["columns", "fill_value"]},
             "shift_nulls_to_top_per_column": {"required": [], "optional": ["columns"]},
+            "row_value_counts": {"required": ["values_column", "count_column"], "optional": ["source_columns", "dropna"]},
+            "groupwise_extreme_neighbor": {"required": ["group_by", "entity_column", "coordinate_columns", "neighbor_column", "distance_column"], "optional": ["extreme", "metric"]},
             "expand_date_range_per_group": {"required": ["group_by", "date_column"], "optional": ["freq", "sort", "range_scope", "fill_values", "fill_strategies", "date_format"]},
             "value_counts_report": {"required": [], "optional": ["columns", "dropna", "sort", "include_header"]},
             "replace_values": {"required": ["column"], "optional": ["mapping", "old_value", "new_value"]},
@@ -493,6 +570,33 @@ NODE_CONTRACTS: dict[str, dict[str, Any]] = {
             {
                 "operations": [
                     {"type": "melt", "id_vars": ["user_id"], "var_name": "metric", "value_name": "value"},
+                ]
+            },
+            {
+                "operations": [
+                    {"type": "pivot_wider", "index": ["user_id"], "columns": "metric", "values": "value"},
+                ]
+            },
+            {
+                "operations": [
+                    {"type": "split_rows", "source_column": "tag_list", "separator": ",", "ignore_index": True},
+                ]
+            },
+            {
+                "operations": [
+                    {"type": "row_value_counts", "values_column": "mode_values", "count_column": "mode_count"},
+                ]
+            },
+            {
+                "operations": [
+                    {
+                        "type": "groupwise_extreme_neighbor",
+                        "group_by": ["time"],
+                        "entity_column": "car",
+                        "coordinate_columns": ["x", "y"],
+                        "neighbor_column": "nearest_car",
+                        "distance_column": "nearest_distance",
+                    },
                 ]
             },
             {
@@ -594,6 +698,121 @@ def _normalize_operation_type(raw_type: Any, synonyms: dict[str, str]) -> str | 
     return synonyms.get(normalized, normalized)
 
 
+def _literal_node_value(node: ast.AST) -> Any:
+    if isinstance(node, ast.Constant):
+        return node.value
+    if isinstance(node, ast.List):
+        return [_literal_node_value(item) for item in node.elts]
+    if isinstance(node, ast.Tuple):
+        return [_literal_node_value(item) for item in node.elts]
+    return None
+
+
+def _keyword_values(call: ast.Call) -> dict[str, Any]:
+    return {
+        keyword.arg: _literal_node_value(keyword.value)
+        for keyword in call.keywords
+        if keyword.arg is not None
+    }
+
+
+def _parse_dataframe_pivot_expression(expression: Any) -> dict[str, Any] | None:
+    if not isinstance(expression, str):
+        return None
+    try:
+        body = ast.parse(expression.strip(), mode="eval").body
+    except SyntaxError:
+        return None
+
+    reset_index = False
+    pivot_call = body
+    if (
+        isinstance(body, ast.Call)
+        and isinstance(body.func, ast.Attribute)
+        and body.func.attr == "reset_index"
+    ):
+        reset_index = True
+        pivot_call = body.func.value
+
+    if not (
+        isinstance(pivot_call, ast.Call)
+        and isinstance(pivot_call.func, ast.Attribute)
+        and pivot_call.func.attr in {"pivot", "pivot_table"}
+        and isinstance(pivot_call.func.value, ast.Name)
+        and pivot_call.func.value.id == "df"
+    ):
+        return None
+
+    values = _keyword_values(pivot_call)
+    if "index" not in values or "columns" not in values:
+        return None
+
+    result: dict[str, Any] = {
+        "type": "pivot_wider",
+        "index": values.get("index"),
+        "columns": values.get("columns"),
+        "values": values.get("values"),
+        "reset_index": reset_index,
+    }
+    for key in ("aggfunc", "fill_value"):
+        if key in values:
+            result[key] = values[key]
+    return result
+
+
+def _parse_split_rows_expression(expression: Any) -> dict[str, Any] | None:
+    if not isinstance(expression, str):
+        return None
+    try:
+        body = ast.parse(expression.strip(), mode="eval").body
+    except SyntaxError:
+        return None
+
+    if not (
+        isinstance(body, ast.Call)
+        and isinstance(body.func, ast.Attribute)
+        and body.func.attr == "explode"
+        and isinstance(body.func.value, ast.Call)
+        and isinstance(body.func.value.func, ast.Attribute)
+        and body.func.value.func.attr == "split"
+    ):
+        return None
+
+    split_call = body.func.value
+    str_accessor = split_call.func.value
+    if not (
+        isinstance(str_accessor, ast.Attribute)
+        and str_accessor.attr == "str"
+        and isinstance(str_accessor.value, ast.Subscript)
+        and isinstance(str_accessor.value.value, ast.Name)
+        and str_accessor.value.value.id == "df"
+    ):
+        return None
+
+    column = _literal_node_value(str_accessor.value.slice)
+    if column is None:
+        return None
+
+    split_keywords = _keyword_values(split_call)
+    explode_keywords = _keyword_values(body)
+    separator = None
+    if split_call.args:
+        separator = _literal_node_value(split_call.args[0])
+    if separator is None:
+        separator = split_keywords.get("pat") or split_keywords.get("sep")
+
+    return _clean_operation_dict(
+        {
+            "type": "split_rows",
+            "source_column": column,
+            "separator": separator,
+            "regex": split_keywords.get("regex"),
+            "ignore_index": explode_keywords.get("ignore_index"),
+        },
+        allowed_keys={"type", "source_column", "separator", "regex", "ignore_index"},
+    )
+
+
 def _coerce_operation_list(value: Any) -> list[Any]:
     if value is None:
         return []
@@ -644,6 +863,10 @@ def _normalize_column_operation(operation: Any) -> Any:
         "reorder": "reorder_columns",
         "reorder_columns": "reorder_columns",
         "melt": "melt",
+        "pivot": "pivot_wider",
+        "pivot_table": "pivot_wider",
+        "pivot_wider": "pivot_wider",
+        "wide": "pivot_wider",
         "drop_duplicates": "drop_duplicate_rows",
         "drop_duplicate_rows": "drop_duplicate_rows",
         "assign": "derive_column",
@@ -655,6 +878,10 @@ def _normalize_column_operation(operation: Any) -> Any:
         "split_on_single_space": "split_column",
         "split_column": "split_column",
         "split_text": "split_column",
+        "split_rows": "split_rows",
+        "split_to_rows": "split_rows",
+        "split_and_explode": "split_rows",
+        "explode_split": "split_rows",
         "map_values": "map_values",
         "concatenate_columns": "concatenate_columns",
         "concat_columns": "concatenate_columns",
@@ -662,6 +889,12 @@ def _normalize_column_operation(operation: Any) -> Any:
         "explode": "explode_column",
         "explode_column": "explode_column",
         "derive_inverse_columns": "derive_inverse_columns",
+        "row_value_counts": "row_value_counts",
+        "row_modes": "row_value_counts",
+        "rowwise_mode": "row_value_counts",
+        "groupwise_extreme_neighbor": "groupwise_extreme_neighbor",
+        "groupwise_nearest_neighbor": "groupwise_extreme_neighbor",
+        "groupwise_farthest_neighbor": "groupwise_extreme_neighbor",
         "derive_category_from_one_hot": "derive_first_matching_label",
         "one_hot_to_category": "derive_first_matching_label",
         "binary_columns_to_category": "derive_first_matching_label",
@@ -723,6 +956,22 @@ def _normalize_column_operation(operation: Any) -> Any:
             allowed_keys={"type", "id_vars", "value_vars", "var_name", "value_name", "ignore_index", "preserve_row_order", "dropna"},
         )
 
+    if op_type == "pivot_wider":
+        return _clean_operation_dict(
+            {
+                "type": op_type,
+                "index": raw.get("index") or raw.get("id_vars") or raw.get("group_keys"),
+                "columns": raw.get("columns") or raw.get("names_from"),
+                "values": raw.get("values") or raw.get("values_from") or raw.get("value_column"),
+                "aggfunc": raw.get("aggfunc") or raw.get("agg"),
+                "fill_value": raw.get("fill_value"),
+                "reset_index": raw.get("reset_index"),
+                "flatten_columns": raw.get("flatten_columns"),
+                "separator": raw.get("separator"),
+            },
+            allowed_keys={"type", "index", "columns", "values", "aggfunc", "fill_value", "reset_index", "flatten_columns", "separator"},
+        )
+
     if op_type == "drop_duplicate_rows":
         return _clean_operation_dict(
             {
@@ -762,6 +1011,51 @@ def _normalize_column_operation(operation: Any) -> Any:
                 "strip": raw.get("strip"),
             },
             allowed_keys={"type", "source_column", "new_columns", "separator", "regex", "max_splits", "strip"},
+        )
+
+    if op_type == "split_rows":
+        return _clean_operation_dict(
+            {
+                "type": op_type,
+                "source_column": raw.get("source_column") or raw.get("column"),
+                "separator": raw.get("separator") or raw.get("sep"),
+                "regex": raw.get("regex"),
+                "ignore_index": raw.get("ignore_index"),
+                "strip": raw.get("strip"),
+                "drop_empty": raw.get("drop_empty"),
+            },
+            allowed_keys={"type", "source_column", "separator", "regex", "ignore_index", "strip", "drop_empty"},
+        )
+
+    if op_type == "row_value_counts":
+        return _clean_operation_dict(
+            {
+                "type": op_type,
+                "source_columns": raw.get("source_columns") or raw.get("columns"),
+                "values_column": raw.get("values_column") or raw.get("value_column") or raw.get("new_column"),
+                "count_column": raw.get("count_column") or raw.get("frequency_column"),
+                "dropna": raw.get("dropna"),
+            },
+            allowed_keys={"type", "source_columns", "values_column", "count_column", "dropna"},
+        )
+
+    if op_type == "groupwise_extreme_neighbor":
+        inferred_extreme = raw.get("extreme")
+        raw_type_text = str(raw_type).strip().lower()
+        if inferred_extreme is None and "farthest" in raw_type_text:
+            inferred_extreme = "max"
+        return _clean_operation_dict(
+            {
+                "type": op_type,
+                "group_by": raw.get("group_by") or raw.get("group_keys"),
+                "entity_column": raw.get("entity_column") or raw.get("id_column") or raw.get("label_column"),
+                "coordinate_columns": raw.get("coordinate_columns") or raw.get("coordinates") or raw.get("columns"),
+                "neighbor_column": raw.get("neighbor_column") or raw.get("new_column"),
+                "distance_column": raw.get("distance_column"),
+                "extreme": inferred_extreme,
+                "metric": raw.get("metric"),
+            },
+            allowed_keys={"type", "group_by", "entity_column", "coordinate_columns", "neighbor_column", "distance_column", "extreme", "metric"},
         )
 
     if op_type == "map_values":
@@ -814,6 +1108,10 @@ def _normalize_column_operation(operation: Any) -> Any:
         )
 
     if op_type == "derive_function_columns":
+        pivot_wider = _parse_dataframe_pivot_expression(raw.get("function"))
+        if pivot_wider is not None:
+            return pivot_wider
+
         source_columns = raw.get("source_columns") or raw.get("columns")
         collapsed_function = re.sub(r"\s+", "", str(raw.get("function") or "").lower())
         if collapsed_function == "lambdarow:dict(zip(row.index,list(row.dropna().values)+[np.nan]*(len(row)-row.count())))":
@@ -859,6 +1157,10 @@ def _normalize_column_operation(operation: Any) -> Any:
         )
 
     if op_type == "derive_column":
+        split_rows = _parse_split_rows_expression(raw.get("expression"))
+        if split_rows is not None:
+            return split_rows
+
         source_columns = raw.get("source_columns") or raw.get("columns")
         match_value = raw.get("match_value", raw.get("present_value", raw.get("active_value", raw.get("value"))))
         if source_columns and match_value is not None and raw.get("expression") is None and raw.get("rowwise_rule") is None:
@@ -1091,6 +1393,9 @@ def _normalize_value_operation(operation: Any) -> Any:
         "strip": "normalize_text",
         "normalize_text": "normalize_text",
         "replace_substring": "replace_substring",
+        "remove_substring": "remove_substring",
+        "delete_substring": "remove_substring",
+        "strip_substring": "remove_substring",
         "strip_prefix": "strip_prefix",
         "coerce_numeric": "coerce_numeric",
         "clip": "clip_values",
@@ -1105,7 +1410,9 @@ def _normalize_value_operation(operation: Any) -> Any:
 
     if op_type == "replace_infrequent":
         column_rules = raw.get("column_rules")
-        if column_rules is None and isinstance(raw.get("rules"), dict):
+        if isinstance(column_rules, dict):
+            column_rules = [_normalize_value_rule(column, rule) for column, rule in column_rules.items()]
+        elif column_rules is None and isinstance(raw.get("rules"), dict):
             column_rules = [_normalize_value_rule(column, rule) for column, rule in raw["rules"].items()]
         elif column_rules is None and isinstance(raw.get("rules"), list):
             column_rules = []
@@ -1194,16 +1501,40 @@ def _normalize_value_operation(operation: Any) -> Any:
         )
 
     if op_type == "replace_substring":
+        replacement = raw.get("new") or raw.get("replacement") or raw.get("replace_with")
+        if replacement is None:
+            return _clean_operation_dict(
+                {
+                    "type": "remove_substring",
+                    "column": raw.get("column"),
+                    "old": raw.get("old") or raw.get("substring") or raw.get("pattern"),
+                    "regex": raw.get("regex"),
+                    "case": raw.get("case"),
+                },
+                allowed_keys={"type", "column", "old", "regex", "case"},
+            )
         return _clean_operation_dict(
             {
                 "type": "replace_substring",
                 "column": raw.get("column"),
                 "old": raw.get("old") or raw.get("substring") or raw.get("pattern"),
-                "new": raw.get("new") or raw.get("replacement") or raw.get("replace_with"),
+                "new": replacement,
                 "regex": raw.get("regex"),
                 "case": raw.get("case"),
             },
             allowed_keys={"type", "column", "old", "new", "regex", "case"},
+        )
+
+    if op_type == "remove_substring":
+        return _clean_operation_dict(
+            {
+                "type": "remove_substring",
+                "column": raw.get("column"),
+                "old": raw.get("old") or raw.get("substring") or raw.get("pattern"),
+                "regex": raw.get("regex"),
+                "case": raw.get("case"),
+            },
+            allowed_keys={"type", "column", "old", "regex", "case"},
         )
 
     if op_type == "strip_prefix":
@@ -1519,6 +1850,12 @@ def _normalize_data_operation(operation: Any) -> Any:
         "circular_shift": "circular_shift",
         "shift_non_nulls_left": "shift_non_nulls_left",
         "shift_nulls_to_top_per_column": "shift_nulls_to_top_per_column",
+        "row_value_counts": "row_value_counts",
+        "row_modes": "row_value_counts",
+        "rowwise_mode": "row_value_counts",
+        "groupwise_extreme_neighbor": "groupwise_extreme_neighbor",
+        "groupwise_nearest_neighbor": "groupwise_extreme_neighbor",
+        "groupwise_farthest_neighbor": "groupwise_extreme_neighbor",
         "expand_date_range_per_group": "expand_date_range_per_group",
         "value_counts_report": "value_counts_report",
     }
@@ -1630,15 +1967,19 @@ def _normalize_generic_transformer_operation(operation: Any) -> Any:
         "drop_columns",
         "reorder_columns",
         "melt",
+        "pivot_wider",
         "drop_duplicate_rows",
         "extract_regex",
         "split_column",
+        "split_rows",
         "map_values",
         "concatenate_columns",
         "explode_column",
         "derive_inverse_columns",
         "derive_function_columns",
         "derive_column",
+        "row_value_counts",
+        "groupwise_extreme_neighbor",
         "derive_first_matching_label",
         "derive_matching_labels",
     }:
@@ -1653,6 +1994,7 @@ def _normalize_generic_transformer_operation(operation: Any) -> Any:
         "fill_missing",
         "normalize_text",
         "replace_substring",
+        "remove_substring",
         "strip_prefix",
         "coerce_numeric",
         "clip_values",
@@ -1675,9 +2017,13 @@ def _normalize_generic_transformer_operation(operation: Any) -> Any:
     if isinstance(normalized, dict) and normalized.get("type") in {
         "cast_column",
         "melt",
+        "pivot_wider",
+        "split_rows",
         "circular_shift",
         "shift_non_nulls_left",
         "shift_nulls_to_top_per_column",
+        "row_value_counts",
+        "groupwise_extreme_neighbor",
         "expand_date_range_per_group",
         "value_counts_report",
     }:
@@ -2002,6 +2348,7 @@ def _normalize_reduce_output_params(params: dict[str, Any]) -> dict[str, Any]:
         "position",
         "n",
         "agg",
+        "separator",
         "anchor_extreme",
         "anchor_occurrence",
         "target_extreme",
@@ -2015,6 +2362,8 @@ def _normalize_reduce_output_params(params: dict[str, Any]) -> dict[str, Any]:
     if isinstance(method, str) and method.strip().lower() in {"to_series", "as_series", "series"}:
         normalized["method"] = "column_to_series"
         normalized.setdefault("name", None)
+    elif isinstance(method, str) and method.strip().lower() in {"aggregate", "agg"}:
+        normalized["method"] = "scalar_agg"
     normalized.update(raw)
     return normalized
 

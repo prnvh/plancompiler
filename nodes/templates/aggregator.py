@@ -90,6 +90,25 @@ def _select_columns(df: pd.DataFrame, aggregation: dict) -> list:
     return resolved
 
 
+def _materialize_aggregation_expression(df: pd.DataFrame, aggregation: dict, index: int) -> dict | None:
+    if "column" not in aggregation:
+        return None
+
+    evaluated = evaluate_dynamic_value(df, aggregation.get("column"))
+    if not isinstance(evaluated, pd.Series):
+        return None
+    if len(evaluated) != len(df):
+        return None
+
+    temp_column = aggregation.get("expression_name") or f"__agg_expr_{index}"
+    df[temp_column] = evaluated.reindex(df.index)
+    return {
+        **aggregation,
+        "column": temp_column,
+        "output": aggregation.get("output") or temp_column,
+    }
+
+
 def _default_output_name(column, aggregation: dict) -> str:
     if aggregation.get("output"):
         return str(aggregation["output"])
@@ -99,10 +118,15 @@ def _default_output_name(column, aggregation: dict) -> str:
 def _expand_aggregation_specs(df: pd.DataFrame, aggregations: list[dict]) -> list[dict]:
     expanded: list[dict] = []
 
-    for aggregation in aggregations:
+    for index, aggregation in enumerate(aggregations):
         op = aggregation["op"]
         if op == "size":
             expanded.append({**aggregation, "output": aggregation.get("output") or "size"})
+            continue
+
+        materialized = _materialize_aggregation_expression(df, aggregation, index)
+        if materialized is not None:
+            expanded.append(materialized)
             continue
 
         if op == "collect_rows":
