@@ -30,6 +30,8 @@ def auto_glue_code(
     parameters: dict,
     node_type_by_id: dict[str, str],
     output_var_by_id: dict[str, str],
+    emit_mode: str = "print",
+    result_variable: str = "result",
 ) -> str:
     predecessor = {}
     for source, target in edges:
@@ -59,12 +61,17 @@ def auto_glue_code(
         lines.append(f"    {out_var} = {func_name}({arg_str})")
 
     last_var = output_var_by_id[ordered_node_ids[-1]]
-    lines.append(f"    print({last_var})")
+    if emit_mode == "print":
+        lines.append(f"    print({last_var})")
+    elif emit_mode == "result":
+        lines.append(f"    {result_variable} = {last_var}")
+    else:
+        raise ValueError(f"Unsupported emit_mode: {emit_mode}")
 
     return "\n".join(lines)
 
 
-def compile_output(plan: dict) -> str:
+def compile_output(plan: dict, *, emit_mode: str = "print", result_variable: str = "result") -> str:
     plan = normalize_plan_shape(plan)
     is_valid, errors = validate_plan(plan)
 
@@ -120,6 +127,8 @@ def compile_output(plan: dict) -> str:
                 parameters,
                 node_type_by_id,
                 output_var_by_id,
+                emit_mode=emit_mode,
+                result_variable=result_variable,
             )
         )
 

@@ -1,5 +1,8 @@
 from pydantic import BaseModel
+
+from nodes.contracts import get_contract_examples, get_contract_param_schema
 from nodes.types import NodeType
+
 
 class Node(BaseModel):
     name: str
@@ -9,283 +12,433 @@ class Node(BaseModel):
     template_path: str
     required_params: list[str] = []
     function_name: str
+    is_source: bool = False
+    when_to_use: str = ""
+    avoid_for: str = ""
+    canonical_params: dict[str, str] = {}
+    param_examples: list[dict] = []
+    planner_enabled: bool = True
+
 
 NODE_REGISTRY = {
-
     # -------------------------
     # INGESTION
     # -------------------------
-
     "CSVParser": Node(
-        name="CSVParser",
-        description="Reads a CSV file from disk and returns a DataFrame",
+        name="Read CSV File",
+        description="Source node. Reads a CSV file from disk and returns a DataFrame.",
         input_type=NodeType.FILE_PATH,
         output_type=NodeType.DATA_FRAME,
         template_path="nodes/templates/csv_parser.py",
         required_params=["file_path"],
-        function_name="csv_parser"
+        function_name="csv_parser",
+        is_source=True,
+        when_to_use="Use when the task starts from a .csv file path on disk.",
+        avoid_for="Do not use for in-memory df inputs or for JSON, Excel, SQL, or HTTP sources.",
     ),
-
     "JSONParser": Node(
-        name="JSONParser",
-        description="Reads a JSON file from disk and returns a DataFrame",
+        name="Read JSON File",
+        description="Source node. Reads a JSON file from disk and returns a DataFrame.",
         input_type=NodeType.FILE_PATH,
         output_type=NodeType.DATA_FRAME,
         template_path="nodes/templates/json_parser.py",
         required_params=["file_path"],
-        function_name="json_parser"
+        function_name="json_parser",
+        is_source=True,
+        when_to_use="Use when the task starts from a JSON file that should become a DataFrame.",
+        avoid_for="Do not use for CSV, Excel, in-memory df, SQL, or HTTP inputs.",
     ),
-
     "ExcelParser": Node(
-        name="ExcelParser",
-        description="Reads an Excel file from disk and returns a DataFrame",
+        name="Read Excel File",
+        description="Source node. Reads an Excel file from disk and returns a DataFrame.",
         input_type=NodeType.FILE_PATH,
         output_type=NodeType.DATA_FRAME,
         template_path="nodes/templates/excel_parser.py",
         required_params=["file_path"],
-        function_name="excel_parser"
+        function_name="excel_parser",
+        is_source=True,
+        when_to_use="Use when the task starts from an .xls or .xlsx file.",
+        avoid_for="Do not use for CSV, JSON, in-memory df, SQL, or HTTP inputs.",
+    ),
+    "DataFrameInput": Node(
+        name="Start From In-Memory DataFrame",
+        description="Source node. Loads an already-existing in-memory DataFrame from the runtime context.",
+        input_type=NodeType.ANY,
+        output_type=NodeType.DATA_FRAME,
+        template_path="nodes/templates/dataframe_input.py",
+        required_params=[],
+        function_name="dataframe_input",
+        is_source=True,
+        when_to_use="Use when the workflow should start from df already in memory instead of reading a file.",
+        avoid_for="Do not use when the task explicitly starts from a file path, database, or HTTP response.",
+        canonical_params=get_contract_param_schema("DataFrameInput"),
+        param_examples=[{}] + get_contract_examples("DataFrameInput"),
     ),
 
     # -------------------------
     # DATAFRAME PROCESSING
     # -------------------------
-
     "SchemaValidator": Node(
-        name="SchemaValidator",
-        description="Validates DataFrame columns and types against expected schema",
+        name="Validate DataFrame Schema",
+        description="Checks that expected columns and dtypes are present while keeping the DataFrame unchanged.",
         input_type=NodeType.DATA_FRAME,
         output_type=NodeType.DATA_FRAME,
         template_path="nodes/templates/schema_validator.py",
         required_params=[],
-        function_name="schema_validator"
+        function_name="schema_validator",
+        when_to_use="Use when the task explicitly asks to validate required columns or dtypes before continuing.",
+        avoid_for="Do not use for filtering, casting, renaming, aggregation, or exporting.",
     ),
-
     "DataTransformer": Node(
-        name="DataTransformer",
-        description="Applies transformations to a DataFrame (rename, filter, cast)",
+        name="Generic Mixed Transformer Fallback",
+        description="Fallback transformer for genuinely mixed dataframe cleanup and reshape tasks when a more specific node is not a clear fit, including generic cast, melt, shifting, and date-range expansion work.",
         input_type=NodeType.DATA_FRAME,
         output_type=NodeType.DATA_FRAME,
         template_path="nodes/templates/data_transformer.py",
         required_params=[],
-        function_name="data_transformer"
+        function_name="data_transformer",
+        when_to_use="Use only as a fallback when the task genuinely mixes multiple transformation families and the specific nodes do not fit cleanly.",
+        avoid_for="Prefer DataFilter for row-keeping logic, DataDeduplicator for duplicate removal, ColumnTransformer for column structure or derived columns, ValueTransformer for cell-value cleanup or bucketing, and DatetimeTransformer for parsing, timezone, or formatting work.",
+        canonical_params=get_contract_param_schema("DataTransformer"),
+        param_examples=get_contract_examples("DataTransformer"),
     ),
-
+    "ColumnTransformer": Node(
+        name="Transform Columns And Derive New Columns",
+        description="Renames, selects, drops, reorders, and reshapes columns, and creates new columns from existing column values or row-wise rules, including regex extraction, column splitting, mapping into new columns, inverse-column derivation, and collapsing indicator columns into labels.",
+        input_type=NodeType.DATA_FRAME,
+        output_type=NodeType.DATA_FRAME,
+        template_path="nodes/templates/column_transformer.py",
+        required_params=[],
+        function_name="column_transformer",
+        when_to_use="Use when the task is mainly about column structure, reshaping columns, creating a new column, row-wise category derivation, reversing dummy or indicator columns into labels, extracting text into new columns, splitting columns, renaming, dropping, selecting, or reordering columns.",
+        avoid_for="Do not use for value cleanup like replacing categories with 'other', missing-value filling, datetime parsing, timezone removal, grouping, joining, or exporting.",
+        canonical_params=get_contract_param_schema("ColumnTransformer"),
+        param_examples=get_contract_examples("ColumnTransformer"),
+    ),
+    "ValueTransformer": Node(
+        name="Transform Column Values",
+        description="Changes values inside columns through replacement, mapping, factorization, filling, normalization, substring replacement, prefix stripping, duration parsing, rounding, or rare-value bucketing with optional reserved values.",
+        input_type=NodeType.DATA_FRAME,
+        output_type=NodeType.DATA_FRAME,
+        template_path="nodes/templates/value_transformer.py",
+        required_params=[],
+        function_name="value_transformer",
+        when_to_use="Use when the task is about changing cell values inside existing columns, such as replace, map, factorize categories, parse textual durations, fill, normalize text, strip prefixes, replace substrings, round numeric values, preserve named values, or replace infrequent values with 'other'.",
+        avoid_for="Do not use for adding or removing columns, datetime parsing or formatting, grouping, joining, or exporting.",
+        canonical_params=get_contract_param_schema("ValueTransformer"),
+        param_examples=get_contract_examples("ValueTransformer"),
+    ),
+    "DatetimeTransformer": Node(
+        name="Parse Format And Normalize Datetime Columns",
+        description="Parses datetime columns or datetime index levels, removes or adjusts timezone information, formats datetime output, and extracts datetime-related values.",
+        input_type=NodeType.DATA_FRAME,
+        output_type=NodeType.DATA_FRAME,
+        template_path="nodes/templates/datetime_transformer.py",
+        required_params=[],
+        function_name="datetime_transformer",
+        when_to_use="Use when the task explicitly mentions datetime parsing, to_datetime, timezone removal, timezone conversion, datetime formatting, datetime-part extraction, or parsing a datetime index level.",
+        avoid_for="Do not use for generic value replacement, column renaming, grouping, joining, or exporting.",
+        canonical_params=get_contract_param_schema("DatetimeTransformer"),
+        param_examples=get_contract_examples("DatetimeTransformer"),
+    ),
     "DataFilter": Node(
-        name="DataFilter",
-        description="Filters rows using pandas query syntax",
+        name="Keep Matching Rows Only",
+        description="Filters a DataFrame down to rows whose boolean condition evaluates to True.",
         input_type=NodeType.DATA_FRAME,
         output_type=NodeType.DATA_FRAME,
         template_path="nodes/templates/data_filter.py",
         required_params=["condition"],
-        function_name="data_filter"
+        function_name="data_filter",
+        when_to_use="Use when the task says filter rows, keep rows, drop rows by a condition, membership test, duplicate-flag rule, or duplicate-aware keep/drop condition.",
+        avoid_for="Do not use for selecting columns, sorting rows, grouping, joining, or exporting files.",
+        canonical_params=get_contract_param_schema("DataFilter"),
+        param_examples=get_contract_examples("DataFilter"),
     ),
-
     "ColumnSelector": Node(
-        name="ColumnSelector",
-        description="Selects specific columns from a DataFrame",
+        name="Keep Specific Columns",
+        description="Returns only the requested subset of columns from a DataFrame.",
         input_type=NodeType.DATA_FRAME,
         output_type=NodeType.DATA_FRAME,
         template_path="nodes/templates/column_selector.py",
         required_params=["columns"],
-        function_name="column_selector"
+        function_name="column_selector",
+        when_to_use="Use when the task says select, keep, pick, or project a subset of columns.",
+        avoid_for="Do not use for row filtering, renaming, casting, sorting, or aggregation.",
     ),
-
     "NullHandler": Node(
-        name="NullHandler",
-        description="Handles null values in a DataFrame (drop or fill)",
+        name="Handle Null Values",
+        description="Drops rows with nulls or fills null values according to the chosen strategy.",
         input_type=NodeType.DATA_FRAME,
         output_type=NodeType.DATA_FRAME,
         template_path="nodes/templates/null_handler.py",
         required_params=["strategy"],
-        function_name="null_handler"
+        function_name="null_handler",
+        when_to_use="Use when the task explicitly asks to drop missing rows or fill missing values.",
+        avoid_for="Do not use for deduplication, filtering by non-null boolean logic, or datatype conversion.",
     ),
-
     "DataSorter": Node(
-        name="DataSorter",
-        description="Sorts a DataFrame by a specified column",
+        name="Sort Rows By Column Values",
+        description="Sorts DataFrame rows by one or more columns in ascending or descending order.",
         input_type=NodeType.DATA_FRAME,
         output_type=NodeType.DATA_FRAME,
         template_path="nodes/templates/data_sorter.py",
         required_params=["by", "ascending"],
-        function_name="data_sorter"
+        function_name="data_sorter",
+        when_to_use="Use when the task says sort rows, order by a column, or rank by sorted values.",
+        avoid_for="Do not use for filtering, grouping, joins, or file export.",
     ),
-
     "TypeCaster": Node(
-        name="TypeCaster",
-        description="Casts DataFrame columns to specified types",
+        name="Cast Columns To Explicit Types",
+        description="Casts one or more DataFrame columns to requested target dtypes.",
         input_type=NodeType.DATA_FRAME,
         output_type=NodeType.DATA_FRAME,
         template_path="nodes/templates/type_caster.py",
         required_params=["mapping"],
-        function_name="type_caster"
+        function_name="type_caster",
+        when_to_use="Use when the task explicitly says astype, cast, convert dtype, or coerce columns to types.",
+        avoid_for="Do not use for renaming, filtering, grouping, or final output reduction.",
     ),
-
     "DataFrameJoin": Node(
-        name="DataFrameJoin",
-        description="Joins two DataFrames on a key",
-        input_type=NodeType.DATA_FRAME,  # you will allow multi-input validation
+        name="Join Two DataFrames",
+        description="Combines two DataFrames using merge-style join semantics on shared keys.",
+        input_type=NodeType.DATA_FRAME,
         output_type=NodeType.DATA_FRAME,
         template_path="nodes/templates/dataframe_join.py",
         required_params=["on", "how"],
-        function_name="dataframe_join"
+        function_name="dataframe_join",
+        when_to_use="Use only when the workflow truly has two DataFrame inputs that must be merged on a key.",
+        avoid_for="Do not use in single-input linear plans. Do not use for concatenation, aggregation, sorting, or file export.",
+        planner_enabled=False,
     ),
-
     "StatsSummary": Node(
-        name="StatsSummary",
-        description="Generates descriptive statistics for a DataFrame",
+        name="Descriptive Statistics Summary",
+        description="Produces a DataFrame of descriptive statistics for numeric and categorical columns.",
         input_type=NodeType.DATA_FRAME,
         output_type=NodeType.DATA_FRAME,
         template_path="nodes/templates/stats_summary.py",
         required_params=[],
-        function_name="stats_summary"
+        function_name="stats_summary",
+        when_to_use="Use when the task asks for summary statistics, describe, min/max, or aggregate profile output.",
+        avoid_for="Do not use for grouped aggregation, row filtering, joins, or exporting.",
     ),
-
     "DataDeduplicator": Node(
-        name="DataDeduplicator",
-        description="Removes duplicate rows from a DataFrame",
+        name="Remove Duplicate Rows",
+        description="Drops duplicate rows from a DataFrame, optionally using a subset of columns.",
         input_type=NodeType.DATA_FRAME,
         output_type=NodeType.DATA_FRAME,
         template_path="nodes/templates/data_deduplicator.py",
         required_params=[],
-        function_name="data_deduplicator"
+        function_name="data_deduplicator",
+        when_to_use="Use when the task says drop duplicates, unique rows, or deduplicate records with a direct keep=first/last style rule.",
+        avoid_for="Do not use for filtering by arbitrary conditions, grouping, or joins.",
+        canonical_params=get_contract_param_schema("DataDeduplicator"),
+        param_examples=get_contract_examples("DataDeduplicator"),
     ),
-
     "Aggregator": Node(
-        name="Aggregator",
-        description="Aggregates a DataFrame — group by, sum, count, mean",
+        name="Grouped Aggregation",
+        description="Groups rows by one or more keys and computes one or more named aggregate outputs, including numeric summaries and grouped collection outputs.",
         input_type=NodeType.DATA_FRAME,
         output_type=NodeType.DATA_FRAME,
         template_path="nodes/templates/aggregator.py",
-        required_params=["group_by", "agg_func"],
-        function_name="aggregator"
+        required_params=["group_keys", "aggregations"],
+        function_name="aggregator",
+        when_to_use="Use when the task explicitly says group by and aggregate, count per group, summarize by category, or collect grouped values into lists.",
+        avoid_for="Do not use for plain row filtering, sorting, joins, or file export.",
+        canonical_params=get_contract_param_schema("Aggregator"),
+        param_examples=get_contract_examples("Aggregator"),
+    ),
+    "DateRangeExpander": Node(
+        name="Expand Missing Dates Within Groups",
+        description="Expands a grouped time series to a complete date range and fills missing values with explicit values or group-level fill strategies.",
+        input_type=NodeType.DATA_FRAME,
+        output_type=NodeType.DATA_FRAME,
+        template_path="nodes/templates/date_range_expander.py",
+        required_params=["group_keys", "date_column"],
+        function_name="date_range_expander",
+        when_to_use="Use when the task asks to create missing daily or periodic rows for each group across a date range and fill in missing values.",
+        avoid_for="Do not use for one-off datetime parsing, row filtering, grouped aggregation, or export.",
+        canonical_params=get_contract_param_schema("DateRangeExpander"),
+        param_examples=get_contract_examples("DateRangeExpander"),
+    ),
+    "ChunkAggregator": Node(
+        name="Aggregate Fixed Row Chunks",
+        description="Aggregates values over fixed-size row chunks from the front or back of a table, optionally using different rules for different column subsets.",
+        input_type=NodeType.DATA_FRAME,
+        output_type=NodeType.DATA_FRAME,
+        template_path="nodes/templates/chunk_aggregator.py",
+        required_params=["rules"],
+        function_name="chunk_aggregator",
+        when_to_use="Use when the task asks for every N rows, chunks of rows, bins of rows, or chunk aggregation from the start or from the back.",
+        avoid_for="Do not use for key-based groupby aggregation, row filtering, or date expansion.",
+        canonical_params=get_contract_param_schema("ChunkAggregator"),
+        param_examples=get_contract_examples("ChunkAggregator"),
+    ),
+    "ValueCountsReporter": Node(
+        name="Report Value Counts As Text",
+        description="Builds a text report of per-column value counts for one or more columns.",
+        input_type=NodeType.DATA_FRAME,
+        output_type=NodeType.SCALAR,
+        template_path="nodes/templates/value_counts_reporter.py",
+        required_params=[],
+        function_name="value_counts_reporter",
+        when_to_use="Use when the task asks for value_counts output, counts by unique value, or a text summary rather than a DataFrame.",
+        avoid_for="Do not use for numeric aggregation, row filtering, or in-place column transformation.",
+        canonical_params=get_contract_param_schema("ValueCountsReporter"),
+        param_examples=get_contract_examples("ValueCountsReporter"),
+    ),
+    "ReduceOutput": Node(
+        name="Return Final DataFrame Series Or Scalar",
+        description="Turns the current object into the final in-memory answer as a DataFrame, Series, or scalar value, including columnwise summary outputs.",
+        input_type=NodeType.ANY,
+        output_type=NodeType.ANY,
+        template_path="nodes/templates/reduce_output.py",
+        required_params=[],
+        function_name="reduce_output",
+        when_to_use="Use when the task asks for a final column, final scalar statistic, or a final per-column summary Series such as an index or extreme summary, instead of writing a file.",
+        avoid_for="Do not use for file export, SQL storage, or HTTP serving.",
+        canonical_params=get_contract_param_schema("ReduceOutput"),
+        param_examples=get_contract_examples("ReduceOutput"),
     ),
 
     # -------------------------
     # STORAGE
     # -------------------------
-
     "SQLiteConnector": Node(
-        name="SQLiteConnector",
-        description="Stores a DataFrame into a SQLite database table",
+        name="Write DataFrame To SQLite",
+        description="Stores a DataFrame into a SQLite database table and returns a database handle.",
         input_type=NodeType.DATA_FRAME,
         output_type=NodeType.DB_HANDLE,
         template_path="nodes/templates/sqlite_connector.py",
         required_params=["db_path", "table_name"],
-        function_name="sqlite_connector"
+        function_name="sqlite_connector",
+        when_to_use="Use when the task explicitly says to write rows into a SQLite database table.",
+        avoid_for="Do not use for in-memory dataframe answers, filtering, sorting, or reading an existing database as the source.",
     ),
-
     "SQLiteReader": Node(
-        name="SQLiteReader",
-        description="Connects to an existing SQLite database and returns a DB handle",
+        name="Open Existing SQLite Database",
+        description="Source node. Opens an existing SQLite database from disk and returns a database handle.",
         input_type=NodeType.FILE_PATH,
         output_type=NodeType.DB_HANDLE,
         template_path="nodes/templates/sqlite_reader.py",
         required_params=["db_path"],
-        function_name="sqlite_reader"
+        function_name="sqlite_reader",
+        is_source=True,
+        when_to_use="Use when the workflow starts from an already-existing SQLite database file on disk.",
+        avoid_for="Do not use immediately after SQLiteConnector as a middle step in a linear plan.",
     ),
-
     "PostgresConnector": Node(
-        name="PostgresConnector",
-        description="Stores a DataFrame into a PostgreSQL database table",
+        name="Write DataFrame To Postgres",
+        description="Stores a DataFrame into a PostgreSQL table and returns a database handle.",
         input_type=NodeType.DATA_FRAME,
         output_type=NodeType.DB_HANDLE,
         template_path="nodes/templates/postgres_connector.py",
         required_params=["connection_string", "table_name"],
-        function_name="postgres_connector"
+        function_name="postgres_connector",
+        when_to_use="Use when the task explicitly says to store rows in PostgreSQL.",
+        avoid_for="Do not use for in-memory answers, SQLite-specific tasks, or simple dataframe transforms.",
     ),
-
     "QueryEngine": Node(
-        name="QueryEngine",
-        description="Runs SQL queries against a DBHandle and returns a DataFrame",
+        name="Run SQL Query On Database Handle",
+        description="Runs SQL against a database handle and returns the query result as a DataFrame.",
         input_type=NodeType.DB_HANDLE,
         output_type=NodeType.DATA_FRAME,
         template_path="nodes/templates/query_engine.py",
         required_params=["query"],
-        function_name="query_engine"
+        function_name="query_engine",
+        when_to_use="Use after a DB handle exists and the task explicitly asks for a SQL query result.",
+        avoid_for="Do not use for pandas-only dataframe transformations or file exports without querying first.",
     ),
 
     # -------------------------
     # EXPORTERS
     # -------------------------
-
     "CSVExporter": Node(
-        name="CSVExporter",
-        description="Exports a DataFrame to a CSV file",
+        name="Write DataFrame To CSV File",
+        description="Exports a DataFrame to a CSV file on disk and returns the output path.",
         input_type=NodeType.DATA_FRAME,
         output_type=NodeType.FILE_PATH,
         template_path="nodes/templates/csv_exporter.py",
         required_params=["output_path"],
-        function_name="csv_exporter"
+        function_name="csv_exporter",
+        when_to_use="Use only when the task explicitly says to save or export a CSV file.",
+        avoid_for="Do not use when the task wants an in-memory DataFrame, Series, or scalar answer.",
     ),
-
     "JSONExporter": Node(
-        name="JSONExporter",
-        description="Exports a DataFrame to a JSON file",
+        name="Write DataFrame To JSON File",
+        description="Exports a DataFrame to a JSON file on disk and returns the output path.",
         input_type=NodeType.DATA_FRAME,
         output_type=NodeType.FILE_PATH,
         template_path="nodes/templates/json_exporter.py",
         required_params=["output_path"],
-        function_name="json_exporter"
+        function_name="json_exporter",
+        when_to_use="Use only when the task explicitly says to save or export JSON output.",
+        avoid_for="Do not use when the task wants an in-memory DataFrame, Series, or scalar answer.",
     ),
 
     # -------------------------
     # API / HTTP
     # -------------------------
-
     "RESTEndpoint": Node(
-        name="RESTEndpoint",
-        description="Exposes a DBHandle as a REST API endpoint using Flask",
+        name="Expose Database Result As REST API",
+        description="Serves data from a database handle through a Flask REST endpoint.",
         input_type=NodeType.DB_HANDLE,
         output_type=NodeType.HTTP_RESPONSE,
         template_path="nodes/templates/rest_endpoint.py",
         required_params=["route", "port"],
-        function_name="rest_endpoint"
+        function_name="rest_endpoint",
+        when_to_use="Use only when the task explicitly asks to expose data through an HTTP endpoint.",
+        avoid_for="Do not use for pandas-only transforms, file exports, or in-memory answers.",
     ),
-
     "AuthMiddleware": Node(
-        name="AuthMiddleware",
-        description="Adds API key authentication to an HTTP endpoint",
+        name="Add API Key Authentication",
+        description="Wraps an HTTP endpoint with API key authentication logic.",
         input_type=NodeType.HTTP_RESPONSE,
         output_type=NodeType.HTTP_RESPONSE,
         template_path="nodes/templates/auth_middleware.py",
         required_params=["api_key_env_var"],
-        function_name="auth_middleware"
+        function_name="auth_middleware",
+        when_to_use="Use when an existing HTTP endpoint must be protected with an API key.",
+        avoid_for="Do not use for dataframe transforms, SQL querying, or file export.",
     ),
-
     "ErrorHandler": Node(
-        name="ErrorHandler",
-        description="Wraps any output in structured error handling",
+        name="Wrap Output In Structured Error Handling",
+        description="Adds structured error handling around an existing output flow.",
         input_type=NodeType.ANY,
         output_type=NodeType.HTTP_RESPONSE,
         template_path="nodes/templates/error_handler.py",
         required_params=[],
-        function_name="error_handler"
+        function_name="error_handler",
+        when_to_use="Use when the task explicitly asks for error-handled service or endpoint behavior.",
+        avoid_for="Do not use as a generic dataframe transformation node.",
     ),
 
     # -------------------------
     # OBSERVABILITY
     # -------------------------
-
     "Logger": Node(
-        name="Logger",
-        description="Logs intermediate data without modifying it",
+        name="Log Intermediate Value",
+        description="Logs an intermediate value and passes it through unchanged.",
         input_type=NodeType.ANY,
         output_type=NodeType.ANY,
         template_path="nodes/templates/logger.py",
         required_params=[],
-        function_name="logger"
+        function_name="logger",
+        when_to_use="Use when the task explicitly asks to log, inspect, or print an intermediate result.",
+        avoid_for="Do not use when no logging is requested.",
     ),
+
     # -------------------------
     # ADAPTERS / TYPE BRIDGES
     # -------------------------
-    
     "HTTPToDataFrame": Node(
-        name="HTTPToDataFrame",
-        description="Converts HTTP JSON response into a DataFrame",
+        name="Convert HTTP JSON To DataFrame",
+        description="Converts an HTTP JSON response payload into a DataFrame.",
         input_type=NodeType.HTTP_RESPONSE,
         output_type=NodeType.DATA_FRAME,
         template_path="nodes/templates/http_to_dataframe.py",
         required_params=[],
-        function_name="http_to_dataframe"
+        function_name="http_to_dataframe",
+        when_to_use="Use after an HTTP response node when the next steps need a DataFrame.",
+        avoid_for="Do not use for file inputs, SQL handles, or in-memory df sources that are already DataFrames.",
     ),
 }

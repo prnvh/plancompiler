@@ -7,10 +7,14 @@ import pandas as pd
 
 from benchmark.ds1000.loader import DS1000Task, load_ds1000_tasks, normalize_ds1000_task
 from benchmark.ds1000.subset import (
+    apply_linear_pandas_manifest,
+    build_linear_pandas_manifest,
     classify_linear_pandas_task,
     filter_linear_pandas_tasks,
     is_branching_task,
     is_pandas_task,
+    load_linear_pandas_manifest,
+    write_linear_pandas_manifest,
 )
 
 
@@ -99,6 +103,8 @@ df, order = test_input
         self.assertEqual(task.source_name, "df")
         self.assertEqual(task.additional_inputs["order"], [2, 0, 1])
         self.assertEqual(list(task.dataframe.columns), ["value"])
+        self.assertEqual(task.metadata["test_case_count"], 1)
+        self.assertEqual(len(task.cases), 1)
 
     def test_load_tasks_supports_jsonl_gz(self):
         record = {
@@ -311,6 +317,41 @@ df = test_input
         self.assertEqual(len(rejected), 1)
         self.assertEqual(rejected[0].task_id, "ds_task_07")
         self.assertIn("branching_required", rejected[0].reasons)
+
+    def test_manifest_round_trip_freezes_selected_and_rejected_ids(self):
+        selected_task = normalize_ds1000_task(
+            {
+                "task_id": "ds_task_manifest_keep",
+                "prompt": "Using pandas, fillna and sort the dataframe.",
+                "df": [{"name": "A", "score": 1}],
+                "expected": [{"name": "A", "score": 1}],
+                "expected_result_kind": "dataframe",
+                "metadata": {"tags": ["pandas"]},
+            }
+        )
+        rejected_task = {
+            "task_id": "ds_task_manifest_drop",
+            "prompt": "Use pandas to concat two dataframes and compare them.",
+            "metadata": {"libraries": ["pandas"], "dataframes": ["left", "right"]},
+        }
+
+        manifest = build_linear_pandas_manifest([selected_task, rejected_task])
+        self.assertEqual(manifest["selected_task_ids"], ["ds_task_manifest_keep"])
+        self.assertEqual(manifest["rejections"][0]["task_id"], "ds_task_manifest_drop")
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path = Path(tmpdir) / "subset_manifest.json"
+            write_linear_pandas_manifest([selected_task, rejected_task], path)
+            loaded_manifest = load_linear_pandas_manifest(path)
+
+        selected, rejected = apply_linear_pandas_manifest(
+            [selected_task, rejected_task],
+            loaded_manifest,
+            include_rejections=True,
+        )
+
+        self.assertEqual([task.task_id for task in selected], ["ds_task_manifest_keep"])
+        self.assertEqual([decision.task_id for decision in rejected], ["ds_task_manifest_drop"])
 
 
 if __name__ == "__main__":

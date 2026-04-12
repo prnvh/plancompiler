@@ -32,6 +32,7 @@ if str(REPO_ROOT) not in sys.path:
 from benchmark.criteria import check_criteria
 from core.compiler import compile_output
 from core.plan_utils import normalize_plan_shape
+from core.planner import build_planner_payload, get_planner_model, get_planner_pricing
 from core.validator import validate_plan
 from nodes.registry import NODE_REGISTRY
 
@@ -39,9 +40,7 @@ N_RUNS = 3
 DEFAULT_TIMEOUT_SECONDS = 30
 ABLATION_MODES = ["no-registry", "blind-types", "no-linearize"]
 
-# gpt-4o-mini pricing
-PLANNER_INPUT_PRICE_PER_1M = 0.15
-PLANNER_OUTPUT_PRICE_PER_1M = 0.60
+PLANNER_PRICING = get_planner_pricing()
 
 
 def empty_result(task_id, description, mode):
@@ -97,8 +96,8 @@ def _planner_cost(input_tokens, output_tokens):
         return None
 
     return round(
-        (input_tokens / 1_000_000) * PLANNER_INPUT_PRICE_PER_1M
-        + (output_tokens / 1_000_000) * PLANNER_OUTPUT_PRICE_PER_1M,
+        (input_tokens / 1_000_000) * PLANNER_PRICING["input"]
+        + (output_tokens / 1_000_000) * PLANNER_PRICING["output"],
         6,
     )
 
@@ -119,8 +118,7 @@ Response format must be:
   "nodes": [],
   "edges": [],
   "parameters": {},
-  "flags": [],
-  "glue_code": ""
+  "flags": []
 }
 
 Rules:
@@ -129,7 +127,6 @@ Rules:
 - Every edge must be type-compatible.
 - If a required node is missing, add flag MISSING_NODE.
 - If credentials are needed, add flag REQUIRED_CREDENTIAL.
-- Glue code must follow topological execution order.
 - Return raw JSON only.
 """
 
@@ -137,11 +134,16 @@ Rules:
 def _build_node_summary(include_types=True):
     lines = []
     for name, node in NODE_REGISTRY.items():
-        parts = [f"- {name}: {node.description}"]
+        required_params = ", ".join(node.required_params) if node.required_params else "none"
+        parts = [
+            f"- {name} [{node.name}]: {node.description}",
+            f"use when: {node.when_to_use}",
+            f"avoid for: {node.avoid_for}",
+        ]
         if include_types:
             parts.append(f"input: {node.input_type}")
             parts.append(f"output: {node.output_type}")
-        parts.append(f"required params: {node.required_params}")
+        parts.append(f"required params: {required_params}")
         lines.append(" | ".join(parts))
     return "\n".join(lines)
 
@@ -156,14 +158,7 @@ def _raw_chat_completion(system_prompt, user_prompt):
         "Authorization": f"Bearer {api_key}",
     }
 
-    payload = {
-        "model": "gpt-4o-mini",
-        "messages": [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_prompt},
-        ],
-        "temperature": 0,
-    }
+    payload = build_planner_payload(system_prompt, user_prompt, get_planner_model())
 
     last_error = None
 
@@ -215,7 +210,9 @@ def _raw_chat_completion(system_prompt, user_prompt):
 
 
 def _normalize_no_linearize(plan):
-    return normalize_plan_shape(plan)
+    normalized = normalize_plan_shape(plan)
+    normalized.pop("glue_code", None)
+    return normalized
 
 
 def _get_plan_custom(task_description, include_registry=True, include_types=True, linearize=True):

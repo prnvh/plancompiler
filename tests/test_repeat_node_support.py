@@ -2,7 +2,7 @@ import unittest
 
 from core.compiler import compile_output
 from core.plan_utils import normalize_plan_shape
-from core.planner import normalize_plan, plan_from_nodes
+from core.planner import SYSTEM_PROMPT, normalize_plan, plan_from_nodes
 from core.validator import validate_plan
 
 
@@ -101,7 +101,30 @@ class RepeatNodeSupportTests(unittest.TestCase):
             msg=f"Expected duplicate-id error, got: {errors}",
         )
 
-    def test_normalize_plan_linearizes_with_instance_ids(self):
+    def test_multiple_terminal_sinks_are_rejected(self):
+        bad_plan = {
+            "nodes": [
+                {"id": "n1", "type": "CSVParser"},
+                {"id": "n2", "type": "DataFilter"},
+                {"id": "n3", "type": "DataFilter"},
+            ],
+            "edges": [["n1", "n2"], ["n1", "n3"]],
+            "parameters": {
+                "n1": {"file_path": "data.csv"},
+                "n2": {"condition": "salary > 35000"},
+                "n3": {"condition": "salary < 80000"},
+            },
+        }
+
+        is_valid, errors = validate_plan(bad_plan)
+
+        self.assertFalse(is_valid)
+        self.assertTrue(
+            any("INVALID_TERMINAL_SHAPE" in error for error in errors),
+            msg=errors,
+        )
+
+    def test_normalize_plan_preserves_declared_edges(self):
         messy_plan = {
             "nodes": [
                 {"id": "step1", "type": "CSVParser"},
@@ -119,8 +142,12 @@ class RepeatNodeSupportTests(unittest.TestCase):
         normalized = normalize_plan(messy_plan)
         self.assertEqual(
             normalized["edges"],
-            [["step1", "step2"], ["step2", "step3"]],
+            [["step2", "step3"]],
         )
+
+        is_valid, errors = validate_plan(normalized)
+        self.assertFalse(is_valid)
+        self.assertTrue(any("INPUT_ARITY" in error or "ORPHAN_NODE" in error for error in errors), msg=errors)
 
     def test_plan_from_nodes_generates_unique_instance_ids(self):
         plan = plan_from_nodes(["CSVParser", "DataFilter", "DataFilter"])
@@ -134,6 +161,23 @@ class RepeatNodeSupportTests(unittest.TestCase):
             ],
         )
         self.assertEqual(plan["edges"], [["n1", "n2"], ["n2", "n3"]])
+        self.assertNotIn("glue_code", plan)
+
+    def test_normalize_plan_drops_glue_code_field(self):
+        plan = normalize_plan({
+            "nodes": [
+                {"id": "n1", "type": "CSVParser"},
+            ],
+            "edges": [],
+            "parameters": {"n1": {"file_path": "data.csv"}},
+            "glue_code": "result = n1.output",
+        })
+
+        self.assertNotIn("glue_code", plan)
+
+    def test_planner_prompt_no_longer_mentions_glue_code(self):
+        self.assertNotIn("glue_code", SYSTEM_PROMPT)
+        self.assertNotIn("Glue code", SYSTEM_PROMPT)
 
 
 if __name__ == "__main__":

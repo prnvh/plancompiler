@@ -1,0 +1,876 @@
+{
+  "dataset": "benchmark/ds1000/upstream/ds1000.jsonl.gz",
+  "library": "Pandas",
+  "loaded_tasks": 223,
+  "filtered_tasks": 158,
+  "requested_limit": 15,
+  "run_count": 15,
+  "pass_count": 13,
+  "results": [
+    {
+      "task_id": "ds1000_pandas_2",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": true,
+      "comparison_passed": false,
+      "validation_errors": [],
+      "compile_error": null,
+      "runtime_error": null,
+      "comparison_failures": [
+        "[test_case_id=2] DataFrame.iloc[:, 1] (column name=\"Qu2\") are different\n\nDataFrame.iloc[:, 1] (column name=\"Qu2\") values are different (33.33333 %)\n[index]: [0, 1, 2, 3, 4, 5, 6, 7, 8]\n[left]:  [apple, potato, sausage, cheese, cheese, potato, cheese, potato, egg]\n[right]: [other, potato, other, cheese, cheese, potato, cheese, potato, other]\nAt positional index 0, first diff: apple != other"
+      ],
+      "plan": {
+        "nodes": [
+          {
+            "id": "n1",
+            "type": "DataFrameInput"
+          },
+          {
+            "id": "n2",
+            "type": "ValueTransformer"
+          },
+          {
+            "id": "n3",
+            "type": "ReduceOutput"
+          }
+        ],
+        "edges": [
+          [
+            "n1",
+            "n2"
+          ],
+          [
+            "n2",
+            "n3"
+          ]
+        ],
+        "parameters": {
+          "n1": {},
+          "n2": {
+            "operations": [
+              {
+                "type": "replace_infrequent",
+                "columns": [
+                  "Qu1",
+                  "Qu3"
+                ],
+                "threshold": 2,
+                "replacement": "other"
+              }
+            ]
+          },
+          "n3": {}
+        },
+        "flags": []
+      }
+    },
+    {
+      "task_id": "ds1000_pandas_3",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": true,
+      "comparison_passed": true,
+      "validation_errors": [],
+      "compile_error": null,
+      "runtime_error": null,
+      "comparison_failures": [],
+      "plan": {
+        "nodes": [
+          {
+            "id": "n1",
+            "type": "DataFrameInput"
+          },
+          {
+            "id": "n2",
+            "type": "ValueTransformer"
+          },
+          {
+            "id": "n3",
+            "type": "ReduceOutput"
+          }
+        ],
+        "edges": [
+          [
+            "n1",
+            "n2"
+          ],
+          [
+            "n2",
+            "n3"
+          ]
+        ],
+        "parameters": {
+          "n1": {},
+          "n2": {
+            "operations": [
+              {
+                "type": "replace_infrequent",
+                "columns": [
+                  "Qu1",
+                  "Qu2",
+                  "Qu3"
+                ],
+                "threshold": 3,
+                "replacement": "other"
+              }
+            ]
+          },
+          "n3": {}
+        },
+        "flags": []
+      }
+    },
+    {
+      "task_id": "ds1000_pandas_4",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": true,
+      "comparison_passed": true,
+      "validation_errors": [],
+      "compile_error": null,
+      "runtime_error": null,
+      "comparison_failures": [],
+      "plan": {
+        "nodes": [
+          {
+            "id": "n1",
+            "type": "DataFrameInput"
+          },
+          {
+            "id": "n2",
+            "type": "ValueTransformer"
+          },
+          {
+            "id": "n3",
+            "type": "ReduceOutput"
+          }
+        ],
+        "edges": [
+          [
+            "n1",
+            "n2"
+          ],
+          [
+            "n2",
+            "n3"
+          ]
+        ],
+        "parameters": {
+          "n1": {},
+          "n2": {
+            "operations": [
+              {
+                "type": "replace_infrequent",
+                "columns": [
+                  "Qu1",
+                  "Qu2",
+                  "Qu3"
+                ],
+                "threshold": 2,
+                "replacement": "other"
+              }
+            ]
+          },
+          "n3": {}
+        },
+        "flags": []
+      }
+    },
+    {
+      "task_id": "ds1000_pandas_5",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": true,
+      "comparison_passed": true,
+      "validation_errors": [],
+      "compile_error": null,
+      "runtime_error": null,
+      "comparison_failures": [],
+      "plan": {
+        "nodes": [
+          {
+            "id": "n1",
+            "type": "DataFrameInput"
+          },
+          {
+            "id": "n2",
+            "type": "ValueTransformer"
+          },
+          {
+            "id": "n3",
+            "type": "ReduceOutput"
+          }
+        ],
+        "edges": [
+          [
+            "n1",
+            "n2"
+          ],
+          [
+            "n2",
+            "n3"
+          ]
+        ],
+        "parameters": {
+          "n1": {},
+          "n2": {
+            "operations": [
+              {
+                "type": "replace_infrequent",
+                "column_rules": [
+                  {
+                    "column": "Qu1",
+                    "threshold": 3,
+                    "replacement": "other"
+                  },
+                  {
+                    "column": "Qu2",
+                    "threshold": 2,
+                    "replacement": "other"
+                  },
+                  {
+                    "column": "Qu3",
+                    "threshold": 2,
+                    "replacement": "other"
+                  }
+                ]
+              }
+            ]
+          },
+          "n3": {}
+        },
+        "flags": []
+      }
+    },
+    {
+      "task_id": "ds1000_pandas_6",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": true,
+      "comparison_passed": false,
+      "validation_errors": [],
+      "compile_error": null,
+      "runtime_error": null,
+      "comparison_failures": [
+        "[test_case_id=1] DataFrame.iloc[:, 2] (column name=\"Qu3\") are different\n\nDataFrame.iloc[:, 2] (column name=\"Qu3\") values are different (11.11111 %)\n[index]: [0, 1, 2, 3, 4, 5, 6, 7, 8]\n[left]:  [other, potato, other, cheese, cheese, potato, cheese, potato, other]\n[right]: [apple, potato, other, cheese, cheese, potato, cheese, potato, other]\nAt positional index 0, first diff: other != apple"
+      ],
+      "plan": {
+        "nodes": [
+          {
+            "id": "n1",
+            "type": "DataFrameInput"
+          },
+          {
+            "id": "n2",
+            "type": "ValueTransformer"
+          },
+          {
+            "id": "n3",
+            "type": "ReduceOutput"
+          }
+        ],
+        "edges": [
+          [
+            "n1",
+            "n2"
+          ],
+          [
+            "n2",
+            "n3"
+          ]
+        ],
+        "parameters": {
+          "n1": {},
+          "n2": {
+            "operations": [
+              {
+                "type": "replace_infrequent",
+                "column_rules": [
+                  {
+                    "column": "Qu1",
+                    "threshold": 3,
+                    "replacement": "other",
+                    "preserve_values": [
+                      "apple"
+                    ]
+                  },
+                  {
+                    "column": "Qu2",
+                    "threshold": 2,
+                    "replacement": "other"
+                  },
+                  {
+                    "column": "Qu3",
+                    "threshold": 2,
+                    "replacement": "other"
+                  }
+                ]
+              }
+            ]
+          },
+          "n3": {}
+        },
+        "flags": []
+      }
+    },
+    {
+      "task_id": "ds1000_pandas_7",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": true,
+      "comparison_passed": true,
+      "validation_errors": [],
+      "compile_error": null,
+      "runtime_error": null,
+      "comparison_failures": [],
+      "plan": {
+        "nodes": [
+          {
+            "id": "n1",
+            "type": "DataFrameInput"
+          },
+          {
+            "id": "n2",
+            "type": "DataFilter"
+          }
+        ],
+        "edges": [
+          [
+            "n1",
+            "n2"
+          ]
+        ],
+        "parameters": {
+          "n1": {},
+          "n2": {
+            "condition": "(keep_if_dup == 'Yes') or ~url.duplicated()"
+          }
+        },
+        "flags": []
+      }
+    },
+    {
+      "task_id": "ds1000_pandas_8",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": true,
+      "comparison_passed": true,
+      "validation_errors": [],
+      "compile_error": null,
+      "runtime_error": null,
+      "comparison_failures": [],
+      "plan": {
+        "nodes": [
+          {
+            "id": "n1",
+            "type": "DataFrameInput"
+          },
+          {
+            "id": "n2",
+            "type": "DataFilter"
+          }
+        ],
+        "edges": [
+          [
+            "n1",
+            "n2"
+          ]
+        ],
+        "parameters": {
+          "n1": {},
+          "n2": {
+            "condition": "(drop_if_dup == 'No') or ~url.duplicated()"
+          }
+        },
+        "flags": []
+      }
+    },
+    {
+      "task_id": "ds1000_pandas_9",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": true,
+      "comparison_passed": true,
+      "validation_errors": [],
+      "compile_error": null,
+      "runtime_error": null,
+      "comparison_failures": [],
+      "plan": {
+        "nodes": [
+          {
+            "id": "n1",
+            "type": "DataFrameInput"
+          },
+          {
+            "id": "n2",
+            "type": "DataFilter"
+          }
+        ],
+        "edges": [
+          [
+            "n1",
+            "n2"
+          ]
+        ],
+        "parameters": {
+          "n1": {},
+          "n2": {
+            "condition": "(keep_if_dup == 'Yes') or (~url.duplicated(keep='last'))"
+          }
+        },
+        "flags": []
+      }
+    },
+    {
+      "task_id": "ds1000_pandas_11",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": true,
+      "comparison_passed": true,
+      "validation_errors": [],
+      "compile_error": null,
+      "runtime_error": null,
+      "comparison_failures": [],
+      "plan": {
+        "nodes": [
+          {
+            "id": "n1",
+            "type": "DataFrameInput"
+          },
+          {
+            "id": "n2",
+            "type": "DatetimeTransformer"
+          },
+          {
+            "id": "n3",
+            "type": "ReduceOutput"
+          }
+        ],
+        "edges": [
+          [
+            "n1",
+            "n2"
+          ],
+          [
+            "n2",
+            "n3"
+          ]
+        ],
+        "parameters": {
+          "n1": {},
+          "n2": {
+            "operations": [
+              {
+                "type": "parse_datetime",
+                "column": "datetime"
+              },
+              {
+                "type": "remove_timezone",
+                "column": "datetime",
+                "strategy": "preserve_wall_time"
+              }
+            ]
+          },
+          "n3": {}
+        },
+        "flags": []
+      }
+    },
+    {
+      "task_id": "ds1000_pandas_12",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": true,
+      "comparison_passed": true,
+      "validation_errors": [],
+      "compile_error": null,
+      "runtime_error": null,
+      "comparison_failures": [],
+      "plan": {
+        "nodes": [
+          {
+            "id": "n1",
+            "type": "DataFrameInput"
+          },
+          {
+            "id": "n2",
+            "type": "DatetimeTransformer"
+          },
+          {
+            "id": "n3",
+            "type": "ReduceOutput"
+          }
+        ],
+        "edges": [
+          [
+            "n1",
+            "n2"
+          ],
+          [
+            "n2",
+            "n3"
+          ]
+        ],
+        "parameters": {
+          "n1": {},
+          "n2": {
+            "operations": [
+              {
+                "type": "remove_timezone",
+                "column": "datetime",
+                "strategy": "preserve_wall_time"
+              }
+            ]
+          },
+          "n3": {}
+        },
+        "flags": []
+      }
+    },
+    {
+      "task_id": "ds1000_pandas_13",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": true,
+      "comparison_passed": true,
+      "validation_errors": [],
+      "compile_error": null,
+      "runtime_error": null,
+      "comparison_failures": [],
+      "plan": {
+        "nodes": [
+          {
+            "id": "n1",
+            "type": "DataFrameInput"
+          },
+          {
+            "id": "n2",
+            "type": "DatetimeTransformer"
+          },
+          {
+            "id": "n3",
+            "type": "DataSorter"
+          },
+          {
+            "id": "n4",
+            "type": "ReduceOutput"
+          }
+        ],
+        "edges": [
+          [
+            "n1",
+            "n2"
+          ],
+          [
+            "n2",
+            "n3"
+          ],
+          [
+            "n3",
+            "n4"
+          ]
+        ],
+        "parameters": {
+          "n1": {},
+          "n2": {
+            "operations": [
+              {
+                "type": "parse_datetime",
+                "column": "datetime"
+              },
+              {
+                "type": "remove_timezone",
+                "column": "datetime",
+                "strategy": "preserve_wall_time"
+              },
+              {
+                "type": "format_datetime",
+                "column": "datetime",
+                "format": "%d-%b-%Y %H:%M:%S"
+              }
+            ]
+          },
+          "n3": {
+            "by": [
+              "datetime"
+            ],
+            "ascending": true
+          },
+          "n4": {}
+        },
+        "flags": []
+      }
+    },
+    {
+      "task_id": "ds1000_pandas_14",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": true,
+      "comparison_passed": true,
+      "validation_errors": [],
+      "compile_error": null,
+      "runtime_error": null,
+      "comparison_failures": [],
+      "plan": {
+        "nodes": [
+          {
+            "id": "n1",
+            "type": "DataFrameInput"
+          },
+          {
+            "id": "n2",
+            "type": "DatetimeTransformer"
+          },
+          {
+            "id": "n3",
+            "type": "DataSorter"
+          },
+          {
+            "id": "n4",
+            "type": "ReduceOutput"
+          }
+        ],
+        "edges": [
+          [
+            "n1",
+            "n2"
+          ],
+          [
+            "n2",
+            "n3"
+          ],
+          [
+            "n3",
+            "n4"
+          ]
+        ],
+        "parameters": {
+          "n1": {},
+          "n2": {
+            "operations": [
+              {
+                "type": "parse_datetime",
+                "column": "datetime"
+              },
+              {
+                "type": "remove_timezone",
+                "column": "datetime",
+                "strategy": "preserve_wall_time"
+              }
+            ]
+          },
+          "n3": {
+            "by": "datetime",
+            "ascending": true
+          },
+          "n4": {}
+        },
+        "flags": []
+      }
+    },
+    {
+      "task_id": "ds1000_pandas_20",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": true,
+      "comparison_passed": true,
+      "validation_errors": [],
+      "compile_error": null,
+      "runtime_error": null,
+      "comparison_failures": [],
+      "plan": {
+        "nodes": [
+          {
+            "id": "n1",
+            "type": "DataFrameInput"
+          },
+          {
+            "id": "n2",
+            "type": "ColumnTransformer"
+          },
+          {
+            "id": "n3",
+            "type": "ReduceOutput"
+          }
+        ],
+        "edges": [
+          [
+            "n1",
+            "n2"
+          ],
+          [
+            "n2",
+            "n3"
+          ]
+        ],
+        "parameters": {
+          "n1": {},
+          "n2": {
+            "operations": [
+              {
+                "type": "derive_first_matching_label",
+                "new_column": "category",
+                "source_columns": [
+                  "A",
+                  "B",
+                  "C",
+                  "D"
+                ],
+                "match_value": 1,
+                "labels": {
+                  "A": "A",
+                  "B": "B",
+                  "C": "C",
+                  "D": "D"
+                }
+              }
+            ]
+          },
+          "n3": {}
+        },
+        "flags": []
+      }
+    },
+    {
+      "task_id": "ds1000_pandas_21",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": true,
+      "comparison_passed": true,
+      "validation_errors": [],
+      "compile_error": null,
+      "runtime_error": null,
+      "comparison_failures": [],
+      "plan": {
+        "nodes": [
+          {
+            "id": "n1",
+            "type": "DataFrameInput"
+          },
+          {
+            "id": "n2",
+            "type": "ColumnTransformer"
+          },
+          {
+            "id": "n3",
+            "type": "ReduceOutput"
+          }
+        ],
+        "edges": [
+          [
+            "n1",
+            "n2"
+          ],
+          [
+            "n2",
+            "n3"
+          ]
+        ],
+        "parameters": {
+          "n1": {},
+          "n2": {
+            "operations": [
+              {
+                "type": "derive_first_matching_label",
+                "new_column": "category",
+                "source_columns": [
+                  "A",
+                  "B",
+                  "C",
+                  "D"
+                ],
+                "match_value": 0,
+                "labels": {
+                  "A": "A",
+                  "B": "B",
+                  "C": "C",
+                  "D": "D"
+                }
+              }
+            ]
+          },
+          "n3": {}
+        },
+        "flags": []
+      }
+    },
+    {
+      "task_id": "ds1000_pandas_22",
+      "plan_success": true,
+      "validation_success": true,
+      "compile_success": true,
+      "run_success": true,
+      "comparison_passed": true,
+      "validation_errors": [],
+      "compile_error": null,
+      "runtime_error": null,
+      "comparison_failures": [],
+      "plan": {
+        "nodes": [
+          {
+            "id": "n1",
+            "type": "DataFrameInput"
+          },
+          {
+            "id": "n2",
+            "type": "ColumnTransformer"
+          },
+          {
+            "id": "n3",
+            "type": "ReduceOutput"
+          }
+        ],
+        "edges": [
+          [
+            "n1",
+            "n2"
+          ],
+          [
+            "n2",
+            "n3"
+          ]
+        ],
+        "parameters": {
+          "n1": {},
+          "n2": {
+            "operations": [
+              {
+                "type": "derive_matching_labels",
+                "new_column": "category",
+                "source_columns": [
+                  "A",
+                  "B",
+                  "C",
+                  "D"
+                ],
+                "match_value": 1,
+                "labels": {
+                  "A": "A",
+                  "B": "B",
+                  "C": "C",
+                  "D": "D"
+                }
+              }
+            ]
+          },
+          "n3": {}
+        },
+        "flags": []
+      }
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 from collections import defaultdict, deque
 from core.plan_utils import normalize_plan_shape
+from nodes.contracts import validate_canonical_node_parameters
 from nodes.registry import NODE_REGISTRY
 from nodes.types import NodeType
 
@@ -81,13 +82,23 @@ def validate_plan(plan: dict) -> tuple[bool, list[str]]:
 
     # ---- CHECK 5: Orphan nodes ----
     connected = set()
+    out_degree = {node_id: 0 for node_id in node_ids}
     for source, target in edges:
         connected.add(source)
         connected.add(target)
+        out_degree[source] += 1
 
     for node_id in node_ids:
         if len(node_ids) > 1 and node_id not in connected:
             errors.append(f"ORPHAN_NODE: '{node_id}' is disconnected.")
+
+    # ---- CHECK 5b: Single terminal sink ----
+    sink_nodes = [node_id for node_id in node_ids if out_degree[node_id] == 0]
+    if len(node_ids) > 1 and len(sink_nodes) != 1:
+        errors.append(
+            "INVALID_TERMINAL_SHAPE: executable plans must have exactly one terminal output node; "
+            f"found {len(sink_nodes)} sink nodes ({', '.join(sink_nodes)})."
+        )
 
     # ---- CHECK 6: Input arity (branch-safe structural integrity) ----
     # Recompute in-degree cleanly (cycle step mutated it)
@@ -99,8 +110,13 @@ def validate_plan(plan: dict) -> tuple[bool, list[str]]:
         node_type = node_type_by_id[node_id]
         node = NODE_REGISTRY[node_type]
 
-        # Nodes that require an input must have exactly one inbound edge
-        if node.input_type != NodeType.FILE_PATH:
+        if node.is_source:
+            if in_degree[node_id] != 0:
+                errors.append(
+                    f"INVALID_ARITY: '{node_id}' expects 0 inbound edges "
+                    f"(source node), got {in_degree[node_id]}."
+                )
+        else:
             if in_degree[node_id] != 1:
                 errors.append(
                     f"INVALID_ARITY: '{node_id}' expects 1 inbound edge "
@@ -118,6 +134,8 @@ def validate_plan(plan: dict) -> tuple[bool, list[str]]:
                 errors.append(
                     f"MISSING_PARAM: '{node_id}' ({node_type}) requires '{param}'."
                 )
+
+        errors.extend(validate_canonical_node_parameters(node_type, provided))
 
     return len(errors) == 0, errors
 

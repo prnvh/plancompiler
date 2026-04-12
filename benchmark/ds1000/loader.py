@@ -2,11 +2,21 @@ from __future__ import annotations
 
 import gzip
 import json
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
 import pandas as pd
+
+
+@dataclass(slots=True)
+class DS1000Case:
+    test_case_id: int | None
+    dataframe: pd.DataFrame
+    expected_result: Any
+    source_name: str = "df"
+    additional_inputs: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass(slots=True)
@@ -18,6 +28,7 @@ class DS1000Task:
     expected_result_kind: str
     source_name: str = "df"
     additional_inputs: dict[str, Any] = field(default_factory=dict)
+    cases: list[DS1000Case] = field(default_factory=list)
     metadata: dict[str, Any] = field(default_factory=dict)
     raw_record: dict[str, Any] = field(default_factory=dict)
 
@@ -274,7 +285,21 @@ def infer_result_kind(value: Any) -> str:
     return "object"
 
 
-def _derive_from_code_context(record: dict[str, Any]) -> tuple[pd.DataFrame, Any, str, dict[str, Any], dict[str, Any]]:
+def _infer_test_case_ids_from_code_context(code_context: str) -> list[int] | None:
+    matches = [
+        int(match.group(1))
+        for match in re.finditer(r"for\s+\w+\s+in\s+range\((\d+)\)\s*:", code_context)
+    ]
+    if not matches:
+        return None
+
+    count = max(matches)
+    if count <= 0:
+        return None
+    return list(range(1, count + 1))
+
+
+def _derive_cases_from_code_context(record: dict[str, Any]) -> tuple[list[DS1000Case], dict[str, Any]]:
     code_context = record.get("code_context")
     if not isinstance(code_context, str) or not code_context.strip():
         raise ValueError("DS-1000 record is missing a usable code_context.")
@@ -286,19 +311,59 @@ def _derive_from_code_context(record: dict[str, Any]) -> tuple[pd.DataFrame, Any
     if not callable(generate_test_case):
         raise ValueError("DS-1000 code_context does not define generate_test_case().")
 
-    test_case_id = 1
-    test_input, expected_result = generate_test_case(test_case_id)
     exec_context = runtime.get("exec_context")
     binding_names = _parse_exec_input_bindings(exec_context if isinstance(exec_context, str) else None)
-    dataframe, source_name, additional_inputs = _normalize_runtime_inputs(test_input, binding_names)
+
+    cases: list[DS1000Case] = []
+    inferred_test_case_ids = _infer_test_case_ids_from_code_context(code_context)
+
+    if inferred_test_case_ids is None:
+        explicit_max_test_cases = record.get("max_test_cases")
+        if explicit_max_test_cases is not None:
+            test_case_ids = list(range(1, int(explicit_max_test_cases) + 1))
+        else:
+            test_case_ids = [1]
+    else:
+        test_case_ids = inferred_test_case_ids
+
+    for test_case_id in test_case_ids:
+        try:
+            test_input, expected_result = generate_test_case(test_case_id)
+        except Exception:
+            if inferred_test_case_ids is None and record.get("max_test_cases") is not None and cases:
+                break
+            raise
+
+        dataframe, source_name, additional_inputs = _normalize_runtime_inputs(test_input, binding_names)
+        cases.append(
+            DS1000Case(
+                test_case_id=test_case_id,
+                dataframe=dataframe,
+                expected_result=expected_result,
+                source_name=source_name,
+                additional_inputs=additional_inputs,
+            )
+        )
+
+    if not cases:
+        raise ValueError("DS-1000 code_context did not yield any runnable test cases.")
+
+    all_additional_names = sorted(
+        {
+            name
+            for case in cases
+            for name in case.additional_inputs.keys()
+        }
+    )
 
     derived_metadata = {
         "derived_from_code_context": True,
-        "test_case_id": test_case_id,
+        "test_case_ids": [case.test_case_id for case in cases],
+        "test_case_count": len(cases),
         "input_bindings": binding_names,
-        "additional_input_names": list(additional_inputs.keys()),
+        "additional_input_names": all_additional_names,
     }
-    return dataframe, expected_result, source_name, additional_inputs, derived_metadata
+    return cases, derived_metadata
 
 
 def _coerce_expected_result(value: Any, explicit_kind: str | None, base_dir: Path | None) -> tuple[Any, str]:
@@ -406,10 +471,18 @@ def normalize_ds1000_task(
     )
     derived_metadata: dict[str, Any] = {}
     additional_inputs: dict[str, Any] = {}
+    cases: list[DS1000Case] = []
 
     if dataframe_payload is None or expected_payload is None:
-        dataframe, expected_result, source_name, additional_inputs, derived_metadata = _derive_from_code_context(record)
-        expected_result_kind = infer_result_kind(expected_result)
+        cases, derived_metadata = _derive_cases_from_code_context(record)
+        dataframe = cases[0].dataframe.copy()
+        expected_result = cases[0].expected_result
+        source_name = cases[0].source_name
+        additional_inputs = dict(cases[0].additional_inputs)
+        kinds = {infer_result_kind(case.expected_result) for case in cases}
+        if len(kinds) != 1:
+            raise ValueError("DS-1000 task produced inconsistent result kinds across test cases.")
+        expected_result_kind = kinds.pop()
     else:
         dataframe = _coerce_dataframe(dataframe_payload, base_path)
         expected_result, expected_result_kind = _coerce_expected_result(
@@ -418,6 +491,15 @@ def normalize_ds1000_task(
             base_path,
         )
         source_name = str(record.get("source_name") or "df")
+        cases = [
+            DS1000Case(
+                test_case_id=None,
+                dataframe=dataframe.copy(),
+                expected_result=expected_result,
+                source_name=source_name,
+                additional_inputs={},
+            )
+        ]
 
     metadata = record_metadata
     metadata.update(derived_metadata)
@@ -432,6 +514,7 @@ def normalize_ds1000_task(
         expected_result_kind=expected_result_kind,
         source_name=source_name,
         additional_inputs=additional_inputs,
+        cases=cases,
         metadata=metadata,
         raw_record=dict(record),
     )

@@ -1,0 +1,620 @@
+{
+  "manifest_version": 1,
+  "subset_name": "ds1000_pandas_linear_non_branching",
+  "selected_task_ids": [
+    "ds1000_pandas_2",
+    "ds1000_pandas_3",
+    "ds1000_pandas_4",
+    "ds1000_pandas_5",
+    "ds1000_pandas_6",
+    "ds1000_pandas_7",
+    "ds1000_pandas_8",
+    "ds1000_pandas_9",
+    "ds1000_pandas_11",
+    "ds1000_pandas_12",
+    "ds1000_pandas_13",
+    "ds1000_pandas_14",
+    "ds1000_pandas_20",
+    "ds1000_pandas_21",
+    "ds1000_pandas_22",
+    "ds1000_pandas_23",
+    "ds1000_pandas_24",
+    "ds1000_pandas_26",
+    "ds1000_pandas_27",
+    "ds1000_pandas_28",
+    "ds1000_pandas_29",
+    "ds1000_pandas_34",
+    "ds1000_pandas_35",
+    "ds1000_pandas_41",
+    "ds1000_pandas_44",
+    "ds1000_pandas_45",
+    "ds1000_pandas_46",
+    "ds1000_pandas_50",
+    "ds1000_pandas_51",
+    "ds1000_pandas_52",
+    "ds1000_pandas_53",
+    "ds1000_pandas_54",
+    "ds1000_pandas_55",
+    "ds1000_pandas_56",
+    "ds1000_pandas_57",
+    "ds1000_pandas_58",
+    "ds1000_pandas_59",
+    "ds1000_pandas_60",
+    "ds1000_pandas_62",
+    "ds1000_pandas_65",
+    "ds1000_pandas_66",
+    "ds1000_pandas_67",
+    "ds1000_pandas_76",
+    "ds1000_pandas_77",
+    "ds1000_pandas_78",
+    "ds1000_pandas_79",
+    "ds1000_pandas_80",
+    "ds1000_pandas_81",
+    "ds1000_pandas_85",
+    "ds1000_pandas_86",
+    "ds1000_pandas_87",
+    "ds1000_pandas_91",
+    "ds1000_pandas_92",
+    "ds1000_pandas_94",
+    "ds1000_pandas_95",
+    "ds1000_pandas_96",
+    "ds1000_pandas_97",
+    "ds1000_pandas_98",
+    "ds1000_pandas_99",
+    "ds1000_pandas_100",
+    "ds1000_pandas_101",
+    "ds1000_pandas_102",
+    "ds1000_pandas_103",
+    "ds1000_pandas_104",
+    "ds1000_pandas_105",
+    "ds1000_pandas_106",
+    "ds1000_pandas_107",
+    "ds1000_pandas_110",
+    "ds1000_pandas_111",
+    "ds1000_pandas_115",
+    "ds1000_pandas_116",
+    "ds1000_pandas_121",
+    "ds1000_pandas_122",
+    "ds1000_pandas_127",
+    "ds1000_pandas_128",
+    "ds1000_pandas_129",
+    "ds1000_pandas_130",
+    "ds1000_pandas_131",
+    "ds1000_pandas_132",
+    "ds1000_pandas_133",
+    "ds1000_pandas_134",
+    "ds1000_pandas_135",
+    "ds1000_pandas_136",
+    "ds1000_pandas_137",
+    "ds1000_pandas_138",
+    "ds1000_pandas_141",
+    "ds1000_pandas_142",
+    "ds1000_pandas_143",
+    "ds1000_pandas_144",
+    "ds1000_pandas_145",
+    "ds1000_pandas_146",
+    "ds1000_pandas_147",
+    "ds1000_pandas_148",
+    "ds1000_pandas_149",
+    "ds1000_pandas_150",
+    "ds1000_pandas_160",
+    "ds1000_pandas_161",
+    "ds1000_pandas_166",
+    "ds1000_pandas_167",
+    "ds1000_pandas_168",
+    "ds1000_pandas_169",
+    "ds1000_pandas_170",
+    "ds1000_pandas_171",
+    "ds1000_pandas_172",
+    "ds1000_pandas_175",
+    "ds1000_pandas_176",
+    "ds1000_pandas_177",
+    "ds1000_pandas_178",
+    "ds1000_pandas_179",
+    "ds1000_pandas_180",
+    "ds1000_pandas_185",
+    "ds1000_pandas_186",
+    "ds1000_pandas_187",
+    "ds1000_pandas_190",
+    "ds1000_pandas_191",
+    "ds1000_pandas_192",
+    "ds1000_pandas_193",
+    "ds1000_pandas_194",
+    "ds1000_pandas_198",
+    "ds1000_pandas_206",
+    "ds1000_pandas_207",
+    "ds1000_pandas_208",
+    "ds1000_pandas_212",
+    "ds1000_pandas_213",
+    "ds1000_pandas_214",
+    "ds1000_pandas_217",
+    "ds1000_pandas_218",
+    "ds1000_pandas_219",
+    "ds1000_pandas_223",
+    "ds1000_pandas_224",
+    "ds1000_pandas_225",
+    "ds1000_pandas_243",
+    "ds1000_pandas_244",
+    "ds1000_pandas_245",
+    "ds1000_pandas_251",
+    "ds1000_pandas_252",
+    "ds1000_pandas_253",
+    "ds1000_pandas_255",
+    "ds1000_pandas_256",
+    "ds1000_pandas_259",
+    "ds1000_pandas_260",
+    "ds1000_pandas_261",
+    "ds1000_pandas_268",
+    "ds1000_pandas_269",
+    "ds1000_pandas_270",
+    "ds1000_pandas_271",
+    "ds1000_pandas_272",
+    "ds1000_pandas_276",
+    "ds1000_pandas_277",
+    "ds1000_pandas_278",
+    "ds1000_pandas_279",
+    "ds1000_pandas_280",
+    "ds1000_pandas_281",
+    "ds1000_pandas_284",
+    "ds1000_pandas_285",
+    "ds1000_pandas_286",
+    "ds1000_pandas_287",
+    "ds1000_pandas_288"
+  ],
+  "rejections": [
+    {
+      "task_id": "ds1000_pandas_0",
+      "reasons": [
+        "multiple_inputs",
+        "requires_auxiliary_inputs",
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_1",
+      "reasons": [
+        "multiple_inputs",
+        "requires_auxiliary_inputs",
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_10",
+      "reasons": [
+        "unsupported_result_kind"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_16",
+      "reasons": [
+        "multiple_inputs",
+        "requires_auxiliary_inputs",
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_17",
+      "reasons": [
+        "multiple_inputs",
+        "requires_auxiliary_inputs",
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_18",
+      "reasons": [
+        "multiple_inputs",
+        "requires_auxiliary_inputs",
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_19",
+      "reasons": [
+        "multiple_inputs",
+        "requires_auxiliary_inputs",
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_25",
+      "reasons": [
+        "multiple_inputs",
+        "requires_auxiliary_inputs",
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_30",
+      "reasons": [
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_31",
+      "reasons": [
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_32",
+      "reasons": [
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_36",
+      "reasons": [
+        "multiple_inputs",
+        "requires_auxiliary_inputs",
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_37",
+      "reasons": [
+        "multiple_inputs",
+        "requires_auxiliary_inputs",
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_38",
+      "reasons": [
+        "multiple_inputs",
+        "requires_auxiliary_inputs",
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_42",
+      "reasons": [
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_43",
+      "reasons": [
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_68",
+      "reasons": [
+        "multiple_inputs",
+        "requires_auxiliary_inputs",
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_69",
+      "reasons": [
+        "multiple_inputs",
+        "requires_auxiliary_inputs",
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_70",
+      "reasons": [
+        "multiple_inputs",
+        "requires_auxiliary_inputs",
+        "unsupported_result_kind",
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_71",
+      "reasons": [
+        "multiple_inputs",
+        "requires_auxiliary_inputs",
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_72",
+      "reasons": [
+        "multiple_inputs",
+        "requires_auxiliary_inputs",
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_73",
+      "reasons": [
+        "multiple_inputs",
+        "requires_auxiliary_inputs",
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_74",
+      "reasons": [
+        "multiple_inputs",
+        "requires_auxiliary_inputs",
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_75",
+      "reasons": [
+        "multiple_inputs",
+        "requires_auxiliary_inputs",
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_93",
+      "reasons": [
+        "unsupported_result_kind"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_112",
+      "reasons": [
+        "unsupported_result_kind"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_113",
+      "reasons": [
+        "unsupported_result_kind"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_114",
+      "reasons": [
+        "unsupported_result_kind"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_123",
+      "reasons": [
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_124",
+      "reasons": [
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_125",
+      "reasons": [
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_126",
+      "reasons": [
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_139",
+      "reasons": [
+        "multiple_inputs",
+        "requires_auxiliary_inputs",
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_140",
+      "reasons": [
+        "multiple_inputs",
+        "requires_auxiliary_inputs",
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_157",
+      "reasons": [
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_158",
+      "reasons": [
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_159",
+      "reasons": [
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_162",
+      "reasons": [
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_163",
+      "reasons": [
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_164",
+      "reasons": [
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_188",
+      "reasons": [
+        "unsupported_result_kind"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_189",
+      "reasons": [
+        "unsupported_result_kind"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_215",
+      "reasons": [
+        "unsupported_result_kind"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_216",
+      "reasons": [
+        "unsupported_result_kind"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_229",
+      "reasons": [
+        "multiple_inputs",
+        "requires_auxiliary_inputs",
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_230",
+      "reasons": [
+        "multiple_inputs",
+        "requires_auxiliary_inputs",
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_231",
+      "reasons": [
+        "multiple_inputs",
+        "requires_auxiliary_inputs",
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_232",
+      "reasons": [
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_233",
+      "reasons": [
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_234",
+      "reasons": [
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_235",
+      "reasons": [
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_236",
+      "reasons": [
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_248",
+      "reasons": [
+        "multiple_inputs",
+        "requires_auxiliary_inputs",
+        "unsupported_result_kind",
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_249",
+      "reasons": [
+        "multiple_inputs",
+        "requires_auxiliary_inputs",
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_250",
+      "reasons": [
+        "multiple_inputs",
+        "requires_auxiliary_inputs",
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_254",
+      "reasons": [
+        "unsupported_result_kind"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_262",
+      "reasons": [
+        "multiple_inputs",
+        "requires_auxiliary_inputs",
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_263",
+      "reasons": [
+        "multiple_inputs",
+        "requires_auxiliary_inputs",
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_264",
+      "reasons": [
+        "unsupported_result_kind"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_265",
+      "reasons": [
+        "unsupported_result_kind"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_266",
+      "reasons": [
+        "unsupported_result_kind"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_267",
+      "reasons": [
+        "unsupported_result_kind"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_273",
+      "reasons": [
+        "multiple_inputs",
+        "requires_auxiliary_inputs",
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_274",
+      "reasons": [
+        "multiple_inputs",
+        "requires_auxiliary_inputs",
+        "branching_required"
+      ]
+    },
+    {
+      "task_id": "ds1000_pandas_275",
+      "reasons": [
+        "multiple_inputs",
+        "requires_auxiliary_inputs",
+        "branching_required"
+      ]
+    }
+  ]
+}

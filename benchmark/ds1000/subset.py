@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import json
 import re
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Any
 
 from benchmark.ds1000.loader import DS1000Task
@@ -242,3 +244,63 @@ def filter_linear_pandas_tasks(
         return selected, rejected
 
     return selected
+
+
+def build_linear_pandas_manifest(tasks: list[DS1000Task | dict[str, Any]]) -> dict[str, Any]:
+    selected, rejected = filter_linear_pandas_tasks(tasks, include_rejections=True)
+    return {
+        "manifest_version": 1,
+        "subset_name": "ds1000_pandas_linear_non_branching",
+        "selected_task_ids": [_task_id(task) for task in selected],
+        "rejections": [
+            {
+                "task_id": decision.task_id,
+                "reasons": list(decision.reasons),
+            }
+            for decision in rejected
+        ],
+    }
+
+
+def write_linear_pandas_manifest(tasks: list[DS1000Task | dict[str, Any]], path: str | Path) -> Path:
+    manifest = build_linear_pandas_manifest(tasks)
+    output_path = Path(path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+    return output_path
+
+
+def load_linear_pandas_manifest(path: str | Path) -> dict[str, Any]:
+    manifest_path = Path(path)
+    return json.loads(manifest_path.read_text(encoding="utf-8"))
+
+
+def apply_linear_pandas_manifest(
+    tasks: list[DS1000Task | dict[str, Any]],
+    manifest: dict[str, Any],
+    *,
+    include_rejections: bool = False,
+) -> list[DS1000Task | dict[str, Any]] | tuple[list[DS1000Task | dict[str, Any]], list[TaskSelection]]:
+    selected_ids = set(manifest.get("selected_task_ids", []))
+    rejection_map = {
+        entry["task_id"]: list(entry.get("reasons", []))
+        for entry in manifest.get("rejections", [])
+        if isinstance(entry, dict) and "task_id" in entry
+    }
+
+    selected = [task for task in tasks if _task_id(task) in selected_ids]
+
+    if not include_rejections:
+        return selected
+
+    selected_id_lookup = {_task_id(task) for task in selected}
+    rejected = [
+        TaskSelection(
+            task_id=_task_id(task),
+            include=False,
+            reasons=list(rejection_map.get(_task_id(task), ["not_in_manifest"])),
+        )
+        for task in tasks
+        if _task_id(task) not in selected_id_lookup
+    ]
+    return selected, rejected

@@ -23,7 +23,7 @@ NOTE — planner.py change required for token tracking:
             "input_tokens": int,
             "output_tokens": int,
             "total_tokens": int,
-            "cost_usd": float,       # gpt-4o-mini pricing
+            "cost_usd": float,       # planner model pricing
         }
     If get_plan() returns only a dict, token fields are set to None.
     To enable tracking, update core/planner.py to return the usage dict
@@ -35,9 +35,9 @@ NOTE — planner.py change required for token tracking:
             "output_tokens": usage.completion_tokens,
             "total_tokens":  usage.total_tokens,
             "cost_usd": round(
-                (usage.prompt_tokens / 1_000_000) * 0.15 +
-                (usage.completion_tokens / 1_000_000) * 0.60, 6
-            ),  # gpt-4o-mini rates
+                (usage.prompt_tokens / 1_000_000) * 2.00 +
+                (usage.completion_tokens / 1_000_000) * 8.00, 6
+            ),  # gpt-4.1 rates
         }
         return plan, plan_usage
 """
@@ -55,15 +55,15 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from core.planner import get_plan
+from core.planner import get_plan, get_planner_pricing
 from core.validator import validate_plan
 from core.compiler import compile_output
 from benchmark.criteria import check_criteria
 
 N_RUNS = 3
 
-# gpt-4o-mini pricing (planner model)
-PLANNER_PRICING = {"input": 0.15, "output": 0.60}  # $/1M tokens
+# active planner-model pricing
+PLANNER_PRICING = get_planner_pricing()
 
 
 def _planner_cost(input_tokens: int, output_tokens: int) -> float:

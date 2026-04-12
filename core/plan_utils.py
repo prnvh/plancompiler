@@ -3,6 +3,7 @@ from __future__ import annotations
 import copy
 import re
 
+from nodes.contracts import normalize_node_parameters
 from nodes.registry import NODE_REGISTRY
 
 
@@ -160,7 +161,16 @@ def _resolve_node_ref(ref, nodes: list[dict[str, str]]) -> str | None:
 def normalize_plan_shape(plan: dict) -> dict:
     raw_nodes = plan.get("nodes", [])
     nodes, inline_parameters = _coerce_nodes(raw_nodes)
-    parameters = _merge_parameters(plan.get("parameters", {}), nodes, inline_parameters)
+    raw_parameters = _merge_parameters(plan.get("parameters", {}), nodes, inline_parameters)
+    parameters = {}
+
+    for node in nodes:
+        node_id = node["id"]
+        node_type = node["type"]
+        parameters[node_id] = normalize_node_parameters(
+            node_type,
+            raw_parameters.get(node_id, {}),
+        )
 
     normalized_edges = []
     for edge in plan.get("edges", []):
@@ -193,31 +203,3 @@ def normalize_plan_shape(plan: dict) -> dict:
         "flags": copy.deepcopy(plan.get("flags", [])),
         "glue_code": plan.get("glue_code", ""),
     }
-
-
-def linearize_plan_edges(plan: dict) -> dict:
-    plan = copy.deepcopy(plan)
-    nodes = plan.get("nodes", [])
-
-    if len(nodes) <= 1:
-        return plan
-
-    ordered_ids = [node["id"] for node in nodes]
-    index = {node_id: idx for idx, node_id in enumerate(ordered_ids)}
-    expected_edges = len(nodes) - 1
-
-    def is_forward_edge(edge: list[str]) -> bool:
-        source, target = edge
-        if source not in index or target not in index:
-            return False
-        return index[source] < index[target]
-
-    has_non_forward = any(not is_forward_edge(edge) for edge in plan.get("edges", []))
-
-    if len(plan.get("edges", [])) != expected_edges or has_non_forward:
-        plan["edges"] = [
-            [ordered_ids[i], ordered_ids[i + 1]]
-            for i in range(len(ordered_ids) - 1)
-        ]
-
-    return plan

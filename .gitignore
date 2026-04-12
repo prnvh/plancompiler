@@ -197,3 +197,4 @@ benchmark/baseline_results.json
 *.jsonl
 
 benchmark/ablations/*.json
+codex.rules
