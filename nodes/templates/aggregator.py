@@ -6,12 +6,13 @@ import pandas as pd
 
 from nodes.contracts import normalize_node_parameters
 from nodes.templates.expression_support import evaluate_frame_expression
-from nodes.templates.frame_support import resolve_column_label, resolve_column_labels
+from nodes.templates.frame_support import evaluate_dynamic_value, resolve_column_label, resolve_column_labels
 
 
 _PANDAS_AGG_OPS = {
     "sum": "sum",
     "mean": "mean",
+    "std": "std",
     "min": "min",
     "max": "max",
     "count": "count",
@@ -56,9 +57,12 @@ def _select_columns(df: pd.DataFrame, aggregation: dict) -> list:
     if explicit_columns:
         selected.extend(explicit_columns)
 
-    explicit_column = aggregation.get("column")
+    explicit_column = evaluate_dynamic_value(df, aggregation.get("column"))
     if explicit_column is not None:
-        selected.append(resolve_column_label(df, explicit_column))
+        if isinstance(explicit_column, (list, tuple, pd.Index, pd.Series)):
+            selected.extend(resolve_column_labels(df, explicit_column) or [])
+        else:
+            selected.append(resolve_column_label(df, explicit_column))
 
     prefix = aggregation.get("columns_prefix")
     if prefix:

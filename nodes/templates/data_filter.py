@@ -110,6 +110,9 @@ def _evaluate_condition_mask(df: pd.DataFrame, condition: str) -> pd.Series:
     if isinstance(mask, pd.Series):
         return mask.reindex(df.index, fill_value=False).astype(bool)
 
+    if hasattr(mask, "__len__") and len(mask) == len(df):
+        return pd.Series(mask, index=df.index).astype(bool)
+
     if isinstance(mask, bool):
         return pd.Series([mask] * len(df), index=df.index)
 

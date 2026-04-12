@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import ast
 import copy
+import re
 from typing import Any
 
 
@@ -49,6 +51,7 @@ NODE_CONTRACTS: dict[str, dict[str, Any]] = {
                 "aggregations": [
                     {"column": "sales", "op": "sum", "output": "total_sales"},
                     {"column": "sales", "op": "mean", "output": "avg_sales"},
+                    {"column": "sales", "op": "std", "output": "std_sales"},
                     {"op": "size", "output": "row_count"},
                 ],
             },
@@ -127,6 +130,7 @@ NODE_CONTRACTS: dict[str, dict[str, Any]] = {
             "column": "string",
             "row": "int|label",
             "label": "label",
+            "name": "string|null",
             "position": "int",
             "n": "int",
             "agg": "string",
@@ -140,6 +144,8 @@ NODE_CONTRACTS: dict[str, dict[str, Any]] = {
         "examples": [
             {},
             {"method": "column", "column": "result"},
+            {"method": "column_to_series", "column": "value", "label": "date"},
+            {"method": "column_to_series", "column": "value", "label": "date", "name": None},
             {"method": "scalar_agg", "column": "score", "agg": "max"},
             {
                 "method": "columnwise_extreme_index",
@@ -196,6 +202,14 @@ NODE_CONTRACTS: dict[str, dict[str, Any]] = {
             "derive_function_columns": {
                 "required": ["source_columns", "function"],
                 "optional": ["prefix", "suffix", "preserve_zero", "zero_value"],
+            },
+            "shift_non_nulls_left": {
+                "required": [],
+                "optional": ["columns", "fill_value"],
+            },
+            "shift_nulls_to_top_per_column": {
+                "required": [],
+                "optional": ["columns"],
             },
             "derive_first_matching_label": {
                 "required": ["new_column", "source_columns"],
@@ -267,6 +281,14 @@ NODE_CONTRACTS: dict[str, dict[str, Any]] = {
                         "function": "inverse",
                         "prefix": "inv_",
                         "preserve_zero": True,
+                    }
+                ]
+            },
+            {
+                "operations": [
+                    {
+                        "type": "shift_non_nulls_left",
+                        "columns": ["A", "B", "C"],
                     }
                 ]
             },
@@ -792,11 +814,42 @@ def _normalize_column_operation(operation: Any) -> Any:
         )
 
     if op_type == "derive_function_columns":
+        source_columns = raw.get("source_columns") or raw.get("columns")
+        collapsed_function = re.sub(r"\s+", "", str(raw.get("function") or "").lower())
+        if collapsed_function == "lambdarow:dict(zip(row.index,list(row.dropna().values)+[np.nan]*(len(row)-row.count())))":
+            return _clean_operation_dict(
+                {
+                    "type": "shift_non_nulls_left",
+                    "columns": source_columns,
+                },
+                allowed_keys={"type", "columns"},
+            )
+        if collapsed_function == "lambdacol:pd.series(list(col[col.isnull()])+list(col[col.notnull()]))":
+            return _clean_operation_dict(
+                {
+                    "type": "shift_nulls_to_top_per_column",
+                    "columns": source_columns,
+                },
+                allowed_keys={"type", "columns"},
+            )
+        normalized_function = {
+            "np.exp": "exp",
+            "numpy.exp": "exp",
+            "1/(1+np.exp(-col))": "sigmoid",
+            "1/(1+numpy.exp(-col))": "sigmoid",
+            "lambdacol:col/col.sum()": "normalize_sum",
+            "col/col.sum()": "normalize_sum",
+        }.get(collapsed_function, raw.get("function"))
+        if re.fullmatch(
+            r"lambda([A-Za-z_][A-Za-z0-9_]*):1/\(1\+(?:np|numpy)\.exp\(-\1\)\)",
+            collapsed_function,
+        ):
+            normalized_function = "sigmoid"
         return _clean_operation_dict(
             {
                 "type": op_type,
-                "source_columns": raw.get("source_columns") or raw.get("columns"),
-                "function": raw.get("function"),
+                "source_columns": source_columns,
+                "function": normalized_function,
                 "prefix": raw.get("prefix"),
                 "suffix": raw.get("suffix"),
                 "preserve_zero": raw.get("preserve_zero"),
@@ -1945,6 +1998,7 @@ def _normalize_reduce_output_params(params: dict[str, Any]) -> dict[str, Any]:
         "column",
         "row",
         "label",
+        "name",
         "position",
         "n",
         "agg",
@@ -1957,6 +2011,10 @@ def _normalize_reduce_output_params(params: dict[str, Any]) -> dict[str, Any]:
     ):
         if key in raw:
             normalized[key] = raw.pop(key)
+    method = normalized.get("method")
+    if isinstance(method, str) and method.strip().lower() in {"to_series", "as_series", "series"}:
+        normalized["method"] = "column_to_series"
+        normalized.setdefault("name", None)
     normalized.update(raw)
     return normalized
 
@@ -2018,6 +2076,27 @@ def _validate_operation_dict(node_type: str, operation_index: int, operation: An
             f"INVALID_PARAM: {node_type}.operations[{operation_index}] type='{op_type}' has unsupported fields: {', '.join(extras)}."
         )
 
+    def _validate_expression_field(field_name: str) -> None:
+        value = operation.get(field_name)
+        if not isinstance(value, str):
+            return
+        if ";" in value or "\n" in value:
+            errors.append(
+                f"INVALID_PARAM: {node_type}.operations[{operation_index}] field '{field_name}' must be a single expression, not multi-statement code."
+            )
+            return
+        try:
+            expression_tree = ast.parse(value, mode="eval")
+        except SyntaxError:
+            errors.append(
+                f"INVALID_PARAM: {node_type}.operations[{operation_index}] field '{field_name}' must be a valid single Python expression."
+            )
+            return
+        if any(isinstance(node, ast.NamedExpr) for node in ast.walk(expression_tree)):
+            errors.append(
+                f"INVALID_PARAM: {node_type}.operations[{operation_index}] field '{field_name}' must not contain assignment statements."
+            )
+
     if op_type == "replace_infrequent":
         has_global = isinstance(operation.get("columns"), list) and operation.get("threshold") is not None and operation.get("replacement") is not None
         has_column_rules = isinstance(operation.get("column_rules"), list) and len(operation["column_rules"]) > 0
@@ -2050,6 +2129,7 @@ def _validate_operation_dict(node_type: str, operation_index: int, operation: An
             "exp",
             "exponential",
             "sigmoid",
+            "normalize_sum",
             "log",
             "log1p",
             "square",
@@ -2060,6 +2140,10 @@ def _validate_operation_dict(node_type: str, operation_index: int, operation: An
             errors.append(
                 f"INVALID_PARAM: {node_type}.operations[{operation_index}] type='derive_function_columns' has unsupported function '{operation.get('function')}'."
             )
+
+    if op_type == "derive_column":
+        _validate_expression_field("expression")
+        _validate_expression_field("rowwise_rule")
 
     if op_type == "parse_duration_text":
         if operation.get("result") not in (None, "number", "timedelta", "days"):
@@ -2108,6 +2192,7 @@ def _validate_aggregator_params(params: dict[str, Any]) -> list[str]:
     allowed_ops = {
         "sum",
         "mean",
+        "std",
         "min",
         "max",
         "count",
@@ -2136,7 +2221,7 @@ def _validate_aggregator_params(params: dict[str, Any]) -> list[str]:
                 aggregation.get(key) not in (None, [], {}, "")
                 for key in ("column", "columns", "columns_regex", "columns_prefix", "columns_suffix")
             )
-            if op in {"sum", "mean", "min", "max", "count", "first", "last", "nunique", "collect_list", "collect_set"}:
+            if op in {"sum", "mean", "std", "min", "max", "count", "first", "last", "nunique", "collect_list", "collect_set"}:
                 if not selector_present:
                     errors.append(
                         f"INVALID_PARAM: Aggregator.aggregations[{index}] op='{op}' requires a column selector."
@@ -2216,6 +2301,8 @@ def _validate_reduce_output_params(params: dict[str, Any]) -> list[str]:
             errors.append("INVALID_PARAM: ReduceOutput.target_occurrence must be 'first' or 'last'.")
         if params.get("direction") not in {None, "after", "before"}:
             errors.append("INVALID_PARAM: ReduceOutput.direction must be 'after' or 'before'.")
+    if method == "column_to_series" and params.get("column") in (None, ""):
+        errors.append("INVALID_PARAM: ReduceOutput method='column_to_series' requires 'column'.")
     return errors
 
 

@@ -76,6 +76,15 @@ def reduce_output(value, method: str = "identity", **options):
             raise TypeError("ReduceOutput column method requires a DataFrame input.")
         result = value[options["column"]]
 
+    elif method == "column_to_series":
+        if not isinstance(value, pd.DataFrame):
+            raise TypeError("ReduceOutput column_to_series method requires a DataFrame input.")
+        column = options["column"]
+        label = options.get("label")
+        result = value[column] if label is None else value.set_index(label)[column]
+        if "name" in options:
+            result = result.rename(options["name"])
+
     elif method == "row":
         if not isinstance(value, pd.DataFrame):
             raise TypeError("ReduceOutput row method requires a DataFrame input.")

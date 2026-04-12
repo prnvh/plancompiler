@@ -6,6 +6,9 @@ from nodes.types import NodeType
 
 
 def validate_plan(plan: dict) -> tuple[bool, list[str]]:
+    if not isinstance(plan, dict):
+        return False, ["INVALID_PLAN: plan must be a JSON object."]
+
     plan = normalize_plan_shape(plan)
     errors: list[str] = []
 

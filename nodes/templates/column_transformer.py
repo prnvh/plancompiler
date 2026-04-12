@@ -8,8 +8,15 @@ from nodes.templates.expression_support import (
     build_row_expression_env,
     build_frame_expression_env,
     evaluate_frame_expression,
+    evaluate_row_expression,
 )
-from nodes.templates.frame_support import resolve_column_label, resolve_column_labels, resolve_mapping_keys
+from nodes.templates.frame_support import (
+    evaluate_dynamic_value,
+    resolve_column_label,
+    resolve_column_labels,
+    resolve_column_mapping,
+    resolve_mapping_keys,
+)
 
 
 def _evaluate_expression(df: pd.DataFrame, expression: str):
@@ -56,8 +63,38 @@ def _evaluate_rowwise_expression(df: pd.DataFrame, condition: str, when_true: st
 
 def _evaluate_rowwise_rule(df: pd.DataFrame, rule: str):
     rule_globals = build_frame_expression_env(df)
-    row_func = eval(rule, rule_globals, {})
-    return df.apply(row_func, axis=1)
+    try:
+        row_func = eval(rule, rule_globals, {})
+    except Exception:
+        row_func = None
+    if callable(row_func):
+        return df.apply(row_func, axis=1)
+    return df.apply(lambda row: evaluate_row_expression(row, rule, df=df), axis=1)
+
+
+def _shift_non_nulls_left(df: pd.DataFrame, columns: list[str] | None = None, fill_value=None) -> pd.DataFrame:
+    target_columns = resolve_column_labels(df, columns) if columns is not None else df.columns.tolist()
+
+    def _compress_row(row):
+        values = [row[column] for column in target_columns if pd.notna(row[column])]
+        values.extend([fill_value] * (len(target_columns) - len(values)))
+        for index, column in enumerate(target_columns):
+            row[column] = values[index]
+        return row
+
+    return df.apply(_compress_row, axis=1)
+
+
+def _shift_nulls_to_top_per_column(df: pd.DataFrame, columns: list[str] | None = None) -> pd.DataFrame:
+    target_columns = resolve_column_labels(df, columns) if columns is not None else df.columns.tolist()
+    result = df.copy()
+
+    for column in target_columns:
+        series = result[column]
+        reordered = pd.concat([series[series.isna()], series[series.notna()]], ignore_index=True)
+        result[column] = reordered.reindex(range(len(result)))
+
+    return result
 
 
 def _concatenate_columns(df: pd.DataFrame, source_columns: list[str], *, separator: str = "", strip: bool = False) -> pd.Series:
@@ -69,7 +106,7 @@ def _apply_column_operation(df: pd.DataFrame, operation: dict) -> pd.DataFrame:
     op_type = operation["type"]
 
     if op_type == "rename_columns":
-        return df.rename(columns=operation["mapping"])
+        return df.rename(columns=resolve_column_mapping(df, operation["mapping"]))
 
     if op_type == "select_columns":
         return df.loc[:, resolve_column_labels(df, operation["columns"])].copy()
@@ -170,7 +207,8 @@ def _apply_column_operation(df: pd.DataFrame, operation: dict) -> pd.DataFrame:
     if op_type == "map_values":
         source = resolve_column_label(df, operation["source_column"])
         target = operation.get("new_column") or source
-        mapped = df[source].map(resolve_mapping_keys(df[source], operation["mapping"]))
+        mapping = evaluate_dynamic_value(df, operation["mapping"])
+        mapped = df[source].map(resolve_mapping_keys(df[source], mapping))
         if "default" in operation:
             mapped = mapped.fillna(operation["default"])
         df[target] = mapped
@@ -255,11 +293,27 @@ def _apply_column_operation(df: pd.DataFrame, operation: dict) -> pd.DataFrame:
                 transformed = values.abs()
             elif function == "negate":
                 transformed = -values
+            elif function == "normalize_sum":
+                denominator = values.sum()
+                transformed = values / denominator if pd.notna(denominator) and denominator != 0 else values * np.nan
             else:
                 raise ValueError(f"Unsupported derive_function_columns function: {function}")
 
             df[f"{prefix}{source_column}{suffix}"] = transformed
         return df
+
+    if op_type == "shift_non_nulls_left":
+        return _shift_non_nulls_left(
+            df.copy(),
+            columns=operation.get("columns"),
+            fill_value=operation.get("fill_value"),
+        )
+
+    if op_type == "shift_nulls_to_top_per_column":
+        return _shift_nulls_to_top_per_column(
+            df,
+            columns=operation.get("columns"),
+        )
 
     if op_type == "derive_column":
         target = operation["new_column"]

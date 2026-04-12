@@ -4,6 +4,12 @@ from nodes.contracts import normalize_node_parameters
 from nodes.templates.frame_support import resolve_column_label, resolve_mapping_keys
 
 
+def _resolve_target_columns(df: pd.DataFrame, reference) -> list:
+    if isinstance(reference, str) and reference.strip() == "*":
+        return list(df.columns)
+    return [resolve_column_label(df, reference)]
+
+
 def _apply_low_frequency_rule(
     df: pd.DataFrame,
     *,
@@ -98,20 +104,18 @@ def _apply_value_operation(df: pd.DataFrame, operation: dict) -> pd.DataFrame:
         return df
 
     if op_type == "normalize_text":
-        column = resolve_column_label(df, operation["column"])
-        series = df[column].astype(str)
         style = operation["style"]
-        if style == "lower":
-            df[column] = series.str.lower()
-        elif style == "upper":
-            df[column] = series.str.upper()
-        elif style == "strip":
-            df[column] = series.str.strip()
+        for column in _resolve_target_columns(df, operation["column"]):
+            series = df[column].astype(str)
+            if style == "lower":
+                df[column] = series.str.lower()
+            elif style == "upper":
+                df[column] = series.str.upper()
+            elif style == "strip":
+                df[column] = series.str.strip()
         return df
 
     if op_type == "replace_substring":
-        column = resolve_column_label(df, operation["column"])
-        series = df[column].astype(str)
         replace_kwargs = {
             "pat": operation["old"],
             "repl": operation["new"],
@@ -119,7 +123,15 @@ def _apply_value_operation(df: pd.DataFrame, operation: dict) -> pd.DataFrame:
         }
         if "case" in operation:
             replace_kwargs["case"] = operation["case"]
-        df[column] = series.str.replace(**replace_kwargs)
+        target_columns = _resolve_target_columns(df, operation["column"])
+        if isinstance(operation["column"], str) and operation["column"].strip() == "*":
+            target_columns = [
+                column
+                for column in target_columns
+                if pd.api.types.is_object_dtype(df[column]) or pd.api.types.is_string_dtype(df[column])
+            ]
+        for column in target_columns:
+            df[column] = df[column].astype(str).str.replace(**replace_kwargs)
         return df
 
     if op_type == "strip_prefix":

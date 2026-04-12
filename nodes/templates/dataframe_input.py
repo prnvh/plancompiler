@@ -13,6 +13,15 @@ def dataframe_input(
     candidate = dataframe if dataframe is not None else globals().get(source_name)
 
     if candidate is None:
+        dataframe_bindings = {
+            name: value
+            for name, value in globals().items()
+            if isinstance(value, pd.DataFrame)
+        }
+        if len(dataframe_bindings) == 1:
+            candidate = next(iter(dataframe_bindings.values()))
+
+    if candidate is None:
         raise ValueError(
             f"DataFrameInput could not find a DataFrame in '{source_name}'."
         )

@@ -9,8 +9,10 @@ from nodes.templates.expression_support import (
     evaluate_row_expression,
 )
 from nodes.templates.frame_support import (
+    evaluate_dynamic_value,
     resolve_column_label,
     resolve_column_labels,
+    resolve_column_mapping,
     resolve_mapping_keys,
 )
 from nodes.templates.value_counts_reporter import value_counts_reporter
@@ -321,7 +323,7 @@ def _apply_transformation(df: pd.DataFrame, transform: dict) -> pd.DataFrame:
         if not mapping and transform.get("from") and transform.get("to"):
             mapping = {transform["from"]: transform["to"]}
         if mapping:
-            df = df.rename(columns=mapping)
+            df = df.rename(columns=resolve_column_mapping(df, mapping))
         return df
 
     if operation == "drop_duplicate_rows":
@@ -486,6 +488,7 @@ def _apply_transformation(df: pd.DataFrame, transform: dict) -> pd.DataFrame:
 
         mapping = transform.get("mapping")
         if mapping is not None:
+            mapping = evaluate_dynamic_value(df, mapping)
             df[column] = df[column].replace(resolve_mapping_keys(df[column], mapping))
             return df
 
@@ -507,7 +510,7 @@ def _apply_transformation(df: pd.DataFrame, transform: dict) -> pd.DataFrame:
     if operation == "map":
         source_column = resolve_column_label(df, transform.get("source_column") or transform.get("column"))
         target_column = transform.get("new_column") or transform.get("column") or source_column
-        mapping = transform.get("mapping", {})
+        mapping = evaluate_dynamic_value(df, transform.get("mapping", {}))
         default = transform.get("default")
         mapped = df[source_column].map(resolve_mapping_keys(df[source_column], mapping))
         if default is not None:

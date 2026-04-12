@@ -7,6 +7,7 @@ import pandas as pd
 
 
 def resolve_column_label(df: pd.DataFrame, reference: Any) -> Any:
+    reference = evaluate_dynamic_value(df, reference)
     columns = list(df.columns)
 
     if reference in columns:
@@ -35,9 +36,71 @@ def resolve_column_label(df: pd.DataFrame, reference: Any) -> Any:
 def resolve_column_labels(df: pd.DataFrame, references: list[Any] | tuple[Any, ...] | Any | None) -> list[Any] | None:
     if references is None:
         return None
-    if not isinstance(references, (list, tuple)):
-        references = [references]
-    return [resolve_column_label(df, reference) for reference in references]
+    evaluated = evaluate_dynamic_value(df, references)
+    if evaluated is None:
+        return None
+    if isinstance(evaluated, pd.Series):
+        evaluated = evaluated.tolist()
+    elif isinstance(evaluated, pd.Index):
+        evaluated = evaluated.tolist()
+    elif not isinstance(evaluated, (list, tuple)):
+        evaluated = [evaluated]
+    return [resolve_column_label(df, reference) for reference in evaluated]
+
+
+def _looks_like_expression_text(value: str) -> bool:
+    text = value.strip()
+    if not text:
+        return False
+    expression_tokens = (
+        "df.",
+        "col(",
+        "column(",
+        "index",
+        ".tolist(",
+        ".columns",
+        "filter(",
+        "regex=",
+        "lambda ",
+        " for ",
+        "[",
+        "]",
+        "{",
+        "}",
+    )
+    return any(token in text for token in expression_tokens)
+
+
+def evaluate_dynamic_value(df: pd.DataFrame, value: Any) -> Any:
+    if isinstance(value, dict) and value.get("type") == "expression" and value.get("expression"):
+        from nodes.templates.expression_support import evaluate_frame_expression
+
+        return evaluate_frame_expression(df, value["expression"])
+
+    if isinstance(value, str):
+        if value in df.columns:
+            return value
+        if not _looks_like_expression_text(value):
+            return value
+        from nodes.templates.expression_support import evaluate_frame_expression
+
+        try:
+            return evaluate_frame_expression(df, value)
+        except Exception:
+            return value
+
+    return value
+
+
+def resolve_column_mapping(df: pd.DataFrame, mapping: Mapping[Any, Any] | str) -> dict[Any, Any]:
+    evaluated = evaluate_dynamic_value(df, mapping)
+    if not isinstance(evaluated, Mapping):
+        raise TypeError("Column mapping must resolve to a mapping object.")
+
+    return {
+        resolve_column_label(df, key): value
+        for key, value in evaluated.items()
+    }
 
 
 def resolve_index_level_reference(df: pd.DataFrame, reference: Any) -> Any:

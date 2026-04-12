@@ -5,7 +5,7 @@
   "filtered_tasks": 158,
   "requested_limit": 15,
   "run_count": 15,
-  "pass_count": 13,
+  "pass_count": 12,
   "results": [
     {
       "task_id": "ds1000_pandas_2",
@@ -13,13 +13,11 @@
       "validation_success": true,
       "compile_success": true,
       "run_success": true,
-      "comparison_passed": false,
+      "comparison_passed": true,
       "validation_errors": [],
       "compile_error": null,
       "runtime_error": null,
-      "comparison_failures": [
-        "[test_case_id=2] DataFrame.iloc[:, 1] (column name=\"Qu2\") are different\n\nDataFrame.iloc[:, 1] (column name=\"Qu2\") values are different (33.33333 %)\n[index]: [0, 1, 2, 3, 4, 5, 6, 7, 8]\n[left]:  [apple, potato, sausage, cheese, cheese, potato, cheese, potato, egg]\n[right]: [other, potato, other, cheese, cheese, potato, cheese, potato, other]\nAt positional index 0, first diff: apple != other"
-      ],
+      "comparison_failures": [],
       "plan": {
         "nodes": [
           {
@@ -29,20 +27,12 @@
           {
             "id": "n2",
             "type": "ValueTransformer"
-          },
-          {
-            "id": "n3",
-            "type": "ReduceOutput"
           }
         ],
         "edges": [
           [
             "n1",
             "n2"
-          ],
-          [
-            "n2",
-            "n3"
           ]
         ],
         "parameters": {
@@ -53,14 +43,14 @@
                 "type": "replace_infrequent",
                 "columns": [
                   "Qu1",
+                  "Qu2",
                   "Qu3"
                 ],
                 "threshold": 2,
                 "replacement": "other"
               }
             ]
-          },
-          "n3": {}
+          }
         },
         "flags": []
       }
@@ -182,11 +172,13 @@
     {
       "task_id": "ds1000_pandas_5",
       "plan_success": true,
-      "validation_success": true,
-      "compile_success": true,
-      "run_success": true,
-      "comparison_passed": true,
-      "validation_errors": [],
+      "validation_success": false,
+      "compile_success": false,
+      "run_success": false,
+      "comparison_passed": false,
+      "validation_errors": [
+        "INVALID_PARAM: ValueTransformer.operations[0] type='replace_infrequent' requires either columns+threshold+replacement or non-empty column_rules."
+      ],
       "compile_error": null,
       "runtime_error": null,
       "comparison_failures": [],
@@ -221,23 +213,20 @@
             "operations": [
               {
                 "type": "replace_infrequent",
-                "column_rules": [
-                  {
-                    "column": "Qu1",
+                "column_rules": {
+                  "Qu1": {
                     "threshold": 3,
                     "replacement": "other"
                   },
-                  {
-                    "column": "Qu2",
+                  "Qu2": {
                     "threshold": 2,
                     "replacement": "other"
                   },
-                  {
-                    "column": "Qu3",
+                  "Qu3": {
                     "threshold": 2,
                     "replacement": "other"
                   }
-                ]
+                }
               }
             ]
           },
@@ -252,13 +241,11 @@
       "validation_success": true,
       "compile_success": true,
       "run_success": true,
-      "comparison_passed": false,
+      "comparison_passed": true,
       "validation_errors": [],
       "compile_error": null,
       "runtime_error": null,
-      "comparison_failures": [
-        "[test_case_id=1] DataFrame.iloc[:, 2] (column name=\"Qu3\") are different\n\nDataFrame.iloc[:, 2] (column name=\"Qu3\") values are different (11.11111 %)\n[index]: [0, 1, 2, 3, 4, 5, 6, 7, 8]\n[left]:  [other, potato, other, cheese, cheese, potato, cheese, potato, other]\n[right]: [apple, potato, other, cheese, cheese, potato, cheese, potato, other]\nAt positional index 0, first diff: other != apple"
-      ],
+      "comparison_failures": [],
       "plan": {
         "nodes": [
           {
@@ -302,12 +289,18 @@
                   {
                     "column": "Qu2",
                     "threshold": 2,
-                    "replacement": "other"
+                    "replacement": "other",
+                    "preserve_values": [
+                      "apple"
+                    ]
                   },
                   {
                     "column": "Qu3",
                     "threshold": 2,
-                    "replacement": "other"
+                    "replacement": "other",
+                    "preserve_values": [
+                      "apple"
+                    ]
                   }
                 ]
               }
@@ -320,40 +313,16 @@
     },
     {
       "task_id": "ds1000_pandas_7",
-      "plan_success": true,
-      "validation_success": true,
-      "compile_success": true,
-      "run_success": true,
-      "comparison_passed": true,
+      "plan_success": false,
+      "validation_success": false,
+      "compile_success": false,
+      "run_success": false,
+      "comparison_passed": false,
       "validation_errors": [],
       "compile_error": null,
-      "runtime_error": null,
+      "runtime_error": "Planner error:\nTraceback (most recent call last):\n  File \"C:\\Users\\pranav h\\Documents\\GitHub\\llm-code-graph-compiler\\.venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 534, in _make_request\n    response = conn.getresponse()\n  File \"C:\\Users\\pranav h\\Documents\\GitHub\\llm-code-graph-compiler\\.venv\\Lib\\site-packages\\urllib3\\connection.py\", line 571, in getresponse\n    httplib_response = super().getresponse()\n  File \"C:\\Users\\pranav h\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\http\\client.py\", line 1450, in getresponse\n    response.begin()\n    ~~~~~~~~~~~~~~^^\n  File \"C:\\Users\\pranav h\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\http\\client.py\", line 336, in begin\n    version, status, reason = self._read_status()\n                              ~~~~~~~~~~~~~~~~~^^\n  File \"C:\\Users\\pranav h\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\http\\client.py\", line 297, in _read_status\n    line = str(self.fp.readline(_MAXLINE + 1), \"iso-8859-1\")\n               ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^\n  File \"C:\\Users\\pranav h\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\socket.py\", line 725, in readinto\n    return self._sock.recv_into(b)\n           ~~~~~~~~~~~~~~~~~~~~^^^\n  File \"C:\\Users\\pranav h\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\ssl.py\", line 1304, in recv_into\n    return self.read(nbytes, buffer)\n           ~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\pranav h\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\ssl.py\", line 1138, in read\n    return self._sslobj.read(len, buffer)\n           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^\nTimeoutError: The read operation timed out\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"C:\\Users\\pranav h\\Documents\\GitHub\\llm-code-graph-compiler\\.venv\\Lib\\site-packages\\requests\\adapters.py\", line 644, in send\n    resp = conn.urlopen(\n        method=request.method,\n    ...<9 lines>...\n        chunked=chunked,\n    )\n  File \"C:\\Users\\pranav h\\Documents\\GitHub\\llm-code-graph-compiler\\.venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 841, in urlopen\n    retries = retries.increment(\n        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]\n    )\n  File \"C:\\Users\\pranav h\\Documents\\GitHub\\llm-code-graph-compiler\\.venv\\Lib\\site-packages\\urllib3\\util\\retry.py\", line 490, in increment\n    raise reraise(type(error), error, _stacktrace)\n          ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\pranav h\\Documents\\GitHub\\llm-code-graph-compiler\\.venv\\Lib\\site-packages\\urllib3\\util\\util.py\", line 39, in reraise\n    raise value\n  File \"C:\\Users\\pranav h\\Documents\\GitHub\\llm-code-graph-compiler\\.venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 787, in urlopen\n    response = self._make_request(\n        conn,\n    ...<10 lines>...\n        **response_kw,\n    )\n  File \"C:\\Users\\pranav h\\Documents\\GitHub\\llm-code-graph-compiler\\.venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 536, in _make_request\n    self._raise_timeout(err=e, url=url, timeout_value=read_timeout)\n    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\pranav h\\Documents\\GitHub\\llm-code-graph-compiler\\.venv\\Lib\\site-packages\\urllib3\\connectionpool.py\", line 367, in _raise_timeout\n    raise ReadTimeoutError(\n        self, url, f\"Read timed out. (read timeout={timeout_value})\"\n    ) from err\nurllib3.exceptions.ReadTimeoutError: HTTPSConnectionPool(host='api.openai.com', port=443): Read timed out. (read timeout=45)\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"C:\\Users\\pranav h\\Documents\\GitHub\\llm-code-graph-compiler\\core\\planner.py\", line 492, in _call_planner_stage\n    resp = req.post(\n        \"https://api.openai.com/v1/chat/completions\",\n    ...<2 lines>...\n        timeout=45,\n    )\n  File \"C:\\Users\\pranav h\\Documents\\GitHub\\llm-code-graph-compiler\\.venv\\Lib\\site-packages\\requests\\api.py\", line 115, in post\n    return request(\"post\", url, data=data, json=json, **kwargs)\n  File \"C:\\Users\\pranav h\\Documents\\GitHub\\llm-code-graph-compiler\\.venv\\Lib\\site-packages\\requests\\api.py\", line 59, in request\n    return session.request(method=method, url=url, **kwargs)\n           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\pranav h\\Documents\\GitHub\\llm-code-graph-compiler\\.venv\\Lib\\site-packages\\requests\\sessions.py\", line 589, in request\n    resp = self.send(prep, **send_kwargs)\n  File \"C:\\Users\\pranav h\\Documents\\GitHub\\llm-code-graph-compiler\\.venv\\Lib\\site-packages\\requests\\sessions.py\", line 703, in send\n    r = adapter.send(request, **kwargs)\n  File \"C:\\Users\\pranav h\\Documents\\GitHub\\llm-code-graph-compiler\\.venv\\Lib\\site-packages\\requests\\adapters.py\", line 690, in send\n    raise ReadTimeout(e, request=request)\nrequests.exceptions.ReadTimeout: HTTPSConnectionPool(host='api.openai.com', port=443): Read timed out. (read timeout=45)\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"C:\\Users\\pranav h\\Documents\\GitHub\\llm-code-graph-compiler\\benchmark\\ds1000\\runner.py\", line 119, in run_ds1000_task\n    planner_result = planner_fn(task.prompt, context=_build_planning_context(task))\n  File \"C:\\Users\\pranav h\\Documents\\GitHub\\llm-code-graph-compiler\\core\\planner.py\", line 674, in get_plan\n    parameter_raw, parameter_usage = _call_planner_stage(\n                                     ~~~~~~~~~~~~~~~~~~~^\n        PARAMETER_SYSTEM_PROMPT,\n        ^^^^^^^^^^^^^^^^^^^^^^^^\n        parameter_user_message,\n        ^^^^^^^^^^^^^^^^^^^^^^^\n        planner_model,\n        ^^^^^^^^^^^^^^\n    )\n    ^\n  File \"C:\\Users\\pranav h\\Documents\\GitHub\\llm-code-graph-compiler\\core\\planner.py\", line 537, in _call_planner_stage\n    raise RuntimeError(\n        f\"Planner API call timed out after 45 seconds for model '{planner_model}'\"\n    )\nRuntimeError: Planner API call timed out after 45 seconds for model 'gpt-5-mini'\n",
       "comparison_failures": [],
-      "plan": {
-        "nodes": [
-          {
-            "id": "n1",
-            "type": "DataFrameInput"
-          },
-          {
-            "id": "n2",
-            "type": "DataFilter"
-          }
-        ],
-        "edges": [
-          [
-            "n1",
-            "n2"
-          ]
-        ],
-        "parameters": {
-          "n1": {},
-          "n2": {
-            "condition": "(keep_if_dup == 'Yes') or ~url.duplicated()"
-          }
-        },
-        "flags": []
-      }
+      "plan": null
     },
     {
       "task_id": "ds1000_pandas_8",
@@ -375,19 +344,28 @@
           {
             "id": "n2",
             "type": "DataFilter"
+          },
+          {
+            "id": "n3",
+            "type": "ReduceOutput"
           }
         ],
         "edges": [
           [
             "n1",
             "n2"
+          ],
+          [
+            "n2",
+            "n3"
           ]
         ],
         "parameters": {
           "n1": {},
           "n2": {
             "condition": "(drop_if_dup == 'No') or ~url.duplicated()"
-          }
+          },
+          "n3": {}
         },
         "flags": []
       }
@@ -395,13 +373,13 @@
     {
       "task_id": "ds1000_pandas_9",
       "plan_success": true,
-      "validation_success": true,
-      "compile_success": true,
-      "run_success": true,
-      "comparison_passed": true,
+      "validation_success": false,
+      "compile_success": false,
+      "run_success": false,
+      "comparison_passed": false,
       "validation_errors": [],
       "compile_error": null,
-      "runtime_error": null,
+      "runtime_error": "Validator error:\nTraceback (most recent call last):\n  File \"C:\\Users\\pranav h\\Documents\\GitHub\\llm-code-graph-compiler\\benchmark\\ds1000\\runner.py\", line 135, in run_ds1000_task\n    is_valid, errors = validate_plan(plan)\n                       ~~~~~~~~~~~~~^^^^^^\n  File \"C:\\Users\\pranav h\\Documents\\GitHub\\llm-code-graph-compiler\\core\\validator.py\", line 138, in validate_plan\n    errors.extend(validate_canonical_node_parameters(node_type, provided))\n                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\pranav h\\Documents\\GitHub\\llm-code-graph-compiler\\nodes\\contracts.py\", line 2311, in validate_canonical_node_parameters\n    errors.extend(_validate_operation_dict(node_type, index, operation))\n                  ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\pranav h\\Documents\\GitHub\\llm-code-graph-compiler\\nodes\\contracts.py\", line 2125, in _validate_operation_dict\n    _validate_expression_field(\"rowwise_rule\")\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\pranav h\\Documents\\GitHub\\llm-code-graph-compiler\\nodes\\contracts.py\", line 2074, in _validate_expression_field\n    if re.search(r\"(^|[\\s(])([A-Za-z_][A-Za-z0-9_]*)\\s*=(?!=)\", value):\n       ^^\nNameError: name 're' is not defined. Did you forget to import 're'?\n",
       "comparison_failures": [],
       "plan": {
         "nodes": [
@@ -411,20 +389,47 @@
           },
           {
             "id": "n2",
-            "type": "DataFilter"
+            "type": "DataTransformer"
+          },
+          {
+            "id": "n3",
+            "type": "ReduceOutput"
           }
         ],
         "edges": [
           [
             "n1",
             "n2"
+          ],
+          [
+            "n2",
+            "n3"
           ]
         ],
         "parameters": {
           "n1": {},
           "n2": {
-            "condition": "(keep_if_dup == 'Yes') or (~url.duplicated(keep='last'))"
-          }
+            "operations": [
+              {
+                "type": "derive_column",
+                "new_column": "url",
+                "rowwise_rule": "row['url'] + '||__IDX__||' + str(index) if row['keep_if_dup'] == 'Yes' else row['url']"
+              },
+              {
+                "type": "drop_duplicate_rows",
+                "subset": [
+                  "url"
+                ],
+                "keep": "last"
+              },
+              {
+                "type": "derive_column",
+                "new_column": "url",
+                "rowwise_rule": "row['url'].split('||__IDX__||')[0]"
+              }
+            ]
+          },
+          "n3": {}
         },
         "flags": []
       }
@@ -469,10 +474,6 @@
           "n1": {},
           "n2": {
             "operations": [
-              {
-                "type": "parse_datetime",
-                "column": "datetime"
-              },
               {
                 "type": "remove_timezone",
                 "column": "datetime",
@@ -526,6 +527,10 @@
           "n2": {
             "operations": [
               {
+                "type": "parse_datetime",
+                "column": "datetime"
+              },
+              {
                 "type": "remove_timezone",
                 "column": "datetime",
                 "strategy": "preserve_wall_time"
@@ -561,10 +566,6 @@
           {
             "id": "n3",
             "type": "DataSorter"
-          },
-          {
-            "id": "n4",
-            "type": "ReduceOutput"
           }
         ],
         "edges": [
@@ -575,14 +576,12 @@
           [
             "n2",
             "n3"
-          ],
-          [
-            "n3",
-            "n4"
           ]
         ],
         "parameters": {
-          "n1": {},
+          "n1": {
+            "source_name": "df"
+          },
           "n2": {
             "operations": [
               {
@@ -606,8 +605,7 @@
               "datetime"
             ],
             "ascending": true
-          },
-          "n4": {}
+          }
         },
         "flags": []
       }
@@ -672,7 +670,9 @@
             ]
           },
           "n3": {
-            "by": "datetime",
+            "by": [
+              "datetime"
+            ],
             "ascending": true
           },
           "n4": {}
@@ -764,24 +764,18 @@
           {
             "id": "n2",
             "type": "ColumnTransformer"
-          },
-          {
-            "id": "n3",
-            "type": "ReduceOutput"
           }
         ],
         "edges": [
           [
             "n1",
             "n2"
-          ],
-          [
-            "n2",
-            "n3"
           ]
         ],
         "parameters": {
-          "n1": {},
+          "n1": {
+            "source_name": "df"
+          },
           "n2": {
             "operations": [
               {
@@ -802,8 +796,7 @@
                 }
               }
             ]
-          },
-          "n3": {}
+          }
         },
         "flags": []
       }

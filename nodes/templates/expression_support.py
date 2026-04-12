@@ -18,6 +18,7 @@ SAFE_EXPRESSION_BUILTINS = {
     "isinstance": isinstance,
     "len": len,
     "list": list,
+    "map": map,
     "max": max,
     "min": min,
     "range": range,
@@ -62,7 +63,7 @@ def build_frame_expression_env(
         "pd": pd,
         "np": np,
         "df": df,
-        "index": pd.Series(df.index, index=df.index),
+        "index": df.index,
         "col": _column_accessor(df),
         "column": _column_accessor(df),
         "where": lambda condition, when_true, when_false: _where_like(

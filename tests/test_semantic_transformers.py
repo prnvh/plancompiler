@@ -12,6 +12,7 @@ from nodes.registry import NODE_REGISTRY
 from nodes.templates.aggregator import aggregator
 from nodes.templates.chunk_aggregator import chunk_aggregator
 from nodes.templates.column_transformer import column_transformer
+from nodes.templates.data_filter import data_filter
 from nodes.templates.date_range_expander import date_range_expander
 from nodes.templates.datetime_transformer import datetime_transformer
 from nodes.templates.reduce_output import reduce_output
@@ -47,6 +48,7 @@ class SemanticTransformerTests(unittest.TestCase):
             source_type="in_memory_dataframe",
             desired_output_kind="dataframe",
             workflow_mode="in_memory",
+            source_binding_names=["input_df"],
             notes=["Avoid file export nodes for this workflow."],
         )
 
@@ -56,6 +58,7 @@ class SemanticTransformerTests(unittest.TestCase):
         self.assertIn("Source type: in_memory_dataframe", summary)
         self.assertIn("Desired output kind: dataframe", summary)
         self.assertIn("Workflow mode: in_memory", summary)
+        self.assertIn("Runtime dataframe bindings: input_df", summary)
 
         filtered_summary = build_node_summary(context)
         self.assertIn("DataFrameInput", filtered_summary)
@@ -297,6 +300,131 @@ class SemanticTransformerTests(unittest.TestCase):
         self.assertEqual(list(transformed.columns), ["A", "B", "sigmoid_A", "sigmoid_B"])
         self.assertAlmostEqual(float(transformed.loc[0, "sigmoid_A"]), 0.5)
 
+    def test_column_transformer_can_normalize_column_lists_and_mapping_expressions(self):
+        frame = pd.DataFrame(
+            {
+                "A_Name": ["x", "y"],
+                "B_Detail": ["u", "v"],
+                "Value_left": [1, 2],
+                "Value_right": [3, 4],
+            }
+        )
+
+        transformed = column_transformer(
+            frame,
+            operations=[
+                {
+                    "type": "select_columns",
+                    "columns": "['A_Name', 'B_Detail'] + df.filter(regex='^Value').columns.tolist()",
+                },
+                {
+                    "type": "rename_columns",
+                    "mapping": "{c: c.replace('Value_', '') for c in df.filter(regex='^Value').columns}",
+                },
+            ],
+        )
+
+        self.assertEqual(list(transformed.columns), ["A_Name", "B_Detail", "left", "right"])
+
+    def test_column_transformer_can_evaluate_rowwise_rule_without_lambda_wrapper(self):
+        frame = pd.DataFrame({"text": ["a1", "abc", "z9!"]})
+
+        transformed = column_transformer(
+            frame,
+            operations=[
+                {
+                    "type": "derive_column",
+                    "new_column": "letters",
+                    "rowwise_rule": "sum(1 for ch in row['text'] if ch.isalpha())",
+                }
+            ],
+        )
+
+        self.assertEqual(transformed["letters"].tolist(), [1, 3, 1])
+
+    def test_column_transformer_can_shift_null_patterns(self):
+        frame = pd.DataFrame(
+            {
+                "A": [None, 1.0],
+                "B": [2.0, None],
+                "C": [3.0, 4.0],
+            }
+        )
+
+        left_shifted = column_transformer(
+            frame,
+            operations=[{"type": "shift_non_nulls_left", "columns": ["A", "B", "C"]}],
+        )
+        nulls_to_top = column_transformer(
+            frame,
+            operations=[{"type": "shift_nulls_to_top_per_column", "columns": ["A", "B"]}],
+        )
+
+        self.assertEqual(left_shifted.iloc[0].iloc[:2].tolist(), [2.0, 3.0])
+        self.assertTrue(pd.isna(left_shifted.iloc[0].iloc[2]))
+        self.assertTrue(pd.isna(nulls_to_top.iloc[0]["A"]))
+        self.assertTrue(pd.isna(nulls_to_top.iloc[0]["B"]))
+
+    def test_aggregator_supports_std_and_expression_selected_columns(self):
+        frame = pd.DataFrame(
+            {
+                "group": ["a", "a", "b", "b"],
+                "value": [1.0, 3.0, 2.0, 6.0],
+                "keep": [10.0, 20.0, 30.0, 40.0],
+            }
+        )
+
+        transformed = aggregator(
+            frame,
+            group_keys=["group"],
+            aggregations=[
+                {"column": "value", "op": "std", "output": "value_std"},
+                {
+                    "column": {"type": "expression", "expression": "[c for c in df.columns if c.startswith('ke')]"},
+                    "op": "sum",
+                    "output": "keep",
+                },
+            ],
+        )
+
+        self.assertEqual(list(transformed.columns), ["group", "value_std", "keep"])
+        self.assertAlmostEqual(float(transformed.loc[0, "keep"]), 30.0)
+
+    def test_reduce_output_can_convert_dataframe_column_to_series(self):
+        frame = pd.DataFrame(
+            {
+                "date": ["2024-01-01", "2024-01-02"],
+                "value": [5, 6],
+            }
+        )
+
+        result = reduce_output(frame, method="column_to_series", column="value", label="date")
+
+        self.assertEqual(result.index.tolist(), ["2024-01-01", "2024-01-02"])
+        self.assertEqual(result.tolist(), [5, 6])
+
+    def test_reduce_output_can_control_series_name(self):
+        frame = pd.DataFrame({"date": ["2024-01-01"], "value": [5]})
+
+        result = reduce_output(frame, method="column_to_series", column="value", label="date", name=None)
+
+        self.assertIsNone(result.name)
+
+    def test_data_filter_supports_datetime_index_normalize_conditions(self):
+        frame = pd.DataFrame(
+            {"value": [1, 2, 3]},
+            index=pd.to_datetime(
+                ["2020-02-17 10:00:00", "2020-02-18 09:00:00", "2020-02-19 08:00:00"]
+            ),
+        )
+
+        filtered = data_filter(
+            frame,
+            "~index.normalize().isin([pd.to_datetime('2020-02-17'), pd.to_datetime('2020-02-18')])",
+        )
+
+        self.assertEqual(filtered["value"].tolist(), [3])
+
     def test_column_transformer_can_concatenate_and_explode_columns(self):
         frame = pd.DataFrame(
             {
@@ -421,6 +549,26 @@ class SemanticTransformerTests(unittest.TestCase):
 
         self.assertEqual(transformed["sku"].tolist(), ["100", "250"])
         self.assertEqual(transformed["rounded_amount"].tolist(), [1.2, 9.9])
+
+    def test_value_transformer_can_replace_substring_across_all_columns(self):
+        frame = pd.DataFrame(
+            {
+                "left": ["&LT;a", "&LT;b"],
+                "right": ["x&LT;", "y&LT;"],
+                "count": [1, 2],
+            }
+        )
+
+        transformed = value_transformer(
+            frame,
+            operations=[
+                {"type": "replace_substring", "column": "*", "old": "&LT;", "new": "<"},
+            ],
+        )
+
+        self.assertEqual(transformed["left"].tolist(), ["<a", "<b"])
+        self.assertEqual(transformed["right"].tolist(), ["x<", "y<"])
+        self.assertEqual(transformed["count"].tolist(), [1, 2])
 
     def test_value_transformer_can_coerce_numeric_and_clip(self):
         frame = pd.DataFrame({"raw": ["1", "20", "bad"]})

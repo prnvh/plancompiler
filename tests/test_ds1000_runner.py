@@ -89,8 +89,9 @@ class DS1000RunnerTests(unittest.TestCase):
         }
 
         code = compile_output(plan, emit_mode="result")
-        with self.assertRaises(ValueError):
-            execute_compiled_plan(code, task)
+        result, _namespace = execute_compiled_plan(code, task)
+
+        pd.testing.assert_frame_equal(result, task.expected_result)
 
     def test_execute_compiled_plan_uses_explicit_source_binding(self):
         task = DS1000Task(
@@ -178,6 +179,31 @@ class DS1000RunnerTests(unittest.TestCase):
 
         self.assertTrue(outcome.comparison_passed, msg=outcome.comparison.failures if outcome.comparison else None)
         self.assertEqual(outcome.result.tolist(), [3, 4])
+
+    def test_compile_output_strips_future_imports_from_multiple_templates(self):
+        plan = {
+            "nodes": [
+                {"id": "n1", "type": "DataFrameInput"},
+                {
+                    "id": "n2",
+                    "type": "DateRangeExpander",
+                    "params": {"group_keys": ["user"], "date_column": "dt"},
+                },
+                {
+                    "id": "n3",
+                    "type": "Aggregator",
+                    "params": {
+                        "group_keys": ["user"],
+                        "aggregations": [{"column": "value", "op": "sum", "output": "total"}],
+                    },
+                },
+            ],
+            "edges": [["n1", "n2"], ["n2", "n3"]],
+        }
+
+        code = compile_output(plan, emit_mode="result")
+
+        self.assertNotIn("from __future__ import annotations", code)
 
 
 if __name__ == "__main__":

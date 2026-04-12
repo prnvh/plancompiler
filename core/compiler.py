@@ -24,6 +24,15 @@ def _build_output_vars(nodes: list[dict[str, str]]) -> dict[str, str]:
     return output_var_by_id
 
 
+def _sanitize_template_code(template_code: str) -> str:
+    sanitized_lines: list[str] = []
+    for line in template_code.splitlines():
+        if line.strip().startswith("from __future__ import "):
+            continue
+        sanitized_lines.append(line)
+    return "\n".join(sanitized_lines).strip()
+
+
 def auto_glue_code(
     ordered_node_ids: list[str],
     edges: list,
@@ -112,7 +121,7 @@ def compile_output(plan: dict, *, emit_mode: str = "print", result_variable: str
             template_code = f.read()
 
         output_parts.append(f"# --- Node Type: {node_type} ---")
-        output_parts.append(template_code.strip() + "\n")
+        output_parts.append(_sanitize_template_code(template_code) + "\n")
         output_parts.append("")
 
     if glue_code:

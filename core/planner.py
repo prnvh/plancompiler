@@ -27,6 +27,7 @@ class PlanningContext:
     source_type: str | None = None
     desired_output_kind: str | None = None
     workflow_mode: str | None = None
+    source_binding_names: list[str] = field(default_factory=list)
     notes: list[str] = field(default_factory=list)
 
 
@@ -196,7 +197,7 @@ def build_node_summary(context: PlanningContext | None = None, task_description:
                 line += f" | examples: {' || '.join(serialized_examples)}"
 
         if name == "Aggregator":
-            line += " | allowed aggregation ops: sum, mean, min, max, count, size, first, last, nunique, collect_list, collect_set, collect_rows"
+            line += " | allowed aggregation ops: sum, mean, min, max, count, size, first, last, nunique, std, collect_list, collect_set, collect_rows"
         if name in {"ColumnTransformer", "DataTransformer", "DataFilter", "Aggregator"}:
             line += " | expression environment: pd, np, df, index, col(name), column(name), and dataframe column names directly; row is available only for rowwise rules"
 
@@ -295,7 +296,7 @@ def build_selected_node_details(nodes: list[dict[str, str]], edges: list[list[st
             )
         if node_type == "Aggregator":
             lines.append(
-                "  allowed aggregation ops: sum, mean, min, max, count, size, first, last, nunique, collect_list, collect_set, collect_rows"
+                "  allowed aggregation ops: sum, mean, min, max, count, size, first, last, nunique, std, collect_list, collect_set, collect_rows"
             )
         if node_type in {"ColumnTransformer", "DataTransformer", "DataFilter", "Aggregator"}:
             lines.append(
@@ -323,6 +324,8 @@ def build_planning_context_summary(context: PlanningContext | None = None) -> st
         lines.append(f"- Desired output kind: {context.desired_output_kind}")
     if context.workflow_mode:
         lines.append(f"- Workflow mode: {context.workflow_mode}")
+    if context.source_binding_names:
+        lines.append(f"- Runtime dataframe bindings: {', '.join(context.source_binding_names)}")
     for note in context.notes:
         lines.append(f"- Constraint: {note}")
 
